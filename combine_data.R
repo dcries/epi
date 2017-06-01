@@ -25,6 +25,7 @@ tri2 <- read.xport("TRIGLY_D.xpt")
 glu1 <- read.xport("L10AM_C.xpt")
 glu2 <- read.xport("glu_D.xpt")
 
+fitness1 <- read.xport("CVX_C.XPT")
 
 #blood pressure systotlic and diastolic
 bp <- rbind(bp1[,c("SEQN","BPXSY1","BPXSY2","BPXSY3","BPXSY4","BPXDI1","BPXDI2","BPXDI3","BPXDI4")],
@@ -51,6 +52,10 @@ names(hdl)[-1] <- "hdl"
 glu <- rbind(glu1[,c("SEQN","LBXGLU")],
 glu2[,c("SEQN","LBXGLU")])
 names(glu)[-1] <- "glu"
+
+#predicted v02, estimated v02, and by class
+fit <- fitness1[,c("SEQN","CVDVOMAX","CVDESVO2","CVDFITLV")]
+names(fit) <- c("id","predv02","estv02","fitlev")
 
 a=left_join(bp,glu)
 b=left_join(waist,tri)

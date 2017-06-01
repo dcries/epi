@@ -94,16 +94,16 @@ summary(m2)
 #-------------------------------------------
 #look at relationships among mets risk factors
 y <- nhanes %>% filter(!duplicated(id))
-pairs(y[,c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin")])
+pairs(y[,c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin","predv02","estv02","fitlev")])
 
 #correlation plot of variables
-cormat <- cor(y[y$vigmin>0,c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin")],use="pairwise.complete.obs")
+cormat <- cor(y[y$vigmin>0,c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin","predv02","estv02","fitlev")],use="pairwise.complete.obs")
 cormat[lower.tri(cormat)] <- 0
 diag(cormat) <- 0
 df <- expand.grid(x=1:ncol(cormat),y=1:ncol(cormat))
 df$covar <- c(cormat)
-df$x <- factor(df$x,labels=c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin"))
-df$y <- factor(df$y,labels=c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin"))
+df$x <- factor(df$x,labels=c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin","predv02","estv02","fitlev"))
+df$y <- factor(df$y,labels=c("glu","waist","tri","ldl","hdl","bps","bpd","modvigmin","lightmin","vigmin","predv02","estv02","fitlev"))
 df$corr <- as.character(c(round(cormat,3)))
 df$corr[df$corr=="0"] <- ""
 
@@ -124,3 +124,13 @@ coef(m3)
 m4 <- lm(with(y,cbind(glu,waist,tri,hdl,bps,bpd))~y$light)
 coef(m4)
 
+m5 <- lm(with(y,cbind(glu,waist,tri,hdl,bps,bpd))~y$modvig+y$estv02)
+coef(m5)
+
+
+#inidivual distributions
+qplot(log(y$glu))
+qplot(log(y$tri))
+qqnorm(log(y$hdl));qqline(log(y$hdl))
+qqnorm(sqrt(y$ldl));qqline(sqrt(y$ldl))
+qplot(y$bpd)
