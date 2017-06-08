@@ -2,6 +2,8 @@ library(ggplot2)
 library(lme4)
 library(dplyr)
 library(reshape)
+library(car)
+library(nlme)
 
 setwd("C:\\Users\\dcries\\github\\epi")
 nhanes <- read.csv("NHANES_complete.csv")
@@ -32,11 +34,17 @@ nhanes %>% group_by(dow) %>% summarise(m=mean(lightmin),s=sd(lightmin)/sqrt(leng
 #first day vig
 nhanes %>% group_by(rep) %>% summarise(m=mean(vigmin),s=sd(vigmin)/sqrt(length(lightmin)))
 
+qplot(data=nhanes,x=as.factor(rep),y=modvigmin,geom="boxplot")
+anova(lm(modvigmin~as.factor(rep),data=subset(nhanes,rep<6))) #first 5 days are similar, last two
+
+qplot(data=nhanes,x=as.factor(dow),y=modvigmin,geom="boxplot")
+anova(lm(modvigmin~as.factor(dow),data=subset(nhanes,dow%in%c(2:6)))) #M-F similar
+
 #test for weekend effects
-summary(lm(modvigmin ~ as.factor(weekend),data=nhanes))
-summary(lm(modmin ~ as.factor(weekend),data=nhanes))
-summary(lm(lightmin ~ as.factor(weekend),data=nhanes))
-summary(lm(vigmin ~ as.factor(weekend),data=nhanes))
+anova(lm(modvigmin ~ as.factor(weekend),data=nhanes))
+anova(lm(modmin ~ as.factor(weekend),data=nhanes))
+anova(lm(lightmin ~ as.factor(weekend),data=nhanes))
+anova(lm(vigmin ~ as.factor(weekend),data=nhanes))
 
 #cor between wear time and exercise time
 cor(nhanes$wearmin,nhanes$lightmin);plot(nhanes$wearmin,nhanes$lightmin)
@@ -47,7 +55,9 @@ cor(nhanes$wearmin,nhanes$vigmin);plot(nhanes$wearmin,nhanes$vigmin)
 
 nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
 
-m1 <- lmer(modvigmin~(1|id),data=nhanes)
+m1 <- lmer(modvigmin~(1|id),data=nhanes,REML=FALSE)
+#m1b <- gls(modvigmin~1,data=nhanes,correlation=corAR1(form=~1|id),method="ML")
+m1c <- lme(modvigmin~1,data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
 re <- rep(unlist(ranef(m1)),nrep)
 nhanes$error <- nhanes$modvigmin - re - fixef(m1)
@@ -57,6 +67,12 @@ acf(nhanes$error[nhanes$id==id[1]])
 
 eht <- nhanes %>% group_by(id) %>% summarise(e1=error[1],e2=error[2],e3=error[3],e4=error[4],e5=error[5],e6=error[6],e7=error[7])
 #eht <- nhanes %>% group_by(id) %>% summarise(e1=modmin[1],e2=modmin[2],e3=modmin[3],e4=modmin[4],e5=modmin[5],e6=modmin[6],e7=modmin[7])
+
+ind <- which(!is.na(eht$e7))
+boxtest <- rep(0,length(ind))
+for(i in 1:length(ind)){
+  boxtest[i] <- Box.test(unlist(eht[ind[i],-1]),lag=2,type="Ljung-Box")$p.value
+}
 
 #lag 1 difference
 o1a = c(eht$e1[nrep > 1],eht$e2[nrep > 2],eht$e3[nrep > 3],eht$e4[nrep > 4],eht$e5[nrep > 5],eht$e6[nrep > 6])
@@ -131,6 +147,52 @@ coef(m5)
 #inidivual distributions
 qplot(log(y$glu))
 qplot(log(y$tri))
+qqnorm(log(y$tri));qqline(log(y$tri))
 qqnorm(log(y$hdl));qqline(log(y$hdl))
 qqnorm(sqrt(y$ldl));qqline(sqrt(y$ldl))
 qplot(y$bpd)
+qqnorm((y$bpd));qqline((y$bpd))
+
+
+#---------------------------------
+library(rstan)
+model = "
+data{
+  int<lower = 0> N; //number of individuals
+  int<lower = 0> K; //number of obs per individual
+
+  vector[K] Y[N];
+  vector[N] D;
+
+  cov_matrix[K] R;
+}
+
+parameters{
+  vector[K] a;
+  vector[K] b;
+
+  cov_matrix[K] Omega;
+}
+
+transformed parameters{
+  vector[K] mu[N];
+
+for(k in 1:K){
+  for(i in 1:N){
+    mu[i, k] <- a[k] + b[k] * D[i];
+    }
+  }
+}
+
+model{
+  for(i in 1:N){
+    Y[i] ~ multi_normal(mu[i], Omega);
+  }
+
+  Omega ~ inv_wishart(K+1, R);
+}
+"
+model = stan_model(model_code=model)
+results = sampling(model,data=dataList)
+r=as.matrix(results)
+

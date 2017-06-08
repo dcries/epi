@@ -27,6 +27,9 @@ glu2 <- read.xport("glu_D.xpt")
 
 fitness1 <- read.xport("CVX_C.XPT")
 
+meds1 <- read.xport("BPQ_C.xpt")
+meds2 <- read.xport("BPQ_D.xpt")
+
 #blood pressure systotlic and diastolic
 bp <- rbind(bp1[,c("SEQN","BPXSY1","BPXSY2","BPXSY3","BPXSY4","BPXDI1","BPXDI2","BPXDI3","BPXDI4")],
 bp2[,c("SEQN","BPXSY1","BPXSY2","BPXSY3","BPXSY4","BPXDI1","BPXDI2","BPXDI3","BPXDI4")])
@@ -69,5 +72,11 @@ names(full)[1] <- "id"
 complete=inner_join(nhanes,full[,c(1,10:16)])
 sum(complete.cases(complete))
 length(unique(complete$id[complete.cases(complete)]))
+
+
+#---------------
+meds <- rbind(meds1[,c("SEQN","BPQ040A")],meds2[,c("SEQN","BPQ040A")])
+names(meds) <- c("id","bpmed")
+complete=left_join(nhanes,meds)
 
 write.csv(complete,file="nhanes_complete.csv",row.names=FALSE)

@@ -1,0 +1,10 @@
+base
+knitr
+ggplot2
+Matrix
+lme4
+dplyr
+reshape
+car
+nlme
+gridExtra
