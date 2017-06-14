@@ -181,5 +181,156 @@ p3 <- qplot(data=nhanes,x=vigmin) + theme_bw()
 grid.arrange(p1,p2,p3,nrow=1)
 @
 
+<<>>=
+
+summary(lm(wearmin~as.factor(dow),data=nhanes))
+summary(lm(wearmin~as.factor(rep),data=nhanes))
+
+table(nhanes$rep,nhanes$dow)
+@
+
+<<complete,echo=TRUE,cache=TRUE>>=
+dim(nhanes)
+length(unique(nhanes$id))
+table(nrep) #gives distribution of number of replicates
+
+
+meas7 <- subset(nhanes, id %in% unique(id)[nrep==7]) #individuals with all 7 days
+length(unique(meas7$id[complete.cases(meas7[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 405
+#no big changes by taking one of the 7 metsynd variables out
+
+meas67 <- subset(nhanes, id %in% unique(id)[nrep>=6] & rep <= 6) #individuals with 6 days
+length(unique(meas67$id[complete.cases(meas67[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 638
+
+meas57 <- subset(nhanes, id %in% unique(id)[nrep>=5] & rep <= 5) #individuals with 6 days
+length(unique(meas57$id[complete.cases(meas57[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 803, 348 estv02
+
+@
+
+
+<<dowrep,echo=TRUE,cache=TRUE>>=
+q1 <- lm(modvigmin~as.factor(rep),data=nhanes)
+nhanes$rep2 <- nhanes$rep
+nhanes$rep2[nhanes$rep %in% c(1:5)] <- 1
+q2 <- lm(modvigmin~as.factor(rep2),data=nhanes)
+anova(q1,q2)
+
+q3 <- lm(modvigmin~as.factor(dow),data=nhanes)
+q4 <- lm(modvigmin~as.factor(weekend),data=nhanes)
+nhanes$dow2 <- nhanes$dow
+nhanes$dow2[nhanes$dow %in% c(2:6)] <- 2
+q5 <- lm(modvigmin~as.factor(dow2),data=nhanes)
+
+anova(q3,q4)
+anova(q3,q5)
+
+
+q1 <- lm(modvigmin~as.factor(rep),data=meas7)
+meas7$rep2 <- meas7$rep
+meas7$rep2[meas7$rep %in% c(1:5)] <- 1
+q2 <- lm(modvigmin~as.factor(rep2),data=meas7)
+anova(q1,q2)
+
+q3 <- lm(modvigmin~as.factor(dow),data=meas7)
+q4 <- lm(modvigmin~as.factor(weekend),data=meas7)
+meas7$dow2 <- meas7$dow
+meas7$dow2[meas7$dow %in% c(2:6)] <- 2
+q5 <- lm(modvigmin~as.factor(dow2),data=meas7)
+
+anova(q3,q4)
+anova(q3,q5)
+
+@
+
+
+<<corstruc,echo=TRUE,cache=TRUE>>=
+m1a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corCompSymm(form=~1|id),method="ML")
+m2a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corAR1(form=~1|id),method="ML")
+m3a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corARMA(form=~1|id,p=1,q=1),method="ML")
+m4a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corARMA(form=~1|id,p=2,q=0),method="ML")
+m6a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corARMA(form=~1|id,p=2,q=1),method="ML")
+m7a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corSymm(form=~1|id),method="ML")
+m8a <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas7,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML")
+
+extractAIC(m1a)
+extractAIC(m2a)
+extractAIC(m3a)
+extractAIC(m4a)
+extractAIC(m6a)
+extractAIC(m7a)
+extractAIC(m8a)
+
+anova(m3a,m2a)
+anova(m6a,m3a)
+anova(m7a,m6a)
+anova(m8a,m7a)
+
+@
+
+<<corstruc2,echo=TRUE,cache=TRUE>>=
+meas57sub <- subset(meas57,rep <=5)
+
+m1b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corCompSymm(form=~1|id),method="ML")
+m2b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corAR1(form=~1|id),method="ML")
+m3b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corARMA(form=~1|id,p=1,q=1),method="ML")
+m4b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corARMA(form=~1|id,p=2,q=0),method="ML")
+m6b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corARMA(form=~1|id,p=2,q=1),method="ML")
+m7b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57sub,correlation=corSymm(form=~1|id),method="ML")
+m8b <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas57,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML")
+
+extractAIC(m1b)
+extractAIC(m2b)
+extractAIC(m3b)
+extractAIC(m4b)
+extractAIC(m6b)
+extractAIC(m7b)
+extractAIC(m8b)
+
+anova(m3b,m2b)
+anova(m6b,m3b)
+anova(m7b,m3b)
+anova(m8b,m7b)
+
+@
+
+<<corstruc3,echo=TRUE,cache=TRUE>>=
+meas67sub <- subset(meas67,rep <=6)
+
+m1c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corCompSymm(form=~1|id),method="ML")
+m2c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corAR1(form=~1|id),method="ML")
+m3c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corARMA(form=~1|id,p=1,q=1),method="ML")
+m4c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corARMA(form=~1|id,p=2,q=0),method="ML")
+m6c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corARMA(form=~1|id,p=2,q=1),method="ML")
+m7c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corSymm(form=~1|id),method="ML")
+m8c <- gls(modvigmin~as.factor(dow)+as.factor(rep),data=meas67sub,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML")
+
+extractAIC(m1c)
+extractAIC(m2c)
+extractAIC(m3c)
+extractAIC(m4c)
+extractAIC(m6c)
+extractAIC(m7c)
+extractAIC(m8c)
+
+anova(m3c,m2c)
+anova(m6c,m3c)
+anova(m7c,m6c)
+anova(m7c,m8c)
+
+@
+
+<<lmemodels,echo=TRUE,cache=TRUE>>=
+lme1 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas7,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
+
+lme2 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas57,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
+
+lme3 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas67,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
+@
+
+<<summaries,echo=TRUE,cache=TRUE>>=
+summary(m8a) #gls without random effects
+summary(lme1) #lme with person random effects
+@
+
 
 \end{document}

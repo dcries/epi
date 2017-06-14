@@ -523,5 +523,398 @@
 
 \end{knitrout}
 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=nhanes))}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = modvigmin ~ as.factor(rep), data = nhanes)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -23.02 -18.97 -10.60   7.84 341.98 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      22.6007     0.3572  63.271  < 2e-16 ***
+## as.factor(rep)2   0.4171     0.5060   0.824  0.40981    
+## as.factor(rep)3   0.3670     0.5095   0.720  0.47126    
+## as.factor(rep)4  -0.1868     0.5125  -0.364  0.71551    
+## as.factor(rep)5  -0.3571     0.5171  -0.691  0.48983    
+## as.factor(rep)6  -1.4454     0.5262  -2.747  0.00601 ** 
+## as.factor(rep)7  -3.1807     0.5503  -5.780 7.51e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 29.09 on 42433 degrees of freedom
+## Multiple R-squared:  0.001461,	Adjusted R-squared:  0.001319 
+## F-statistic: 10.34 on 6 and 42433 DF,  p-value: 1.743e-11
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(wearmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow),}\hlkwc{data}\hlstd{=nhanes))}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = wearmin ~ as.factor(dow), data = nhanes)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -261.67 -108.24  -10.55   86.38  621.12 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      818.882      2.048 399.784  < 2e-16 ***
+## as.factor(dow)2   36.599      2.764  13.240  < 2e-16 ***
+## as.factor(dow)3   39.281      2.750  14.282  < 2e-16 ***
+## as.factor(dow)4   40.428      2.764  14.629  < 2e-16 ***
+## as.factor(dow)5   34.328      2.762  12.427  < 2e-16 ***
+## as.factor(dow)6   42.792      2.784  15.373  < 2e-16 ***
+## as.factor(dow)7   21.738      2.873   7.566 3.92e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 148.1 on 42433 degrees of freedom
+## Multiple R-squared:  0.008106,	Adjusted R-squared:  0.007965 
+## F-statistic: 57.79 on 6 and 42433 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(wearmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=nhanes))}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = wearmin ~ as.factor(rep), data = nhanes)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -258.59 -109.09  -11.53   87.27  615.71 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      850.727      1.822 466.907  < 2e-16 ***
+## as.factor(rep)2    7.868      2.581   3.048  0.00231 ** 
+## as.factor(rep)3    5.366      2.599   2.065  0.03893 *  
+## as.factor(rep)4    5.782      2.614   2.212  0.02700 *  
+## as.factor(rep)5    2.224      2.638   0.843  0.39906    
+## as.factor(rep)6   -2.202      2.684  -0.820  0.41198    
+## as.factor(rep)7  -26.440      2.807  -9.420  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 148.4 on 42433 degrees of freedom
+## Multiple R-squared:  0.004513,	Adjusted R-squared:  0.004372 
+## F-statistic: 32.06 on 6 and 42433 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{table}\hlstd{(nhanes}\hlopt{$}\hlstd{rep,nhanes}\hlopt{$}\hlstd{dow)}
+\end{alltt}
+\begin{verbatim}
+##    
+##        1    2    3    4    5    6    7
+##   1 1507 1482 1180  547  586  543  786
+##   2  722 1700 1458 1124  512  567  502
+##   3  451  797 1687 1378 1102  480  516
+##   4  473  503  789 1638 1368 1062  430
+##   5  398  529  486  776 1624 1294  945
+##   6  830  472  513  465  764 1545 1080
+##   7  847  882  398  445  429  683 1145
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{dim}\hlstd{(nhanes)}
+\end{alltt}
+\begin{verbatim}
+## [1] 42440    39
+\end{verbatim}
+\begin{alltt}
+\hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(nhanes}\hlopt{$}\hlstd{id))}
+\end{alltt}
+\begin{verbatim}
+## [1] 8244
+\end{verbatim}
+\begin{alltt}
+\hlkwd{table}\hlstd{(nrep)} \hlcom{#gives distribution of number of replicates}
+\end{alltt}
+\begin{verbatim}
+## nrep
+##    1    2    3    4    5    6    7 
+##  510  555  656  834 1249 1809 2631
+\end{verbatim}
+\begin{alltt}
+\hlstd{meas7} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{==}\hlnum{7}\hlstd{])} \hlcom{#individuals with all 7 days}
+\hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(meas7}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas7[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])]))} \hlcom{#with bpmed 405}
+\end{alltt}
+\begin{verbatim}
+## [1] 1103
+\end{verbatim}
+\begin{alltt}
+\hlcom{#no big changes by taking one of the 7 metsynd variables out}
+
+\hlstd{meas67} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{6}\hlstd{])} \hlcom{#individuals with 6 days}
+\hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(meas67}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas67[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])]))} \hlcom{#with bpmed 638}
+\end{alltt}
+\begin{verbatim}
+## [1] 1878
+\end{verbatim}
+\begin{alltt}
+\hlstd{meas57} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{5}\hlstd{])} \hlcom{#individuals with 6 days}
+\hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(meas57}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas57[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])]))} \hlcom{#with bpmed 803, 348 estv02}
+\end{alltt}
+\begin{verbatim}
+## [1] 2424
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{m1a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m5a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+
+\hlkwd{extractAIC}\hlstd{(m1a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3.0 164612.6
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m2a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3.0 166406.4
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m3a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4 164463
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m4a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4 165127
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m5a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 167597.3
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m6a)}
+\end{alltt}
+\begin{verbatim}
+## [1]      5.0 164385.4
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m7a)}
+\end{alltt}
+\begin{verbatim}
+## [1]     23 164230
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m3a,m2a)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m3a     1  4 164463.0 164494.3 -82227.49                        
+## m2a     2  3 166406.4 166429.9 -83200.20 1 vs 2 1945.413  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m6a,m3a)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m6a     1  5 164385.4 164424.5 -82187.69                        
+## m3a     2  4 164463.0 164494.3 -82227.49 1 vs 2 79.59778  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m7a,m6a)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m7a     1 23 164230.0 164409.9 -82091.98                        
+## m6a     2  5 164385.4 164424.5 -82187.69 1 vs 2 191.4168  <.0001
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{meas57sub} \hlkwb{<-} \hlkwd{subset}\hlstd{(meas57,rep} \hlopt{<=}\hlnum{5}\hlstd{)}
+
+\hlstd{m1b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m5b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+
+\hlkwd{extractAIC}\hlstd{(m1b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3.0 238635.3
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m2b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3 240383
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m3b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 238399.2
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m4b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 238788.7
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m5b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4 241848
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m6b)}
+\end{alltt}
+\begin{verbatim}
+## [1]      5.0 238399.3
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m7b)}
+\end{alltt}
+\begin{verbatim}
+## [1]     12.0 238283.9
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m3b,m2b)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m3b     1  4 238399.2 238431.9 -119195.6                        
+## m2b     2  3 240383.0 240407.5 -120188.5 1 vs 2 1985.732  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m6b,m3b)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m6b     1  5 238399.3 238440.2 -119194.6                        
+## m3b     2  4 238399.2 238431.9 -119195.6 1 vs 2 1.924965  0.1653
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m7b,m3b)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m7b     1 12 238283.9 238382.0 -119130.0                        
+## m3b     2  4 238399.2 238431.9 -119195.6 1 vs 2 131.3118  <.0001
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{meas67sub} \hlkwb{<-} \hlkwd{subset}\hlstd{(meas67,rep} \hlopt{<=}\hlnum{6}\hlstd{)}
+
+\hlstd{m1c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m5c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+
+\hlkwd{extractAIC}\hlstd{(m1c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3.0 230673.6
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m2c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      3.0 232736.1
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m3c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 230358.5
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m4c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 230934.7
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m5c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      4.0 234300.7
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m6c)}
+\end{alltt}
+\begin{verbatim}
+## [1]      5.0 230352.5
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m7c)}
+\end{alltt}
+\begin{verbatim}
+## [1]     17.0 230219.8
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m3c,m2c)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m3c     1  4 230358.5 230391.1 -115175.2                        
+## m2c     2  3 232736.1 232760.6 -116365.1 1 vs 2 2379.651  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m6c,m3c)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m6c     1  5 230352.5 230393.3 -115171.3                        
+## m3c     2  4 230358.5 230391.1 -115175.2 1 vs 2 7.915767  0.0049
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m7c,m6c)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m7c     1 17 230219.8 230358.3 -115092.9                        
+## m6c     2  5 230352.5 230393.3 -115171.3 1 vs 2 156.7862  <.0001
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 
 \end{document}
