@@ -526,34 +526,6 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=nhanes))}
-\end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = modvigmin ~ as.factor(rep), data = nhanes)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -23.02 -18.97 -10.60   7.84 341.98 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)      22.6007     0.3572  63.271  < 2e-16 ***
-## as.factor(rep)2   0.4171     0.5060   0.824  0.40981    
-## as.factor(rep)3   0.3670     0.5095   0.720  0.47126    
-## as.factor(rep)4  -0.1868     0.5125  -0.364  0.71551    
-## as.factor(rep)5  -0.3571     0.5171  -0.691  0.48983    
-## as.factor(rep)6  -1.4454     0.5262  -2.747  0.00601 ** 
-## as.factor(rep)7  -3.1807     0.5503  -5.780 7.51e-09 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 29.09 on 42433 degrees of freedom
-## Multiple R-squared:  0.001461,	Adjusted R-squared:  0.001319 
-## F-statistic: 10.34 on 6 and 42433 DF,  p-value: 1.743e-11
-\end{verbatim}
-\begin{alltt}
 \hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(wearmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow),}\hlkwc{data}\hlstd{=nhanes))}
 \end{alltt}
 \begin{verbatim}
@@ -658,18 +630,38 @@
 \begin{alltt}
 \hlcom{#no big changes by taking one of the 7 metsynd variables out}
 
-\hlstd{meas67} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{6}\hlstd{])} \hlcom{#individuals with 6 days}
+\hlstd{id7complete} \hlkwb{<-} \hlkwd{unique}\hlstd{(meas7}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas7[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])])}
+
+\hlstd{meas67} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{6}\hlstd{]} \hlopt{&} \hlstd{rep} \hlopt{<=} \hlnum{6}\hlstd{)} \hlcom{#individuals with 6 days}
 \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(meas67}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas67[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])]))} \hlcom{#with bpmed 638}
 \end{alltt}
 \begin{verbatim}
 ## [1] 1878
 \end{verbatim}
 \begin{alltt}
-\hlstd{meas57} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{5}\hlstd{])} \hlcom{#individuals with 6 days}
+\hlstd{meas57} \hlkwb{<-} \hlkwd{subset}\hlstd{(nhanes, id} \hlopt{%in%} \hlkwd{unique}\hlstd{(id)[nrep}\hlopt{>=}\hlnum{5}\hlstd{]} \hlopt{&} \hlstd{rep} \hlopt{<=} \hlnum{5}\hlstd{)} \hlcom{#individuals with 6 days}
 \hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(meas57}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas57[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])]))} \hlcom{#with bpmed 803, 348 estv02}
 \end{alltt}
 \begin{verbatim}
 ## [1] 2424
+\end{verbatim}
+\begin{alltt}
+\hlstd{id57complete} \hlkwb{<-} \hlkwd{unique}\hlstd{(meas57}\hlopt{$}\hlstd{id[}\hlkwd{complete.cases}\hlstd{(meas57[,}\hlkwd{c}\hlstd{(}\hlstr{"smplwt"}\hlstd{,}\hlstr{"sex"}\hlstd{,}\hlstr{"age"}\hlstd{,}\hlstr{"race"}\hlstd{,}\hlstr{"rep"}\hlstd{,}\hlstr{"dow"}\hlstd{,}\hlstr{"wearmin"}\hlstd{,}\hlstr{"modvigmin"}\hlstd{,}\hlstr{"modvigminb"}\hlstd{,}\hlstr{"modvigbouts"}\hlstd{,}\hlstr{"glu"}\hlstd{,}\hlstr{"waist"}\hlstd{,}\hlstr{"tri"}\hlstd{,}\hlstr{"ldl"}\hlstd{,}\hlstr{"hdl"}\hlstd{,}\hlstr{"bps"}\hlstd{,}\hlstr{"bpd"}\hlstd{)])])}
+
+\hlkwd{table}\hlstd{((meas57} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{n}\hlstd{=}\hlkwd{length}\hlstd{(id)))}\hlopt{$}\hlstd{n)}
+\end{alltt}
+\begin{verbatim}
+## 
+##    3    4    5 
+##  333 1510 3846
+\end{verbatim}
+\begin{alltt}
+\hlkwd{table}\hlstd{((meas67} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{n}\hlstd{=}\hlkwd{length}\hlstd{(id)))}\hlopt{$}\hlstd{n)}
+\end{alltt}
+\begin{verbatim}
+## 
+##    5    6 
+## 1088 3352
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -678,78 +670,186 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{m1a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m2a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m3a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m4a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m5a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m6a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m7a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{q1} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=nhanes)}
+\hlstd{nhanes}\hlopt{$}\hlstd{rep2} \hlkwb{<-} \hlstd{nhanes}\hlopt{$}\hlstd{rep}
+\hlstd{nhanes}\hlopt{$}\hlstd{rep2[nhanes}\hlopt{$}\hlstd{rep} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{)]} \hlkwb{<-} \hlnum{1}
+\hlstd{q2} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep2),}\hlkwc{data}\hlstd{=nhanes)}
+\hlkwd{anova}\hlstd{(q1,q2)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(rep)
+## Model 2: modvigmin ~ as.factor(rep2)
+##   Res.Df      RSS Df Sum of Sq      F Pr(>F)
+## 1  42433 35902020                           
+## 2  42437 35904922 -4   -2901.8 0.8574 0.4887
+\end{verbatim}
+\begin{alltt}
+\hlstd{q3} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow),}\hlkwc{data}\hlstd{=nhanes)}
+\hlstd{q4} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(weekend),}\hlkwc{data}\hlstd{=nhanes)}
+\hlstd{nhanes}\hlopt{$}\hlstd{dow2} \hlkwb{<-} \hlstd{nhanes}\hlopt{$}\hlstd{dow}
+\hlstd{nhanes}\hlopt{$}\hlstd{dow2[nhanes}\hlopt{$}\hlstd{dow} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlnum{2}\hlopt{:}\hlnum{6}\hlstd{)]} \hlkwb{<-} \hlnum{2}
+\hlstd{q5} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow2),}\hlkwc{data}\hlstd{=nhanes)}
+
+\hlkwd{anova}\hlstd{(q3,q4)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(dow)
+## Model 2: modvigmin ~ as.factor(weekend)
+##   Res.Df      RSS Df Sum of Sq      F    Pr(>F)    
+## 1  42433 35755786                                  
+## 2  42438 35773439 -5    -17653 4.1899 0.0008297 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(q3,q5)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(dow)
+## Model 2: modvigmin ~ as.factor(dow2)
+##   Res.Df      RSS Df Sum of Sq      F Pr(>F)
+## 1  42433 35755786                           
+## 2  42437 35762149 -4     -6363 1.8878 0.1095
+\end{verbatim}
+\begin{alltt}
+\hlstd{q1} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7)}
+\hlstd{meas7}\hlopt{$}\hlstd{rep2} \hlkwb{<-} \hlstd{meas7}\hlopt{$}\hlstd{rep}
+\hlstd{meas7}\hlopt{$}\hlstd{rep2[meas7}\hlopt{$}\hlstd{rep} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{)]} \hlkwb{<-} \hlnum{1}
+\hlstd{q2} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(rep2),}\hlkwc{data}\hlstd{=meas7)}
+\hlkwd{anova}\hlstd{(q1,q2)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(rep)
+## Model 2: modvigmin ~ as.factor(rep2)
+##   Res.Df      RSS Df Sum of Sq      F Pr(>F)
+## 1  18410 14037352                           
+## 2  18414 14038137 -4   -785.07 0.2574 0.9053
+\end{verbatim}
+\begin{alltt}
+\hlstd{q3} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow),}\hlkwc{data}\hlstd{=meas7)}
+\hlstd{q4} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(weekend),}\hlkwc{data}\hlstd{=meas7)}
+\hlstd{meas7}\hlopt{$}\hlstd{dow2} \hlkwb{<-} \hlstd{meas7}\hlopt{$}\hlstd{dow}
+\hlstd{meas7}\hlopt{$}\hlstd{dow2[meas7}\hlopt{$}\hlstd{dow} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlnum{2}\hlopt{:}\hlnum{6}\hlstd{)]} \hlkwb{<-} \hlnum{2}
+\hlstd{q5} \hlkwb{<-} \hlkwd{lm}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow2),}\hlkwc{data}\hlstd{=meas7)}
+
+\hlkwd{anova}\hlstd{(q3,q4)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(dow)
+## Model 2: modvigmin ~ as.factor(weekend)
+##   Res.Df      RSS Df Sum of Sq     F Pr(>F)
+## 1  18410 13976558                          
+## 2  18415 13983155 -5   -6597.3 1.738 0.1221
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(q3,q5)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: modvigmin ~ as.factor(dow)
+## Model 2: modvigmin ~ as.factor(dow2)
+##   Res.Df      RSS Df Sum of Sq      F Pr(>F)
+## 1  18410 13976558                           
+## 2  18414 13977073 -4   -515.62 0.1698 0.9539
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{m1a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m8a} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{weight} \hlstd{=} \hlkwd{varIdent}\hlstd{(}\hlkwc{form} \hlstd{=} \hlopt{~} \hlnum{1}\hlopt{|}\hlstd{rep),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
 
 \hlkwd{extractAIC}\hlstd{(m1a)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3.0 164612.6
+## [1]     15.0 164398.1
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m2a)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3.0 166406.4
+## [1]     15.0 166262.7
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m3a)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4 164463
+## [1]     16.0 164252.2
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m4a)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4 165127
-\end{verbatim}
-\begin{alltt}
-\hlkwd{extractAIC}\hlstd{(m5a)}
-\end{alltt}
-\begin{verbatim}
-## [1]      4.0 167597.3
+## [1]     16.0 164938.2
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m6a)}
 \end{alltt}
 \begin{verbatim}
-## [1]      5.0 164385.4
+## [1]     17.0 164181.5
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m7a)}
 \end{alltt}
 \begin{verbatim}
-## [1]     23 164230
+## [1]     35.0 164043.4
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m8a)}
+\end{alltt}
+\begin{verbatim}
+## [1]     41.0 164029.9
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m3a,m2a)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m3a     1  4 164463.0 164494.3 -82227.49                        
-## m2a     2  3 166406.4 166429.9 -83200.20 1 vs 2 1945.413  <.0001
+## m3a     1 16 164252.2 164377.3 -82110.08                        
+## m2a     2 15 166262.8 166380.1 -83116.37 1 vs 2 2012.582  <.0001
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m6a,m3a)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m6a     1  5 164385.4 164424.5 -82187.69                        
-## m3a     2  4 164463.0 164494.3 -82227.49 1 vs 2 79.59778  <.0001
+## m6a     1 17 164181.5 164314.4 -82073.73                        
+## m3a     2 16 164252.2 164377.3 -82110.08 1 vs 2 72.71033  <.0001
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m7a,m6a)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m7a     1 23 164230.0 164409.9 -82091.98                        
-## m6a     2  5 164385.4 164424.5 -82187.69 1 vs 2 191.4168  <.0001
+## m7a     1 35 164043.4 164317.1 -81986.68                        
+## m6a     2 17 164181.5 164314.4 -82073.73 1 vs 2 174.0954  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m8a,m7a)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m8a     1 41 164029.9 164350.5 -81973.94                        
+## m7a     2 35 164043.4 164317.1 -81986.68 1 vs 2 25.47542   3e-04
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -759,78 +859,86 @@
 \begin{alltt}
 \hlstd{meas57sub} \hlkwb{<-} \hlkwd{subset}\hlstd{(meas57,rep} \hlopt{<=}\hlnum{5}\hlstd{)}
 
-\hlstd{m1b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m2b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m3b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m4b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m5b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m6b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m7b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m1b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m8b} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas57,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{weight} \hlstd{=} \hlkwd{varIdent}\hlstd{(}\hlkwc{form} \hlstd{=} \hlopt{~} \hlnum{1}\hlopt{|}\hlstd{rep),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
 
 \hlkwd{extractAIC}\hlstd{(m1b)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3.0 238635.3
+## [1]     13 238400
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m2b)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3 240383
+## [1]     13.0 240187.2
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m3b)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4.0 238399.2
+## [1]     14.0 238171.1
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m4b)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4.0 238788.7
-\end{verbatim}
-\begin{alltt}
-\hlkwd{extractAIC}\hlstd{(m5b)}
-\end{alltt}
-\begin{verbatim}
-## [1]      4 241848
+## [1]     14.0 238567.7
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m6b)}
 \end{alltt}
 \begin{verbatim}
-## [1]      5.0 238399.3
+## [1]     15 238171
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m7b)}
 \end{alltt}
 \begin{verbatim}
-## [1]     12.0 238283.9
+## [1]     22.0 238067.3
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m8b)}
+\end{alltt}
+\begin{verbatim}
+## [1]     26.0 238041.9
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m3b,m2b)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m3b     1  4 238399.2 238431.9 -119195.6                        
-## m2b     2  3 240383.0 240407.5 -120188.5 1 vs 2 1985.732  <.0001
+## m3b     1 14 238171.1 238285.6 -119071.6                        
+## m2b     2 13 240187.2 240293.5 -120080.6 1 vs 2 2018.088  <.0001
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m6b,m3b)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m6b     1  5 238399.3 238440.2 -119194.6                        
-## m3b     2  4 238399.2 238431.9 -119195.6 1 vs 2 1.924965  0.1653
+## m6b     1 15 238171.0 238293.7 -119070.5                        
+## m3b     2 14 238171.1 238285.6 -119071.6 1 vs 2 2.070635  0.1502
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m7b,m3b)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m7b     1 12 238283.9 238382.0 -119130.0                        
-## m3b     2  4 238399.2 238431.9 -119195.6 1 vs 2 131.3118  <.0001
+## m7b     1 22 238067.3 238247.2 -119011.6                        
+## m3b     2 14 238171.1 238285.6 -119071.6 1 vs 2 119.8111  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m8b,m7b)}
+\end{alltt}
+\begin{verbatim}
+##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## m8b     1 26 238041.9 238254.4 -118994.9                        
+## m7b     2 22 238067.3 238247.2 -119011.6 1 vs 2 33.45403  <.0001
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -840,80 +948,571 @@
 \begin{alltt}
 \hlstd{meas67sub} \hlkwb{<-} \hlkwd{subset}\hlstd{(meas67,rep} \hlopt{<=}\hlnum{6}\hlstd{)}
 
-\hlstd{m1c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m2c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m3c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m4c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m5c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{0}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m6c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
-\hlstd{m7c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlnum{1}\hlstd{,}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m1c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corCompSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m2c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corAR1}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m3c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m4c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{0}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m6c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corARMA}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{p}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{q}\hlstd{=}\hlnum{1}\hlstd{),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m7c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
+\hlstd{m8c} \hlkwb{<-} \hlkwd{gls}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{data}\hlstd{=meas67sub,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{weight} \hlstd{=} \hlkwd{varIdent}\hlstd{(}\hlkwc{form} \hlstd{=} \hlopt{~} \hlnum{1}\hlopt{|}\hlstd{rep),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{)}
 
 \hlkwd{extractAIC}\hlstd{(m1c)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3.0 230673.6
+## [1]     14.0 230404.8
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m2c)}
 \end{alltt}
 \begin{verbatim}
-## [1]      3.0 232736.1
+## [1]     14.0 232528.5
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m3c)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4.0 230358.5
+## [1]     15 230100
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m4c)}
 \end{alltt}
 \begin{verbatim}
-## [1]      4.0 230934.7
-\end{verbatim}
-\begin{alltt}
-\hlkwd{extractAIC}\hlstd{(m5c)}
-\end{alltt}
-\begin{verbatim}
-## [1]      4.0 234300.7
+## [1]     15.0 230692.3
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m6c)}
 \end{alltt}
 \begin{verbatim}
-## [1]      5.0 230352.5
+## [1]     16.0 230093.7
 \end{verbatim}
 \begin{alltt}
 \hlkwd{extractAIC}\hlstd{(m7c)}
 \end{alltt}
 \begin{verbatim}
-## [1]     17.0 230219.8
+## [1]     28.0 229972.9
+\end{verbatim}
+\begin{alltt}
+\hlkwd{extractAIC}\hlstd{(m8c)}
+\end{alltt}
+\begin{verbatim}
+## [1]     33.0 229956.5
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m3c,m2c)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m3c     1  4 230358.5 230391.1 -115175.2                        
-## m2c     2  3 232736.1 232760.6 -116365.1 1 vs 2 2379.651  <.0001
+## m3c     1 15 230100.0 230222.2 -115035.0                        
+## m2c     2 14 232528.5 232642.6 -116250.2 1 vs 2 2430.536  <.0001
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m6c,m3c)}
 \end{alltt}
 \begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m6c     1  5 230352.5 230393.3 -115171.3                        
-## m3c     2  4 230358.5 230391.1 -115175.2 1 vs 2 7.915767  0.0049
+## m6c     1 16 230093.7 230224.0 -115030.8                        
+## m3c     2 15 230100.0 230222.2 -115035.0 1 vs 2 8.293493   0.004
 \end{verbatim}
 \begin{alltt}
 \hlkwd{anova}\hlstd{(m7c,m6c)}
 \end{alltt}
 \begin{verbatim}
+##     Model df      AIC    BIC    logLik   Test  L.Ratio p-value
+## m7c     1 28 229972.9 230201 -114958.4                        
+## m6c     2 16 230093.7 230224 -115030.8 1 vs 2 144.7848  <.0001
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(m7c,m8c)}
+\end{alltt}
+\begin{verbatim}
 ##     Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## m7c     1 17 230219.8 230358.3 -115092.9                        
-## m6c     2  5 230352.5 230393.3 -115171.3 1 vs 2 156.7862  <.0001
+## m7c     1 28 229972.9 230201.0 -114958.4                        
+## m8c     2 33 229956.5 230225.4 -114945.3 1 vs 2 26.35735   1e-04
 \end{verbatim}
 \end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{lme1} \hlkwb{<-} \hlkwd{lme}\hlstd{(modvigmin}\hlopt{~}\hlkwd{as.factor}\hlstd{(dow)}\hlopt{+}\hlkwd{as.factor}\hlstd{(rep),}\hlkwc{random}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id,}\hlkwc{data}\hlstd{=meas7,}\hlkwc{correlation}\hlstd{=}\hlkwd{corSymm}\hlstd{(}\hlkwc{form}\hlstd{=}\hlopt{~}\hlnum{1}\hlopt{|}\hlstd{id),}\hlkwc{method}\hlstd{=}\hlstr{"ML"}\hlstd{,}\hlkwc{control}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{msMaxIter}\hlstd{=}\hlnum{100}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(m8a)} \hlcom{#gls without random effects}
+\end{alltt}
+\begin{verbatim}
+## Generalized least squares fit by maximum likelihood
+##   Model: modvigmin ~ as.factor(dow) + as.factor(rep) 
+##   Data: meas7 
+##        AIC      BIC    logLik
+##   164029.9 164350.5 -81973.94
+## 
+## Correlation Structure: General
+##  Formula: ~1 | id 
+##  Parameter estimate(s):
+##  Correlation: 
+##   1     2     3     4     5     6    
+## 2 0.600                              
+## 3 0.583 0.651                        
+## 4 0.523 0.578 0.658                  
+## 5 0.550 0.608 0.661 0.682            
+## 6 0.561 0.536 0.603 0.600 0.634      
+## 7 0.558 0.539 0.557 0.517 0.554 0.586
+## Variance function:
+##  Structure: Different standard deviations per stratum
+##  Formula: ~1 | rep 
+##  Parameter estimates:
+##         1         2         3         4         5         6         7 
+## 1.0000000 0.9823352 1.0260409 1.0028533 1.0260458 0.9976716 0.9599137 
+## 
+## Coefficients:
+##                     Value Std.Error   t-value p-value
+## (Intercept)     17.195103 0.6072096 28.318233  0.0000
+## as.factor(dow)2  5.415249 0.4702770 11.515019  0.0000
+## as.factor(dow)3  5.052452 0.4976650 10.152314  0.0000
+## as.factor(dow)4  4.876995 0.5138790  9.490551  0.0000
+## as.factor(dow)5  4.907845 0.5136416  9.554999  0.0000
+## as.factor(dow)6  4.647601 0.4972114  9.347334  0.0000
+## as.factor(dow)7  2.268762 0.4728772  4.797782  0.0000
+## as.factor(rep)2 -0.539641 0.4805194 -1.123037  0.2614
+## as.factor(rep)3 -0.308111 0.5049796 -0.610145  0.5418
+## as.factor(rep)4 -0.384855 0.5367814 -0.716967  0.4734
+## as.factor(rep)5 -0.081066 0.5277860 -0.153596  0.8779
+## as.factor(rep)6 -0.831819 0.5105435 -1.629282  0.1033
+## as.factor(rep)7 -1.590955 0.4992559 -3.186652  0.0014
+## 
+##  Correlation: 
+##                 (Intr) as.fctr(d)2 as.fctr(d)3 as.fctr(d)4 as.fctr(d)5
+## as.factor(dow)2 -0.363                                                
+## as.factor(dow)3 -0.376  0.537                                         
+## as.factor(dow)4 -0.355  0.500       0.585                             
+## as.factor(dow)5 -0.358  0.471       0.533       0.601                 
+## as.factor(dow)6 -0.337  0.435       0.475       0.529       0.581     
+## as.factor(dow)7 -0.342  0.442       0.439       0.467       0.505     
+## as.factor(rep)2 -0.365 -0.095      -0.075      -0.105      -0.054     
+## as.factor(rep)3 -0.314 -0.074      -0.141      -0.153      -0.135     
+## as.factor(rep)4 -0.368 -0.030      -0.080      -0.168      -0.138     
+## as.factor(rep)5 -0.336 -0.036      -0.049      -0.126      -0.171     
+## as.factor(rep)6 -0.385  0.019      -0.003      -0.047      -0.078     
+## as.factor(rep)7 -0.423 -0.016       0.017      -0.034      -0.029     
+##                 as.fctr(d)6 as.fctr(d)7 as.fctr(r)2 as.fctr(r)3
+## as.factor(dow)2                                                
+## as.factor(dow)3                                                
+## as.factor(dow)4                                                
+## as.factor(dow)5                                                
+## as.factor(dow)6                                                
+## as.factor(dow)7  0.538                                         
+## as.factor(rep)2 -0.060      -0.020                             
+## as.factor(rep)3 -0.093      -0.062       0.574                 
+## as.factor(rep)4 -0.131      -0.054       0.525       0.619     
+## as.factor(rep)5 -0.151      -0.108       0.531       0.599     
+## as.factor(rep)6 -0.137      -0.075       0.443       0.522     
+## as.factor(rep)7 -0.070      -0.093       0.461       0.474     
+##                 as.fctr(r)4 as.fctr(r)5 as.fctr(r)6
+## as.factor(dow)2                                    
+## as.factor(dow)3                                    
+## as.factor(dow)4                                    
+## as.factor(dow)5                                    
+## as.factor(dow)6                                    
+## as.factor(dow)7                                    
+## as.factor(rep)2                                    
+## as.factor(rep)3                                    
+## as.factor(rep)4                                    
+## as.factor(rep)5  0.660                             
+## as.factor(rep)6  0.565       0.591                 
+## as.factor(rep)7  0.479       0.503       0.542     
+## 
+## Standardized residuals:
+##        Min         Q1        Med         Q3        Max 
+## -0.8204756 -0.6334503 -0.3732255  0.2776025 11.0484393 
+## 
+## Residual standard error: 27.55761 
+## Degrees of freedom: 18417 total; 18404 residual
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(lme1)} \hlcom{#lme with person random effects}
+\end{alltt}
+\begin{verbatim}
+## Linear mixed-effects model fit by maximum likelihood
+##  Data: meas7 
+##        AIC      BIC    logLik
+##   164031.9 164360.4 -81973.94
+## 
+## Random effects:
+##  Formula: ~1 | id
+##         (Intercept) Residual
+## StdDev:    20.94626  17.9077
+## 
+## Correlation Structure: General
+##  Formula: ~1 | id 
+##  Parameter estimate(s):
+##  Correlation: 
+##   1      2      3      4      5      6     
+## 2  0.029                                   
+## 3  0.047  0.183                            
+## 4 -0.125 -0.022  0.220                     
+## 5 -0.029  0.083  0.248  0.275              
+## 6 -0.042 -0.130  0.090  0.053  0.159       
+## 7 -0.110 -0.189 -0.072 -0.208 -0.079 -0.045
+## Variance function:
+##  Structure: Different standard deviations per stratum
+##  Formula: ~1 | rep 
+##  Parameter estimates:
+##         1         2         3         4         5         6         7 
+## 1.0000000 0.9576252 1.0606082 1.0067280 1.0606237 0.9944680 0.9021843 
+## Fixed effects: modvigmin ~ as.factor(dow) + as.factor(rep) 
+##                     Value Std.Error    DF   t-value p-value
+## (Intercept)     17.195092 0.6072126 15774 28.318077  0.0000
+## as.factor(dow)2  5.415249 0.4702767 15774 11.515027  0.0000
+## as.factor(dow)3  5.052471 0.4976649 15774 10.152357  0.0000
+## as.factor(dow)4  4.877019 0.5138789 15774  9.490600  0.0000
+## as.factor(dow)5  4.907868 0.5136415 15774  9.555045  0.0000
+## as.factor(dow)6  4.647623 0.4972113 15774  9.347380  0.0000
+## as.factor(dow)7  2.268769 0.4728769 15774  4.797801  0.0000
+## as.factor(rep)2 -0.539643 0.4805191 15774 -1.123041  0.2614
+## as.factor(rep)3 -0.308116 0.5049787 15774 -0.610157  0.5418
+## as.factor(rep)4 -0.384862 0.5367819 15774 -0.716979  0.4734
+## as.factor(rep)5 -0.081071 0.5277859 15774 -0.153607  0.8779
+## as.factor(rep)6 -0.831823 0.5105435 15774 -1.629289  0.1033
+## as.factor(rep)7 -1.590955 0.4992550 15774 -3.186659  0.0014
+##  Correlation: 
+##                 (Intr) as.fctr(d)2 as.fctr(d)3 as.fctr(d)4 as.fctr(d)5
+## as.factor(dow)2 -0.363                                                
+## as.factor(dow)3 -0.376  0.537                                         
+## as.factor(dow)4 -0.355  0.500       0.585                             
+## as.factor(dow)5 -0.358  0.471       0.533       0.601                 
+## as.factor(dow)6 -0.337  0.435       0.475       0.529       0.581     
+## as.factor(dow)7 -0.342  0.442       0.439       0.467       0.505     
+## as.factor(rep)2 -0.365 -0.095      -0.075      -0.105      -0.054     
+## as.factor(rep)3 -0.314 -0.074      -0.141      -0.153      -0.135     
+## as.factor(rep)4 -0.368 -0.030      -0.080      -0.168      -0.138     
+## as.factor(rep)5 -0.336 -0.036      -0.049      -0.126      -0.171     
+## as.factor(rep)6 -0.385  0.019      -0.003      -0.047      -0.078     
+## as.factor(rep)7 -0.423 -0.016       0.017      -0.034      -0.029     
+##                 as.fctr(d)6 as.fctr(d)7 as.fctr(r)2 as.fctr(r)3
+## as.factor(dow)2                                                
+## as.factor(dow)3                                                
+## as.factor(dow)4                                                
+## as.factor(dow)5                                                
+## as.factor(dow)6                                                
+## as.factor(dow)7  0.538                                         
+## as.factor(rep)2 -0.060      -0.020                             
+## as.factor(rep)3 -0.093      -0.062       0.574                 
+## as.factor(rep)4 -0.131      -0.054       0.525       0.619     
+## as.factor(rep)5 -0.151      -0.108       0.531       0.599     
+## as.factor(rep)6 -0.137      -0.075       0.443       0.522     
+## as.factor(rep)7 -0.070      -0.093       0.461       0.474     
+##                 as.fctr(r)4 as.fctr(r)5 as.fctr(r)6
+## as.factor(dow)2                                    
+## as.factor(dow)3                                    
+## as.factor(dow)4                                    
+## as.factor(dow)5                                    
+## as.factor(dow)6                                    
+## as.factor(dow)7                                    
+## as.factor(rep)2                                    
+## as.factor(rep)3                                    
+## as.factor(rep)4                                    
+## as.factor(rep)5  0.660                             
+## as.factor(rep)6  0.565       0.591                 
+## as.factor(rep)7  0.479       0.503       0.542     
+## 
+## Standardized Within-Group Residuals:
+##        Min         Q1        Med         Q3        Max 
+## -8.4620780 -0.3520519 -0.1234935  0.2129186  9.6612390 
+## 
+## Number of Observations: 18417
+## Number of Groups: 2631
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{meas7}\hlopt{$}\hlstd{error} \hlkwb{<-} \hlstd{meas7}\hlopt{$}\hlstd{modvigmin}  \hlopt{-} \hlkwd{predict}\hlstd{(lme1)}
+\hlstd{eht} \hlkwb{<-} \hlstd{meas7} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{e1}\hlstd{=error[}\hlnum{1}\hlstd{],}\hlkwc{e2}\hlstd{=error[}\hlnum{2}\hlstd{],}\hlkwc{e3}\hlstd{=error[}\hlnum{3}\hlstd{],}\hlkwc{e4}\hlstd{=error[}\hlnum{4}\hlstd{],}\hlkwc{e5}\hlstd{=error[}\hlnum{5}\hlstd{],}\hlkwc{e6}\hlstd{=error[}\hlnum{6}\hlstd{],}\hlkwc{e7}\hlstd{=error[}\hlnum{7}\hlstd{])}
+
+\hlcom{# ind <- which(!is.na(eht$e7))}
+\hlcom{# boxtest <- rep(0,length(ind))}
+\hlcom{# for(i in 1:length(ind))\{}
+\hlcom{#   boxtest[i] <- Box.test(unlist(eht[ind[i],-1]),lag=2,type="Ljung-Box")$p.value}
+\hlcom{# \}}
+\hlcom{# summary(boxtest)}
+
+\hlcom{#lag 1 difference}
+\hlstd{o1a} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e1,eht}\hlopt{$}\hlstd{e2,eht}\hlopt{$}\hlstd{e3,eht}\hlopt{$}\hlstd{e4,eht}\hlopt{$}\hlstd{e5,eht}\hlopt{$}\hlstd{e6)}
+\hlstd{o1b} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e2,eht}\hlopt{$}\hlstd{e3,eht}\hlopt{$}\hlstd{e4,eht}\hlopt{$}\hlstd{e5,eht}\hlopt{$}\hlstd{e6,eht}\hlopt{$}\hlstd{e7)}
+\hlkwd{cor}\hlstd{(o1a,o1b)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.03687864
+\end{verbatim}
+\begin{alltt}
+\hlcom{#lag 2 diff}
+\hlstd{o2a} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e1,eht}\hlopt{$}\hlstd{e2,eht}\hlopt{$}\hlstd{e3,eht}\hlopt{$}\hlstd{e4,eht}\hlopt{$}\hlstd{e5)}
+\hlstd{o2b} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e3,eht}\hlopt{$}\hlstd{e4,eht}\hlopt{$}\hlstd{e5,eht}\hlopt{$}\hlstd{e6,eht}\hlopt{$}\hlstd{e7)}
+\hlkwd{cor}\hlstd{(o2a,o2b)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.05977463
+\end{verbatim}
+\begin{alltt}
+\hlcom{#lag 3 diff  }
+\hlstd{o3a} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e1,eht}\hlopt{$}\hlstd{e2,eht}\hlopt{$}\hlstd{e3,eht}\hlopt{$}\hlstd{e4)}
+\hlstd{o3b} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e4,eht}\hlopt{$}\hlstd{e5,eht}\hlopt{$}\hlstd{e6,eht}\hlopt{$}\hlstd{e7)}
+\hlkwd{cor}\hlstd{(o3a,o3b)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.1641883
+\end{verbatim}
+\begin{alltt}
+\hlcom{#lag 4 diff}
+\hlstd{o4a} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e1,eht}\hlopt{$}\hlstd{e2,eht}\hlopt{$}\hlstd{e3)}
+\hlstd{o4b} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e5,eht}\hlopt{$}\hlstd{e6,eht}\hlopt{$}\hlstd{e7)}
+\hlkwd{cor}\hlstd{(o4a,o4b)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.2107862
+\end{verbatim}
+\begin{alltt}
+\hlcom{#lag 5 diff}
+\hlstd{o5a} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e1,eht}\hlopt{$}\hlstd{e2)}
+\hlstd{o5b} \hlkwb{=} \hlkwd{c}\hlstd{(eht}\hlopt{$}\hlstd{e6,eht}\hlopt{$}\hlstd{e7)}
+\hlkwd{cor}\hlstd{(o5a,o5b)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.2622573
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 22850 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 22850 rows containing missing values (geom\_point).}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 986 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 986 rows containing missing values (geom\_point).}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 23477 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 23477 rows containing missing values (geom\_point).}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1531 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1531 rows containing missing values (geom\_point).}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1781 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1781 rows containing missing values (geom\_point).}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# `geom\_smooth()` using method = 'gam'}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1781 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 1781 rows containing missing values (geom\_point).}}\end{kframe}
+\includegraphics[width=\maxwidth]{figure/plots1-1} 
+
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(nhanes}\hlopt{$}\hlstd{wearmin)}
+\end{alltt}
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   600.0   741.0   839.0   850.6   938.0  1440.0
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(meas7}\hlopt{$}\hlstd{wearmin)}
+\end{alltt}
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   600.0   787.0   876.0   885.8   965.0  1440.0
+\end{verbatim}
+\begin{alltt}
+\hlstd{minweartime} \hlkwb{<-} \hlstd{(meas7} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{minimum}\hlstd{=}\hlkwd{min}\hlstd{(wearmin),}\hlkwc{avg}\hlstd{=}\hlkwd{mean}\hlstd{(wearmin)))}
+
+\hlkwd{sum}\hlstd{(minweartime}\hlopt{$}\hlstd{minimum[minweartime}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id7complete]} \hlopt{>} \hlnum{1000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 21
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(minweartime}\hlopt{$}\hlstd{minimum[minweartime}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id7complete]} \hlopt{>} \hlnum{800}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 254
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(minweartime}\hlopt{$}\hlstd{minimum[minweartime}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id7complete]} \hlopt{>} \hlnum{700}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 663
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(minweartime}\hlopt{$}\hlstd{avg[minweartime}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id7complete])}
+\end{alltt}
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   654.6   821.9   873.6   885.6   928.8  1385.0
+\end{verbatim}
+\begin{alltt}
+\hlstd{minweartime5} \hlkwb{<-} \hlstd{(meas57} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{minimum}\hlstd{=}\hlkwd{min}\hlstd{(wearmin),}\hlkwc{avg}\hlstd{=}\hlkwd{mean}\hlstd{(wearmin)))}
+
+\hlkwd{sum}\hlstd{(minweartime5}\hlopt{$}\hlstd{minimum[minweartime5}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id57complete]} \hlopt{>} \hlnum{1000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 66
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(minweartime5}\hlopt{$}\hlstd{minimum[minweartime5}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id57complete]} \hlopt{>} \hlnum{800}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 691
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(minweartime5}\hlopt{$}\hlstd{minimum[minweartime5}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id57complete]} \hlopt{>} \hlnum{700}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 1528
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(minweartime5}\hlopt{$}\hlstd{avg[minweartime5}\hlopt{$}\hlstd{id} \hlopt{%in%} \hlstd{id57complete])}
+\end{alltt}
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   624.0   790.3   854.0   865.0   920.6  1398.0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{wpall} \hlkwb{<-} \hlstd{nhanes} \hlopt{%>%} \hlkwd{group_by}\hlstd{(id)}  \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwc{m}\hlstd{=}\hlkwd{mean}\hlstd{(modvigmin),}\hlkwc{s}\hlstd{=}\hlkwd{sd}\hlstd{(modvigmin),}\hlkwc{ml}\hlstd{=}\hlkwd{mean}\hlstd{(}\hlkwd{log}\hlstd{(modvigmin)),}\hlkwc{sl}\hlstd{=}\hlkwd{sd}\hlstd{(}\hlkwd{log}\hlstd{(modvigmin)))}
+\hlkwd{qplot}\hlstd{(}\hlkwc{x}\hlstd{=wpall}\hlopt{$}\hlstd{m,}\hlkwc{y}\hlstd{=wpall}\hlopt{$}\hlstd{s)} \hlopt{+} \hlkwd{geom_smooth}\hlstd{(}\hlkwc{method}\hlstd{=}\hlstr{"lm"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 510 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 510 rows containing missing values (geom\_point).}}\end{kframe}
+\includegraphics[width=\maxwidth]{figure/wp-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{qplot}\hlstd{(}\hlkwc{x}\hlstd{=wpall}\hlopt{$}\hlstd{ml,}\hlkwc{y}\hlstd{=wpall}\hlopt{$}\hlstd{sl)}\hlopt{+} \hlkwd{geom_smooth}\hlstd{(}\hlkwc{method}\hlstd{=}\hlstr{"lm"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 2135 rows containing non-finite values (stat\_smooth).}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Removed 2135 rows containing missing values (geom\_point).}}\end{kframe}
+\includegraphics[width=\maxwidth]{figure/wp-2} 
+
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{nhanes}\hlopt{$}\hlstd{bmigroup} \hlkwb{<-} \hlnum{1}
+\hlstd{nhanes}\hlopt{$}\hlstd{bmigroup[nhanes}\hlopt{$}\hlstd{bmi} \hlopt{>=} \hlnum{18}\hlstd{]} \hlkwb{<-} \hlnum{2}
+\hlstd{nhanes}\hlopt{$}\hlstd{bmigroup[nhanes}\hlopt{$}\hlstd{bmi} \hlopt{>=} \hlnum{25}\hlstd{]} \hlkwb{<-} \hlnum{3}
+\hlstd{nhanes}\hlopt{$}\hlstd{bmigroup[nhanes}\hlopt{$}\hlstd{bmi} \hlopt{>=} \hlnum{30}\hlstd{]} \hlkwb{<-} \hlnum{4}
+\hlstd{nhanes}\hlopt{$}\hlstd{bmigroup[nhanes}\hlopt{$}\hlstd{bmi} \hlopt{>=} \hlnum{35}\hlstd{]} \hlkwb{<-} \hlnum{5}
+
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup} \hlkwb{<-} \hlnum{1}
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup[nhanes}\hlopt{$}\hlstd{age} \hlopt{>=} \hlnum{25}\hlstd{]} \hlkwb{<-} \hlnum{2}
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup[nhanes}\hlopt{$}\hlstd{age} \hlopt{>=} \hlnum{35}\hlstd{]} \hlkwb{<-} \hlnum{3}
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup[nhanes}\hlopt{$}\hlstd{age} \hlopt{>=} \hlnum{45}\hlstd{]} \hlkwb{<-} \hlnum{4}
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup[nhanes}\hlopt{$}\hlstd{age} \hlopt{>=} \hlnum{55}\hlstd{]} \hlkwb{<-} \hlnum{5}
+\hlstd{nhanes}\hlopt{$}\hlstd{agegroup[nhanes}\hlopt{$}\hlstd{age} \hlopt{>=} \hlnum{65}\hlstd{]} \hlkwb{<-} \hlnum{6}
+
+\hlstd{nhanes} \hlopt{%>%} \hlkwd{group_by}\hlstd{(sex)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwd{mean}\hlstd{(wearmin),}\hlkwd{sd}\hlstd{(wearmin)}\hlopt{/}\hlkwd{sqrt}\hlstd{(}\hlkwd{length}\hlstd{(wearmin)))}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 2 × 3
+##     sex `mean(wearmin)` `sd(wearmin)/sqrt(length(wearmin))`
+##   <int>           <dbl>                               <dbl>
+## 1     1        862.4040                           1.0745519
+## 2     2        839.2255                           0.9610608
+\end{verbatim}
+\begin{alltt}
+\hlstd{nhanes} \hlopt{%>%} \hlkwd{group_by}\hlstd{(race)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwd{mean}\hlstd{(wearmin),}\hlkwd{sd}\hlstd{(wearmin)}\hlopt{/}\hlkwd{sqrt}\hlstd{(}\hlkwd{length}\hlstd{(wearmin)))}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 5 × 3
+##    race `mean(wearmin)` `sd(wearmin)/sqrt(length(wearmin))`
+##   <int>           <dbl>                               <dbl>
+## 1     1        838.3973                            1.504752
+## 2     2        837.8630                            4.226087
+## 3     3        848.6774                            0.944356
+## 4     4        868.9508                            1.864345
+## 5     5        855.5710                            3.544238
+\end{verbatim}
+\begin{alltt}
+\hlstd{nhanes} \hlopt{%>%} \hlkwd{group_by}\hlstd{(bmigroup)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwd{mean}\hlstd{(wearmin),}\hlkwd{sd}\hlstd{(wearmin)}\hlopt{/}\hlkwd{sqrt}\hlstd{(}\hlkwd{length}\hlstd{(wearmin)))}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 5 × 3
+##   bmigroup `mean(wearmin)` `sd(wearmin)/sqrt(length(wearmin))`
+##      <dbl>           <dbl>                               <dbl>
+## 1        1        853.8333                            7.185609
+## 2        2        851.4379                            1.257627
+## 3        3        855.4751                            1.212399
+## 4        4        847.2281                            1.658649
+## 5        5        839.8965                            2.096613
+\end{verbatim}
+\begin{alltt}
+\hlstd{nhanes} \hlopt{%>%} \hlkwd{group_by}\hlstd{(agegroup)} \hlopt{%>%} \hlkwd{summarise}\hlstd{(}\hlkwd{mean}\hlstd{(wearmin),}\hlkwd{sd}\hlstd{(wearmin)}\hlopt{/}\hlkwd{sqrt}\hlstd{(}\hlkwd{length}\hlstd{(wearmin)))}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 6 × 3
+##   agegroup `mean(wearmin)` `sd(wearmin)/sqrt(length(wearmin))`
+##      <dbl>           <dbl>                               <dbl>
+## 1        1        841.3575                            2.053093
+## 2        2        845.0387                            1.823399
+## 3        3        856.7826                            1.809899
+## 4        4        876.1550                            1.893967
+## 5        5        853.2721                            1.875862
+## 6        6        839.1086                            1.365020
+\end{verbatim}
+\begin{alltt}
+\hlcom{#nhanes %>% group_by(sex,race,bmigroup) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))}
+
+
+\hlkwd{qplot}\hlstd{(}\hlkwc{x}\hlstd{=wearmin,}\hlkwc{y}\hlstd{=modvigmin,}\hlkwc{data}\hlstd{=nhanes)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/wp2-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{qplot}\hlstd{(}\hlkwc{x}\hlstd{=wearmin,}\hlkwc{y}\hlstd{=lightmin,}\hlkwc{data}\hlstd{=nhanes)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/wp2-2} 
+
 \end{knitrout}
 
 

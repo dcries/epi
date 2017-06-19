@@ -199,11 +199,18 @@ meas7 <- subset(nhanes, id %in% unique(id)[nrep==7]) #individuals with all 7 day
 length(unique(meas7$id[complete.cases(meas7[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 405
 #no big changes by taking one of the 7 metsynd variables out
 
+id7complete <- unique(meas7$id[complete.cases(meas7[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])
+
 meas67 <- subset(nhanes, id %in% unique(id)[nrep>=6] & rep <= 6) #individuals with 6 days
 length(unique(meas67$id[complete.cases(meas67[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 638
 
 meas57 <- subset(nhanes, id %in% unique(id)[nrep>=5] & rep <= 5) #individuals with 6 days
 length(unique(meas57$id[complete.cases(meas57[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])) #with bpmed 803, 348 estv02
+
+id57complete <- unique(meas57$id[complete.cases(meas57[,c("smplwt","sex","age","race","rep","dow","wearmin","modvigmin","modvigminb","modvigbouts","glu","waist","tri","ldl","hdl","bps","bpd")])])
+
+table((meas57 %>% group_by(id) %>% summarise(n=length(id)))$n)
+table((meas67 %>% group_by(id) %>% summarise(n=length(id)))$n)
 
 @
 
@@ -320,16 +327,115 @@ anova(m7c,m8c)
 @
 
 <<lmemodels,echo=TRUE,cache=TRUE>>=
-lme1 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas7,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
+lme1 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas7,correlation=corSymm(form=~1|id),method="ML",control=list(msMaxIter=100))
 
-lme2 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas57,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
 
-lme3 <- lme(modvigmin~as.factor(dow)+as.factor(rep),random=~1|id,data=meas67,correlation=corSymm(form=~1|id),weight = varIdent(form = ~ 1|rep),method="ML",control=list(msMaxIter=100))
 @
 
 <<summaries,echo=TRUE,cache=TRUE>>=
 summary(m8a) #gls without random effects
 summary(lme1) #lme with person random effects
+@
+
+
+<<cors,echo=TRUE,cache=TRUE>>=
+meas7$error <- meas7$modvigmin  - predict(lme1)
+eht <- meas7 %>% group_by(id) %>% summarise(e1=error[1],e2=error[2],e3=error[3],e4=error[4],e5=error[5],e6=error[6],e7=error[7])
+
+# ind <- which(!is.na(eht$e7))
+# boxtest <- rep(0,length(ind))
+# for(i in 1:length(ind)){
+#   boxtest[i] <- Box.test(unlist(eht[ind[i],-1]),lag=2,type="Ljung-Box")$p.value
+# }
+# summary(boxtest)
+
+#lag 1 difference
+o1a = c(eht$e1,eht$e2,eht$e3,eht$e4,eht$e5,eht$e6)
+o1b = c(eht$e2,eht$e3,eht$e4,eht$e5,eht$e6,eht$e7)
+cor(o1a,o1b) 
+#lag 2 diff
+o2a = c(eht$e1,eht$e2,eht$e3,eht$e4,eht$e5)
+o2b = c(eht$e3,eht$e4,eht$e5,eht$e6,eht$e7)
+cor(o2a,o2b)
+#lag 3 diff  
+o3a = c(eht$e1,eht$e2,eht$e3,eht$e4)
+o3b = c(eht$e4,eht$e5,eht$e6,eht$e7)
+cor(o3a,o3b)
+#lag 4 diff
+o4a = c(eht$e1,eht$e2,eht$e3)
+o4b = c(eht$e5,eht$e6,eht$e7)
+cor(o4a,o4b)
+#lag 5 diff
+o5a = c(eht$e1,eht$e2)
+o5b = c(eht$e6,eht$e7)
+cor(o5a,o5b)
+@
+
+<<plots1,echo=FALSE,cache=TRUE>>=
+w1 <- qplot(data=nhanes,x=modvigmin,y=glu) + geom_smooth() + theme_bw()
+w2 <- qplot(data=nhanes,x=modvigmin,y=waist) + geom_smooth() + theme_bw()
+w3 <- qplot(data=nhanes,x=modvigmin,y=ldl) + geom_smooth() + theme_bw()
+w4 <- qplot(data=nhanes,x=modvigmin,y=hdl) + geom_smooth() + theme_bw()
+w5 <- qplot(data=nhanes,x=modvigmin,y=bps) + geom_smooth() + theme_bw()
+w6 <- qplot(data=nhanes,x=modvigmin,y=bpd) + geom_smooth() + theme_bw()
+grid.arrange(w1,w2,w3,w4,w5,w6,nrow=3)
+
+@
+
+
+<<wearmin,echo=TRUE,cache=TRUE>>=
+summary(nhanes$wearmin)
+summary(meas7$wearmin)
+minweartime <- (meas7 %>% group_by(id) %>% summarise(minimum=min(wearmin),avg=mean(wearmin)))
+
+sum(minweartime$minimum[minweartime$id %in% id7complete] > 1000)
+sum(minweartime$minimum[minweartime$id %in% id7complete] > 800)
+sum(minweartime$minimum[minweartime$id %in% id7complete] > 700)
+summary(minweartime$avg[minweartime$id %in% id7complete])
+
+minweartime5 <- (meas57 %>% group_by(id) %>% summarise(minimum=min(wearmin),avg=mean(wearmin)))
+
+sum(minweartime5$minimum[minweartime5$id %in% id57complete] > 1000)
+sum(minweartime5$minimum[minweartime5$id %in% id57complete] > 800)
+sum(minweartime5$minimum[minweartime5$id %in% id57complete] > 700)
+summary(minweartime5$avg[minweartime5$id %in% id57complete])
+
+@
+
+
+<<wp,echo=TRUE,cache=TRUE,fig.height=3,fig.width=4>>=
+
+wpall <- nhanes %>% group_by(id)  %>% summarise(m=mean(modvigmin),s=sd(modvigmin),ml=mean(log(modvigmin)),sl=sd(log(modvigmin)))
+qplot(x=wpall$m,y=wpall$s) + geom_smooth(method="lm")
+qplot(x=wpall$ml,y=wpall$sl)+ geom_smooth(method="lm")
+
+@
+
+<<wp2,echo=TRUE,cache=TRUE,fig.height=3,fig.width=4>>=
+nhanes$bmigroup <- 1
+nhanes$bmigroup[nhanes$bmi >= 18] <- 2
+nhanes$bmigroup[nhanes$bmi >= 25] <- 3
+nhanes$bmigroup[nhanes$bmi >= 30] <- 4
+nhanes$bmigroup[nhanes$bmi >= 35] <- 5
+
+nhanes$agegroup <- 1
+nhanes$agegroup[nhanes$age >= 25] <- 2
+nhanes$agegroup[nhanes$age >= 35] <- 3
+nhanes$agegroup[nhanes$age >= 45] <- 4
+nhanes$agegroup[nhanes$age >= 55] <- 5
+nhanes$agegroup[nhanes$age >= 65] <- 6
+
+nhanes %>% group_by(sex) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))
+nhanes %>% group_by(race) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))
+nhanes %>% group_by(bmigroup) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))
+nhanes %>% group_by(agegroup) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))
+
+#nhanes %>% group_by(sex,race,bmigroup) %>% summarise(mean(wearmin),sd(wearmin)/sqrt(length(wearmin)))
+
+
+qplot(x=wearmin,y=modvigmin,data=nhanes)
+
+qplot(x=wearmin,y=lightmin,data=nhanes)
 @
 
 
