@@ -27,4 +27,4 @@ results <- foreach(i=1:5, .export=c('accel.impute'), .packages='accelmissing') %
 }
 
 
-save(accelimp,file="impute.RData")
+save(results,file="impute.RData")
