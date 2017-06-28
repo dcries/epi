@@ -7,7 +7,7 @@ all.equal(unique(data$SEQN),unique(nhanes$id))
 
 flag60 = create.flag(data[,-c(1:3)], window=60)
 label <- data[,1:2]
-demo <- nhanes[unique(nhanes$id),c("sex","age","race","bmi")]
+demo <- nhanes[!duplicated(nhanes$id),c("sex","age","race","bmi")]
 demo$sex <- as.factor(demo$sex)
 demo$race <- as.factor(demo$race)
 
