@@ -2,7 +2,7 @@ library(accelmissing)
 library(mice); library(pscl)
 
 data <- read.csv("/home/dcries/nhanes_casted.csv")
-nhanes <- read.csv("/home/dcries/epi/NHANES_complete.csv")
+nhanes <- read.csv("/home/dcries/epi/nhanes_complete.csv")
 all.equal(unique(data$SEQN),unique(nhanes$id))
 
 flag60 = create.flag(data[,-c(1:3)], window=60)
