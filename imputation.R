@@ -20,3 +20,5 @@ demo$race <- as.factor(demo$race)
 
 accelimp = accel.impute(PA=data[,-c(1:3)], label=label, flag=flag60, demo=demo,
  method="zipln", time.range=c("09:00","20:59"), m=5)
+
+save(accelimp,file="impute.RData")
