@@ -22,7 +22,7 @@ registerDoParallel(cores=5)
 getDoParWorkers()
 
 results <- foreach(i=1:5, .export=c('accel.impute'), .packages='accelmissing') %dopar% {  
-  accel.impute(PA=data[(7*6000+1):nrow(data),-c(1:3)], label=label, flag=flag60, demo=demo[6001:nrow(demo)],
+  accel.impute(PA=data[(7*6000+1):nrow(data),-c(1:3)], label=label, flag=flag60, demo=demo[6001:nrow(demo),],
                method="zipln", time.range=c("09:00","20:59"), m=1,seed=seeds[i],demo.include=TRUE)
 }
 
