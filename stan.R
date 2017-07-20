@@ -2,7 +2,7 @@ library(rstan)
 library(dplyr)
 library(reshape)
 
-setwd("C:\\Users\\dcries\\github\\epi")
+#setwd("C:\\Users\\dcries\\github\\epi")
 setwd("/home/dcries/epi")
 nhanes <- read.csv("nhanes_complete.csv")
 names(nhanes) <- tolower(names(nhanes))
