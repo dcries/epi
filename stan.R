@@ -27,6 +27,12 @@ data{
   matrix[N,k] y;
   real<lower=0> age[N];
   int<lower=0> gender[N];
+  real nu;
+  matrix[2,2] D;
+}
+transformed data{
+  vector[2] zeros;
+  zeros = rep_vector(0,2);
 }
 parameters{
   real gamma0;
@@ -35,9 +41,10 @@ real gamma2;
 real beta0;
 real beta1;
 real beta2;
-//cov_matrix[2] Sigma;
+cov_matrix[2] Sigma;
 real<lower=0> sigma2e;
 real<lower=-1,upper=1> rho;
+matrix[N,2] b;
 }
 transformed parameters{
 cov_matrix[k] ar1mat;
@@ -61,7 +68,7 @@ matrix[N,k] mu;
 vector[N] p;
 
   for(i in 1:N){
-    p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]);
+    p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
     for(j in 1:k){
       if(y[i,j] == 0){
         //increment_log_prob(bernoulli_log(0,p[i]));
@@ -76,12 +83,13 @@ vector[N] p;
 
   for(i in 1:N){
     for(j in 1:k){
-      mu[i,j] = beta0 + beta1*age[i] + beta2*gender[i];
+      mu[i,j] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
     }
   }
 
   for(i in 1:N){
     y[i,] ~ multi_normal(mu[i,],ar1mat);
+    b[i,] ~ multi_normal(zeros,Sigma);
   }
 
   rho ~ uniform(-1,1);
@@ -92,6 +100,7 @@ vector[N] p;
   gamma0 ~ normal(0,100);
   gamma1 ~ normal(0,100);
   gamma2 ~ normal(0,100);
+  Sigma ~ inv_wishart(nu,D);
 }
 "
 
@@ -102,8 +111,9 @@ x <- meas7[,c("age","sex","race","weekend","first5")]
 
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
-         gender= meas7$sex[!duplicated(meas7$id)]
+         gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2)
 )
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta0","beta1","beta2","sigma2e","rho"))
+rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2",
+                        "sigma2e","rho","Sigma"))
