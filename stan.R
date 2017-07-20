@@ -29,9 +29,9 @@ data{
   int<lower=0> gender[N];
 }
 parameters{
-//  real gamma0;
-//    real gamma1;
-//real gamma2;
+  real gamma0;
+    real gamma1;
+real gamma2;
 real beta0;
 real beta1;
 real beta2;
@@ -44,7 +44,7 @@ cov_matrix[k] ar1mat;
 
 
 for (m in 1:k){
-  ar1mat[m,m] <- sigma2e;
+  ar1mat[m,m] = sigma2e;
 }
 
 for (m in 1:(k-1)) {
@@ -58,6 +58,21 @@ for (m in 1:(k-1)) {
 model{
 
 matrix[N,k] mu;
+vector[N] p;
+
+  for(i in 1:N){
+    p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]);
+    for(j in 1:k){
+      if(y[i,j] == 0){
+        //increment_log_prob(bernoulli_log(0,p[i]));
+        target += bernoulli_lpmf(0|p[i]);
+      }
+      else{
+        //increment_log_prob(bernoulli_log(1,p[i]));
+        target += bernoulli_lpmf(1|p[i]);
+      }
+    }
+  }
 
   for(i in 1:N){
     for(j in 1:k){
@@ -74,6 +89,9 @@ matrix[N,k] mu;
   beta0 ~ normal(0,100);
   beta1 ~ normal(0,100);
   beta2 ~ normal(0,100);
+  gamma0 ~ normal(0,100);
+  gamma1 ~ normal(0,100);
+  gamma2 ~ normal(0,100);
 }
 "
 
@@ -82,7 +100,7 @@ yc <- cast(ym,id+variable~rep)
 
 x <- meas7[,c("age","sex","race","weekend","first5")]
 
-dat=list(y=yc[,3:9],  N      = length(unique(meas7$id)),
+dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)]
 )
