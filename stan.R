@@ -43,9 +43,9 @@ transformed parameters{
 cov_matrix[k] ar1mat;
 
 
-//for (m in 1:k){
-//  Sigma[m,m] <- sigma2e;
-//}
+for (m in 1:k){
+  ar1mat[m,m] <- sigma2e;
+}
 
 for (m in 1:(k-1)) {
   for (n in (m+1):k) {
@@ -70,6 +70,10 @@ matrix[N,k] mu;
   }
 
   rho ~ uniform(-1,1);
+  sigma2e ~ inv_gamma(1,1);
+  beta0 ~ normal(0,100);
+  beta1 ~ normal(0,100);
+  beta2 ~ normal(0,100);
 }
 "
 
