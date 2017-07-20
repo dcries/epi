@@ -70,7 +70,7 @@ vector[N] p;
   for(i in 1:N){
     p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
     for(j in 1:k){
-      if(y[i,j] == 0){
+      if(y[i][j] == 0){
         //increment_log_prob(bernoulli_log(0,p[i]));
         target += bernoulli_lpmf(0|p[i]);
       }
@@ -117,3 +117,5 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2",
                         "sigma2e","rho","Sigma"))
+
+save(rs,file="stanout.RData")
