@@ -80,7 +80,7 @@ x <- meas7[,c("age","sex","race","weekend","first5")]
 
 dat=list(y=yc[,3:9],  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
-         gender= meas7$gender[!duplicated(meas7$id)]
+         gender= meas7$sex[!duplicated(meas7$id)]
 )
 
 ms <- stan_model(model_code=models)
