@@ -1,8 +1,10 @@
 library(rstan)
+library(dplyr)
+library(reshape)
 
 setwd("C:\\Users\\dcries\\github\\epi")
 setwd("/home/dcries/epi")
-nhanes <- read.csv("NHANES_complete.csv")
+nhanes <- read.csv("nhanes_complete.csv")
 names(nhanes) <- tolower(names(nhanes))
 nhanes$weekend <- 0
 nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
@@ -82,3 +84,4 @@ dat=list(y=yc[,3:9],  N      = length(unique(meas7$id)),
 )
 
 ms <- stan_model(model_code=models)
+rs <- sampling(ms,dat,c("beta0","beta1","beta2","sigma2e","rho"))
