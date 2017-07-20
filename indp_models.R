@@ -272,6 +272,83 @@ dat <- list(
   m=length(unique(meas7$id))
 )
 
-jm <- jags.model(textConnection(model), data=dat,n.adapt=5000,n.chains=1)
-s <- coda.samples(jm,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","tau2","Sigma"),n.iter=1000)
+jm <- jags.model(textConnection(model), data=dat,n.adapt=5000,n.chains=3)
+s <- coda.samples(jm,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","tau2","Sigma"),n.iter=5000)
+
+
+#-------------
+
+model2 <- "model{
+
+# For the ones trick
+C <- 10000
+
+# for every individual -observation
+for(i in 1:N){
+logit(w[i]) <- zeta[i]
+zeta[i] <- gamma0 + gamma1*age[i] + gamma2*gender[i] + b[ind[i],1]
+
+eta[i] <- beta0 + beta1*age[i] + beta2*gender[i] + b[ind[i],2]
+
+logGamma[i] <- log(dmnorm(y[i], eta[i], tau2))
+
+# define the total likelihood, where the likelihood is (1 - w) if y < 0.0001 (z = 0) or
+# the likelihood is w * gammalik if y >= 0.0001 (z = 1). So if z = 1, then the first bit must be
+# 0 and the second bit 1. Use 1 - z, which is 0 if y > 0.0001 and 1 if y < 0.0001
+logLik[i] <- (1 - z[i]) * log(1 - w[i]) + z[i] * ( log(w[i]) + logGamma[i] )
+
+Lik[i] <- exp(logLik[i])
+
+# Use the ones trick
+p[i] <- Lik[i] / C
+ones[i] ~ dbern(p[i])
+
+}
+for(i in 1:m){
+b[i,1:2] ~ dmnorm(mu,Sigma)
+}
+
+
+  for (i in 1:(K-1)) {
+    H[i,i] <- sigma2e 
+for (j in (i+1):K) {
+H[i,j] <- sigma2e*rho^(abs(i-j))
+H[j,i] <- H[i,j] 
+}
+}
+
+H[K,K] <- sigma2e
+
+Omega[1:K,1:K] <- inverse(H[,])
+
+rho ~ dunif(-1,1)
+tau2e <- 1/sigma2e
+tau2e ~ dgamma(1,1)
+
+beta0 ~ dnorm(0, 0.0001)
+beta1 ~ dnorm(0, 0.0001)
+beta2 ~ dnorm(0, 0.0001)
+gamma0 ~ dnorm(0, 0.0001)
+gamma1 ~ dnorm(0, 0.0001)
+gamma2 ~ dnorm(0, 0.0001)
+tau2 ~ dgamma(1,1)
+Sigma ~ dwish(D,v)
+}"
+
+dat <- list(
+  N      = nrow(meas7),
+  y      = (meas7$modvigmin)^(1/4),
+  z      = meas7$active,
+  ones = rep(1,nrow(meas7)),
+  age=meas7$age,
+  gender=meas7$sex,
+  D=diag(2),
+  v=3,
+  ind=rep(1:length(unique(meas7$id)),each=7),
+  mu=rep(0,2),
+  m=length(unique(meas7$id))
+)
+
+jm <- jags.model(textConnection(model), data=dat,n.adapt=5000,n.chains=3)
+s <- coda.samples(jm,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","tau2","Sigma"),n.iter=5000)
 

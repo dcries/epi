@@ -24,7 +24,7 @@ data{
   int<lower=0> N; //number of individuals
   int<lower=0> k; // number of obs per individual
   //real<lower=0> y[N];
-  matrix[N,k] y;
+  vector[k] y[N];
   real<lower=0> age[N];
   int<lower=0> gender[N];
   real nu;
@@ -81,15 +81,15 @@ vector[N] p;
     }
   }
 
-  for(i in 1:N){
-    for(j in 1:k){
+  for(j in 1:k){
+    for(i in 1:N){
       mu[i,j] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
     }
   }
 
   for(i in 1:N){
-    y[i,] ~ multi_normal(mu[i,],ar1mat);
-    b[i,] ~ multi_normal(zeros,Sigma);
+    y[i] ~ multi_normal(row(mu,i),ar1mat);
+    b[i] ~ multi_normal(zeros,Sigma);
   }
 
   rho ~ uniform(-1,1);
