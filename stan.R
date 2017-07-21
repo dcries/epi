@@ -114,6 +114,9 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2)
 )
 
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2",
                         "sigma2e","rho","Sigma"))
