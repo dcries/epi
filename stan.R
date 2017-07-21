@@ -159,7 +159,7 @@ x <- meas7[,c("age","sex","race","weekend","first5")]
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
-         numnonzeros=nonzeros,nonzeropos=nonzeropos
+         numnonzeros=nonzeros,nonzeropos=t(nonzeropos)
 )
 
 rstan_options(auto_write = TRUE)
@@ -167,6 +167,6 @@ options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2",
-                        "sigma2e","rho","Sigma"))
+                        "sigma2e","rho","Sigma"),iter=200)
 
 save(rs,file="stanout.RData")
