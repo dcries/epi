@@ -23,10 +23,10 @@ models <- "
 data{
   int<lower=0> N; //number of individuals
   int<lower=0> k; // number of obs per individual
-  int<lower=0> n; //total number of non-zero obs
+  int<lower=0> n2; //total number of non-zero obs
   //real<lower=0> y[N];
   vector[k] y[N];
-  vector[n] y2;
+  vector[n2] y2;
   real<lower=0> age[N];
   int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
@@ -162,7 +162,7 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n=sum(meas7$modvigmin>0)
+         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0)
 )
 
 rstan_options(auto_write = TRUE)
