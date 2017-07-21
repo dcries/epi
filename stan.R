@@ -23,8 +23,10 @@ models <- "
 data{
   int<lower=0> N; //number of individuals
   int<lower=0> k; // number of obs per individual
+  int<lower=0> n; //total number of non-zero obs
   //real<lower=0> y[N];
   vector[k] y[N];
+  vector[n] y2;
   real<lower=0> age[N];
   int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
@@ -120,9 +122,9 @@ vector[N] p;
 // need to define ind, change y--so it only includes non-zeros
 
   for(i in 1:N){
-    //segment(y,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //pos = pos + numnonzeros[i];
+    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    pos = pos + numnonzeros[i];
   }
 
   rho ~ uniform(-1,1);
@@ -159,7 +161,8 @@ x <- meas7[,c("age","sex","race","weekend","first5")]
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
-         numnonzeros=nonzeros,nonzeropos=t(nonzeropos)
+         numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
+         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n=sum(meas7$modvigmin>0)
 )
 
 rstan_options(auto_write = TRUE)
