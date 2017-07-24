@@ -130,8 +130,10 @@ vector[N] mu;
   for(i in 1:N){
     //segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    y[i] ~ multi_normal(rep_vector(mu[i],7),diag_matrix(rep_vector(sigma2e,7)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    pos = pos + numnonzeros[i];
+    //y[i] ~ multi_normal(rep_vector(mu[i],7),diag_matrix(rep_vector(sigma2e,7)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    segment(y2,pos,k) ~ multi_normal(rep_vector(mu[i],k),diag_matrix(rep_vector(sigma2e,k)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+
+    pos = pos + k;
   }
 
 
@@ -172,7 +174,8 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0)
+         #y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0)
+         y2=(meas7$modvigmin)^(1/4),n2=length(meas7$modvigmin)
 )
 
 rstan_options(auto_write = TRUE)
