@@ -39,16 +39,16 @@ transformed data{
   zeros = rep_vector(0,2);
 }
 parameters{
-  real gamma0;
-    real gamma1;
-real gamma2;
+//  real gamma0;
+//    real gamma1;
+//real gamma2;
 real beta0;
 real beta1;
 real beta2;
-cov_matrix[2] Sigma;
+//cov_matrix[2] Sigma;
 real<lower=0> sigma2e;
 //real<lower=-1,upper=1> rho;
-matrix[N,2] b;
+//matrix[N,2] b;
 //real mu2;
 //real<lower=0> sigma2;
 }
@@ -87,26 +87,26 @@ model{
 
 //matrix[N,k] mu;
 vector[N] mu;
-vector[N] p;
-  int pos;
-  pos = 1;
+//vector[N] p;
+ // int pos;
+ // pos = 1;
 
-  for(i in 1:N){
-    p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
-    mu[i] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
-    for(j in 1:k){
-      if(y[i][j] == 0){
+ // for(i in 1:N){
+   // p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
+   // mu[i] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
+   // for(j in 1:k){
+    //  if(y[i][j] == 0){
         //increment_log_prob(bernoulli_log(0,p[i]));
-        target += bernoulli_lpmf(0|p[i]);
-      }
-      else{
+    //    target += bernoulli_lpmf(0|p[i]);
+    //  }
+    //  else{
         //increment_log_prob(bernoulli_log(1,p[i]));
-        target += bernoulli_lpmf(1|p[i]) + normal_lpdf(y[i][j]|mu[i],sigma2e);
-      }
-    }
+      //  target += bernoulli_lpmf(1|p[i]) + normal_lpdf(y[i][j]|mu[i],sigma2e);
+     // }
+    //}
   // target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
   // pos = pos + numnonzeros[i];
-  }
+ // }
 
 
 //  for(j in 1:k){
@@ -115,26 +115,24 @@ vector[N] p;
 //    }
 //  }
 
- for(i in 1:N){
+// for(i in 1:N){
     //y[i] ~ multi_normal(row(mu,i),ar1mat);
-    b[i] ~ multi_normal(zeros,Sigma);
-  }
+    //b[i] ~ multi_normal(zeros,Sigma);
+ // }
 
 //would need to change dimension of mu
-//  for(i in 1:N){
-  //    mu[i] = beta0 + beta1*age[i] + beta2*gender[i];
- // }
+  for(i in 1:N){
+      mu[i] = beta0 + beta1*age[i] + beta2*gender[i];
+  }
 
 // need to define ind, change y--so it only includes non-zeros
 
-  //for(i in 1:N){
-   // segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //pos = pos + numnonzeros[i];
-  //}
-//for(i in 1:n2){
-//y2[i] ~ normal(mu2,sigma2);
-//}
+  for(i in 1:N){
+    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    pos = pos + numnonzeros[i];
+  }
+
 
 //mu2 ~ normal(0,1000);
 //sigma2 ~ inv_gamma(1,1);
@@ -143,10 +141,10 @@ vector[N] p;
  beta0 ~ normal(0,100);
   beta1 ~ normal(0,100);
   beta2 ~ normal(0,100);
-  gamma0 ~ normal(0,100);
-  gamma1 ~ normal(0,100);
-  gamma2 ~ normal(0,100);
-  Sigma ~ inv_wishart(nu,D);
+  //gamma0 ~ normal(0,100);
+  //gamma1 ~ normal(0,100);
+  //gamma2 ~ normal(0,100);
+  //Sigma ~ inv_wishart(nu,D);
 }
 "
 
@@ -180,8 +178,8 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","sigma2e","Sigma"),
+rs <- sampling(ms,dat,c("beta0","beta1","beta2","sigma2e"),
                        iter=2000)
 summary(rs)
-save(rs,file="stanout.RData")
+save(rs,file="stanout2.RData")
 
