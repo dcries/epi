@@ -88,8 +88,8 @@ model{
 //matrix[N,k] mu;
 vector[N] mu;
 //vector[N] p;
- // int pos;
- // pos = 1;
+  int pos;
+  pos = 1;
 
  // for(i in 1:N){
    // p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
@@ -128,8 +128,8 @@ vector[N] mu;
 // need to define ind, change y--so it only includes non-zeros
 
   for(i in 1:N){
-    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     pos = pos + numnonzeros[i];
   }
 
