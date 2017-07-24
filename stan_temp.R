@@ -53,7 +53,7 @@ real<lower=0> sigma2e;
 //real<lower=0> sigma2;
 }
 transformed parameters{
-//cov_matrix[k] ar1mat[N];
+cov_matrix[k] ar1mat[N];
 
 
 //for (m in 1:k){
@@ -67,20 +67,20 @@ transformed parameters{
 //  }
 //}
 
-//for(i in 1:N){
-  //for (m in 1:k){
-    //ar1mat[i,m,m] = sigma2e;
- // }
-//}
+for(i in 1:N){
+  for (m in 1:k){
+    ar1mat[i,m,m] = sigma2e;
+  }
+}
 //respecify ar1mat, nonzeropos, numnonzeros
-//for(i in 1:N){
-  //for (m in 1:(numnonzeros[i]-1)) {
-    //for (n in (m+1):numnonzeros[i]) {
-      //ar1mat[i,m,n] = 0;//sigma2e * pow(rho,nonzeropos[i,n]-nonzeropos[i,m]);
-      //ar1mat[i,n,m] = 0;//ar1mat[i,m,n];
-    //}
-  //}
-//}
+for(i in 1:N){
+  for (m in 1:(numnonzeros[i]-1)) {
+    for (n in (m+1):numnonzeros[i]) {
+      ar1mat[i,m,n] = 0;//sigma2e * pow(rho,nonzeropos[i,n]-nonzeropos[i,m]);
+      ar1mat[i,n,m] = 0;//ar1mat[i,m,n];
+    }
+  }
+}
 
 }
 model{
@@ -129,7 +129,7 @@ vector[N] mu;
 
   for(i in 1:N){
     if(numnonzeros[i]>0){
-    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //y[i] ~ multi_normal(rep_vector(mu[i],7),diag_matrix(rep_vector(sigma2e,7)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //segment(y2,pos,k) ~ multi_normal(rep_vector(mu[i],k),diag_matrix(rep_vector(sigma2e,k)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
@@ -186,7 +186,7 @@ options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta0","beta1","beta2","sigma2e"),
-                       iter=2000)
+                       iter=200)
 summary(rs)
 save(rs,file="stanout2.RData")
 

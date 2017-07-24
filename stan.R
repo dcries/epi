@@ -94,6 +94,8 @@ vector[N] p;
   for(i in 1:N){
     p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
     mu[i] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
+    b[i] ~ multi_normal(zeros,Sigma);
+
     for(j in 1:k){
       if(y[i][j] == 0){
         //increment_log_prob(bernoulli_log(0,p[i]));
@@ -104,8 +106,10 @@ vector[N] p;
         target += bernoulli_lpmf(1|p[i]) + normal_lpdf(y[i][j]|mu[i],sigma2e);
       }
     }
-  // target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-  // pos = pos + numnonzeros[i];
+    if(numnonzeros[i]>0){
+      target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+      pos = pos + numnonzeros[i];
+    }
   }
 
 
@@ -115,10 +119,10 @@ vector[N] p;
 //    }
 //  }
 
- for(i in 1:N){
+// for(i in 1:N){
     //y[i] ~ multi_normal(row(mu,i),ar1mat);
-    b[i] ~ multi_normal(zeros,Sigma);
-  }
+   // b[i] ~ multi_normal(zeros,Sigma);
+  //}
 
 //would need to change dimension of mu
 //  for(i in 1:N){
