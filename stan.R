@@ -47,13 +47,13 @@ real beta1;
 real beta2;
 cov_matrix[2] Sigma;
 real<lower=0> sigma2e;
-//real<lower=-1,upper=1> rho;
+real<lower=-1,upper=1> rho;
 matrix[N,2] b;
 //real mu2;
 //real<lower=0> sigma2;
 }
 transformed parameters{
-//cov_matrix[k] ar1mat[N];
+cov_matrix[k] ar1mat[N];
 
 
 //for (m in 1:k){
@@ -82,6 +82,25 @@ transformed parameters{
   //}
 //}
 
+for(i in 1:N){
+  for (m in 1:k){
+    ar1mat[i,m,m] = sigma2e;
+    //for(n in (m+1):k){
+    //ar1mat[i,m,n] = sigma2e*pow(rho,abs(m-n));
+    //ar1mat[i,n,m] = sigma2e*pow(rho,abs(m-n));
+    //}
+  }
+}
+//respecify ar1mat, nonzeropos, numnonzeros
+for(i in 1:N){
+  for (m in 1:(k-1)) {
+    for (n in (m+1):k) {
+      ar1mat[i,m,n] = sigma2e * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,n,m] = ar1mat[i,m,n];
+    }
+  }
+}
+
 }
 model{
 
@@ -103,11 +122,11 @@ vector[N] p;
       }
       else{
         //increment_log_prob(bernoulli_log(1,p[i]));
-        target += bernoulli_lpmf(1|p[i]) + normal_lpdf(y[i][j]|mu[i],sigma2e);
+        target += bernoulli_lpmf(1|p[i]);// + normal_lpdf(y[i][j]|mu[i],sigma2e);
       }
     }
     if(numnonzeros[i]>0){
-      target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+      target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
       pos = pos + numnonzeros[i];
     }
   }
@@ -184,7 +203,7 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","sigma2e","Sigma"),
+rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","sigma2e","Sigma","rho"),
                        iter=2000)
 summary(rs)
 save(rs,file="stanout.RData")
