@@ -27,8 +27,10 @@ data{
   //real<lower=0> y[N];
   vector[k] y[N];
   vector[n2] y2;
-  real<lower=0> age[N];
-  int<lower=0> gender[N];
+  int p; //number of covariates plus intercept
+  matrix[N,p] X;
+  //real<lower=0> age[N];
+  //int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
   matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
   real nu;
@@ -39,12 +41,12 @@ transformed data{
   zeros = rep_vector(0,2);
 }
 parameters{
-  real gamma0;
-    real gamma1;
-real gamma2;
-real beta0;
-real beta1;
-real beta2;
+  vector[p] gamma;
+//    real gamma1;
+//real gamma2;
+vector[p] beta;
+//real beta1;
+//real beta2;
 cov_matrix[2] Sigma;
 real<lower=0> sigma2e;
 real<lower=-1,upper=1> rho;
@@ -111,8 +113,8 @@ vector[N] p;
   pos = 1;
 
   for(i in 1:N){
-    p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
-    mu[i] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
+    p[i] = Phi(X[i,]*gamma+b[i,1]);
+    mu[i] = X[i,]*beta + b[i,2];
     b[i] ~ multi_normal(zeros,Sigma);
 
     for(j in 1:k){
@@ -163,12 +165,12 @@ vector[N] p;
 //sigma2 ~ inv_gamma(1,1);
 //  rho ~ uniform(-1,1);
   sigma2e ~ inv_gamma(1,1);
- beta0 ~ normal(0,100);
-  beta1 ~ normal(0,100);
-  beta2 ~ normal(0,100);
-  gamma0 ~ normal(0,100);
-  gamma1 ~ normal(0,100);
-  gamma2 ~ normal(0,100);
+ beta ~ normal(0,100); //implies independent priors for beta ?
+//  beta1 ~ normal(0,100);
+//  beta2 ~ normal(0,100);
+  gamma ~ normal(0,100);
+//  gamma1 ~ normal(0,100);
+//  gamma2 ~ normal(0,100);
   Sigma ~ inv_wishart(nu,D);
 }
 "
@@ -197,14 +199,15 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0)
+         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
+         X=x,p=ncol(x)
 )
 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta0","beta1","beta2","gamma0","gamma1","gamma2","sigma2e","Sigma","rho"),
+rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho"),
                        iter=2000)
 summary(rs)
 save(rs,file="stanout.RData")
