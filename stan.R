@@ -27,8 +27,8 @@ data{
   //real<lower=0> y[N];
   vector[k] y[N];
   vector[n2] y2;
-  int p; //number of covariates plus intercept
-  matrix[N,p] X;
+  int pk; //number of covariates plus intercept
+  matrix[N,pk] X;
   //real<lower=0> age[N];
   //int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
@@ -200,7 +200,7 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
-         X=x,p=ncol(x)
+         X=x,pk=ncol(x)
 )
 
 rstan_options(auto_write = TRUE)
