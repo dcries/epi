@@ -41,10 +41,10 @@ transformed data{
   zeros = rep_vector(0,2);
 }
 parameters{
-  vector[p] gamma;
+  vector[pk] gamma;
 //    real gamma1;
 //real gamma2;
-vector[p] beta;
+vector[pk] beta;
 //real beta1;
 //real beta2;
 cov_matrix[2] Sigma;
