@@ -190,7 +190,8 @@ for(i in 2:ncol(nonzeropos)){
     nonzeropos[,i] <- temp
 }
 
-x <- meas7[,c("age","sex","race","weekend","first5")]
+x <- model.matrix(~age+sex+as.factor(race)+weekend+first5,data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
+
 
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],

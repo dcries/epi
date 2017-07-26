@@ -372,7 +372,7 @@ o5b = c(eht$e6,eht$e7)
 cor(o5a,o5b)
 @
 
-<<plots1,echo=FALSE,cache=TRUE>>=
+<<plots1,echo=FALSE,cache=TRUE,messages=FALSE>>=
 w1 <- qplot(data=nhanes,x=modvigmin,y=glu) + geom_smooth() + theme_bw()
 w2 <- qplot(data=nhanes,x=modvigmin,y=waist) + geom_smooth() + theme_bw()
 w3 <- qplot(data=nhanes,x=modvigmin,y=ldl) + geom_smooth() + theme_bw()
@@ -383,6 +383,18 @@ grid.arrange(w1,w2,w3,w4,w5,w6,nrow=3)
 
 @
 
+<<plots2,echo=FALSE,cache=TRUE,messages=FALSE>>=
+a <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),s=sd(modvigmin^(1/4)),glu=glu[1],waist=waist[1],ldl=ldl[1],hdl=hdl[1],bps=bps[1],bpd=bpd[1],tri=tri[1])
+
+w1 <- qplot(data=a,x=m,y=glu) + geom_smooth() + theme_bw() + ylim(c(50,300))
+w2 <- qplot(data=a,x=m,y=waist) + geom_smooth() + theme_bw()
+w3 <- qplot(data=a,x=m,y=ldl) + geom_smooth() + theme_bw()
+w4 <- qplot(data=a,x=m,y=tri) + geom_smooth() + theme_bw()+ ylim(c(0,750))
+w5 <- qplot(data=a,x=m,y=bps) + geom_smooth() + theme_bw()
+w6 <- qplot(data=a,x=m,y=hdl) + geom_smooth() + theme_bw()
+grid.arrange(w1,w2,w3,w4,w5,w6,nrow=3)
+
+@
 
 <<wearmin,echo=TRUE,cache=TRUE>>=
 summary(nhanes$wearmin)
@@ -438,6 +450,7 @@ qplot(x=wearmin,y=modvigmin,data=nhanes)
 
 qplot(x=wearmin,y=lightmin,data=nhanes)
 @
+
 
 
 \end{document}
