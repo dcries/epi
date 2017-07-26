@@ -27,8 +27,10 @@ data{
   //real<lower=0> y[N];
   vector[k] y[N];
   vector[n2] y2;
-  real<lower=0> age[N];
-  int<lower=0> gender[N];
+  //real<lower=0> age[N];
+  //int<lower=0> gender[N];
+  int p;
+  matrix[N,p] X;
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
   matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
   real nu;
@@ -42,42 +44,43 @@ parameters{
 //  real gamma0;
 //    real gamma1;
 //real gamma2;
-real beta0;
-real beta1;
-real beta2;
+vector[p] beta;
+//real beta1;
+//real beta2;
 //cov_matrix[2] Sigma;
 real<lower=0> sigma2e;
-//real<lower=-1,upper=1> rho;
+real<lower=-1,upper=1> rho;
 //matrix[N,2] b;
 //real mu2;
 //real<lower=0> sigma2;
 }
 transformed parameters{
 cov_matrix[k] ar1mat[N];
+//matrix[k,k] ar1mat[N];
 
-
-//for (m in 1:k){
-//  ar1mat[m,m] = sigma2e;
-//}
 
 //for (m in 1:(k-1)) {
-//  for (n in (m+1):k) {
-//    ar1mat[m,n] = sigma2e * pow(rho,abs(m-n));
-//    ar1mat[n,m] = ar1mat[m,n];
-//  }
+ // for (n in (m+1):k) {
+   // ar1mat[m,n] = sigma2e * pow(rho,abs(m-n));
+   // ar1mat[n,m] = ar1mat[m,n];
+  //}
 //}
 
 for(i in 1:N){
   for (m in 1:k){
     ar1mat[i,m,m] = sigma2e;
+    //for(n in (m+1):k){
+     //ar1mat[i,m,n] = sigma2e*pow(rho,abs(m-n));
+     //ar1mat[i,n,m] = sigma2e*pow(rho,abs(m-n));
+    //}
   }
 }
 //respecify ar1mat, nonzeropos, numnonzeros
 for(i in 1:N){
-  for (m in 1:(numnonzeros[i]-1)) {
-    for (n in (m+1):numnonzeros[i]) {
-      ar1mat[i,m,n] = 0;//sigma2e * pow(rho,nonzeropos[i,n]-nonzeropos[i,m]);
-      ar1mat[i,n,m] = 0;//ar1mat[i,m,n];
+  for (m in 1:(k-1)) {
+    for (n in (m+1):k) {
+      ar1mat[i,m,n] = sigma2e * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,n,m] = ar1mat[i,m,n];
     }
   }
 }
@@ -92,8 +95,8 @@ vector[N] mu;
   pos = 1;
 
  // for(i in 1:N){
-   // p[i] = Phi(gamma0+gamma1*age[i]+gamma2*gender[i]+b[i,1]);
-   // mu[i] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
+   // p[i] = Phi(gamma*X[i,]+b[i,1]);
+   // mu[i] = beta*X[i,] + b[i,2];
    // for(j in 1:k){
     //  if(y[i][j] == 0){
         //increment_log_prob(bernoulli_log(0,p[i]));
@@ -122,21 +125,21 @@ vector[N] mu;
 
 //would need to change dimension of mu
   for(i in 1:N){
-      mu[i] = beta0 + beta1*age[i] + beta2*gender[i];
+      mu[i] = X[i,]*beta;
   }
 
 // need to define ind, change y--so it only includes non-zeros
 
   for(i in 1:N){
-    if(numnonzeros[i]>0){
+    if(numnonzeros[i]>1){
     segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
     //y[i] ~ multi_normal(rep_vector(mu[i],7),diag_matrix(rep_vector(sigma2e,7)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //segment(y2,pos,k) ~ multi_normal(rep_vector(mu[i],k),diag_matrix(rep_vector(sigma2e,k)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-
+    //segment(y2,pos,k) ~ multi_normal(rep_vector(mu[i],k),ar1mat[i]);//diag_matrix(rep_vector(sigma2e,k)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
+}
     pos = pos + numnonzeros[i];
 
-    }
+ //   }
   }
 
 
@@ -144,9 +147,9 @@ vector[N] mu;
 //sigma2 ~ inv_gamma(1,1);
 //  rho ~ uniform(-1,1);
   sigma2e ~ inv_gamma(1,1);
- beta0 ~ normal(0,100);
-  beta1 ~ normal(0,100);
-  beta2 ~ normal(0,100);
+ beta ~ normal(0,100);
+  //beta1 ~ normal(0,100);
+  //beta2 ~ normal(0,100);
   //gamma0 ~ normal(0,100);
   //gamma1 ~ normal(0,100);
   //gamma2 ~ normal(0,100);
@@ -171,16 +174,17 @@ for(i in 2:ncol(nonzeropos)){
     nonzeropos[,i] <- temp
 }
 
-x <- meas7[,c("age","sex","race","weekend","first5")]
+x <- model.matrix(~age+sex+as.factor(race)+weekend+first5,data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
 
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          k      = 7, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         #y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0)
-         y2=(meas7$modvigmin)^(1/4),n2=length(meas7$modvigmin)
+         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
+         X=x,p=ncol(x)
+         #y2=(meas7$modvigmin)^(1/4),n2=length(meas7$modvigmin)
 )
-
+ 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
