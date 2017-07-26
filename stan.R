@@ -3,8 +3,8 @@ library(dplyr)
 library(reshape)
 
 #setwd("C:\\Users\\dcries\\github\\epi")
-setwd("/home/dcries/epi")
-nhanes <- read.csv("nhanes_complete.csv")
+setwd("/home/dcries")
+nhanes <- read.csv("epi/nhanes_complete.csv")
 names(nhanes) <- tolower(names(nhanes))
 nhanes$weekend <- 0
 nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
