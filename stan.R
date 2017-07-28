@@ -59,9 +59,9 @@ parameters{
   //vector[4] alphag;
   //vector[4] alphat;
   vector[4] alphabs;
-  vector[3] alphal;
+  //vector[3] alphal;
   vector[3] alphabd;
-  //vector[2] alphah;
+  vector[2] alphah;
 
 //real beta1;
 //real beta2;
