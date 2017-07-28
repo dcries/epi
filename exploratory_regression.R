@@ -1,4 +1,9 @@
-indlevel <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),s=sd(modvigmin^(1/4)),glu=glu[1],waist=waist[1],ldl=ldl[1],hdl=hdl[1],bps=bps[1],bpd=bpd[1],tri=tri[1])
+indlevel <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),s=sd(modvigmin^(1/4)),glu=glu[1],waist=waist[1],ldl=ldl[1],hdl=hdl[1],bps=bps[1],bpd=bpd[1],tri=tri[1],gender=sex[1],race=race[1],age=age[1])
+indlevel$agegroup <- 1;indlevel$agegroup[indlevel$age>29] <- 2;indlevel$agegroup[indlevel$age>45] <- 3;indlevel$agegroup[indlevel$age>63] <- 4;
+
+
+
+
 
 plot(a$m,a$s)
 

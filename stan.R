@@ -35,7 +35,7 @@ data{
   real waist[N];
   //real lglu[N];
   //real ltri[N];
-  real lbps[N];
+  real bps[N];
   //real ldl[N];
   real hdl[N];
   real bpd[N];
@@ -102,11 +102,12 @@ model{
 //matrix[N,k] mu;
   vector[N] T; //usual
   vector[N] mu;
+  vector[N] Tstar; // usual ^ 1/4
   vector[N] p;
   vector[N] muwaist;
   //vector[N] mulglu;
   //vector[N] multri;
-  vector[N] mulbps;
+  vector[N] mubps;
   vector[N] mubpd;
   vector[N] muhdl;
   //vector[N] muldl;
@@ -118,20 +119,21 @@ model{
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
-    T[i] = p[i]*mu[i];
+    T[i] = pow(mu[i],4.0) + 6*sigma2e*pow(mu[i],2.0);
+    Tstar[i] = p[i]*pow(T[i],0.25);
 
-    muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(T[i]-alphaw[4])));
-    //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(T[i]-alphag[4])));
-    //multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(T[i]-alphat[4])));
-    mulbps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(T[i]-alphabs[4])));
-    //muldl[i] = alphal[1] + alphal[2]*T[i] + alphal[3]*pow(T[i],2);
-    mubpd[i] = alphabd[1] + alphabd[2]*T[i] + alphabd[3]*pow(T[i],2);
-    muhdl[i] = alphah[1] + alphah[2]*T[i];
+    muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
+    //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
+    //multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(Tstar[i]-alphat[4])));
+    mubps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(Tstar[i]-alphabs[4])));
+    //muldl[i] = alphal[1] + alphal[2]*Tstar[i] + alphal[3]*pow(Tstar[i],2);
+    mubpd[i] = alphabd[1] + alphabd[2]*Tstar[i] + alphabd[3]*pow(Tstar[i],2);
+    muhdl[i] = alphah[1] + alphah[2]*Tstar[i];
 
     waist[i] ~ normal(muwaist[i],sigma2waist);
     //lglu[i] ~ normal(mulglu[i],sigma2glu);
     //ltri[i] ~ normal(multri[i],sigma2tri);
-    lbps[i] ~ normal(mulbps[i],sigma2bps);
+    bps[i] ~ normal(mubps[i],sigma2bps);
     //ldl[i] ~ normal(muldl[i],sigma2ldl);
     hdl[i] ~ normal(muhdl[i],sigma2hdl);
     bpd[i] ~ normal(mubpd[i],sigma2bpd);
@@ -214,7 +216,7 @@ x <- model.matrix(~age+as.factor(sex)+as.factor(race),data=meas7[!duplicated(mea
 waist <- meas7$waist[!duplicated(meas7$id)]
 lglu <- log(meas7$glu[!duplicated(meas7$id)])
 ltri <- log(meas7$tri[!duplicated(meas7$id)])
-lbps <- log(meas7$bps[!duplicated(meas7$id)])
+bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- meas7$ldl[!duplicated(meas7$id)]
 hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
@@ -225,7 +227,7 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),waist=waist,lglu=lglu,ltri=ltri,lbps=lbps,ldl=ldl,
+         X=x,pk=ncol(x),waist=waist,lglu=lglu,ltri=ltri,bps=bps,ldl=ldl,
          hdl=hdl,bpd=bpd
 )
 
