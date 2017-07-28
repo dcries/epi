@@ -20,6 +20,8 @@ nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(nhanes, id %in% unique(id)[nrep==7]) #individuals with all 7 days
 
 
+meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
+
 models <- "
 data{
   int<lower=0> N; //number of individuals
@@ -54,12 +56,12 @@ parameters{
 //real gamma2;
   vector[pk] beta;
   vector[4] alphaw;
-  vector[4] alphag;
-  vector[4] alphat;
+  //vector[4] alphag;
+  //vector[4] alphat;
   vector[4] alphabs;
   vector[3] alphal;
   vector[3] alphabd;
-  vector[2] alphah;
+  //vector[2] alphah;
 
 //real beta1;
 //real beta2;
@@ -68,11 +70,11 @@ parameters{
   real<lower=-1,upper=1> rho;
   matrix[N,2] b;
   real<lower=0> sigma2waist;
-  real<lower=0> sigma2glu;
-  real<lower=0> sigma2tri;
+  //real<lower=0> sigma2glu;
+  //real<lower=0> sigma2tri;
   real<lower=0> sigma2bps;
   real<lower=0> sigma2bpd;
-  real<lower=0> sigma2ldl;
+  //real<lower=0> sigma2ldl;
   real<lower=0> sigma2hdl;
 
 }
@@ -102,12 +104,12 @@ model{
   vector[N] mu;
   vector[N] p;
   vector[N] muwaist;
-  vector[N] mulglu;
-  vector[N] multri;
+  //vector[N] mulglu;
+  //vector[N] multri;
   vector[N] mulbps;
   vector[N] mubpd;
   vector[N] muhdl;
-  vector[N] muldl;
+  //vector[N] muldl;
 
 
   int pos;
@@ -119,18 +121,18 @@ model{
     T[i] = p[i]*mu[i];
 
     muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(T[i]-alphaw[4])));
-    mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(T[i]-alphag[4])));
-    multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(T[i]-alphat[4])));
+    //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(T[i]-alphag[4])));
+    //multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(T[i]-alphat[4])));
     mulbps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(T[i]-alphabs[4])));
-    muldl[i] = alphal[1] + alphal[2]*T[i] + alphal[3]*pow(T[i],2);
+    //muldl[i] = alphal[1] + alphal[2]*T[i] + alphal[3]*pow(T[i],2);
     mubpd[i] = alphabd[1] + alphabd[2]*T[i] + alphabd[3]*pow(T[i],2);
     muhdl[i] = alphah[1] + alphah[2]*T[i];
 
     waist[i] ~ normal(muwaist[i],sigma2waist);
-    lglu[i] ~ normal(mulglu[i],sigma2glu);
-    ltri[i] ~ normal(multri[i],sigma2tri);
+    //lglu[i] ~ normal(mulglu[i],sigma2glu);
+    //ltri[i] ~ normal(multri[i],sigma2tri);
     lbps[i] ~ normal(mulbps[i],sigma2bps);
-    ldl[i] ~ normal(muldl[i],sigma2ldl);
+    //ldl[i] ~ normal(muldl[i],sigma2ldl);
     hdl[i] ~ normal(muhdl[i],sigma2hdl);
     bpd[i] ~ normal(mubpd[i],sigma2bpd);
 
@@ -166,11 +168,11 @@ model{
 //  rho ~ uniform(-1,1);
   sigma2e ~ inv_gamma(1,1);
   sigma2waist ~ inv_gamma(1,1);
-  sigma2glu ~ inv_gamma(1,1);
-  sigma2tri ~ inv_gamma(1,1);
+  //sigma2glu ~ inv_gamma(1,1);
+  //sigma2tri ~ inv_gamma(1,1);
   sigma2bps ~ inv_gamma(1,1);
   sigma2bpd ~ inv_gamma(1,1);
-  sigma2ldl ~ inv_gamma(1,1);
+  //sigma2ldl ~ inv_gamma(1,1);
   sigma2hdl ~ inv_gamma(1,1);
 
  beta ~ normal(0,100); //implies independent priors for beta ?
@@ -180,10 +182,10 @@ model{
 //  gamma1 ~ normal(0,100);
 //  gamma2 ~ normal(0,100);
   alphaw ~ normal(0,100);
-  alphag ~ normal(0,100);
-  alphat ~ normal(0,100);
+  //alphag ~ normal(0,100);
+  //alphat ~ normal(0,100);
   alphabs ~ normal(0,100);
-  alphal ~ normal(0,100);
+  //alphal ~ normal(0,100);
   alphabd ~ normal(0,100);
   alphah ~ normal(0,100);
   Sigma ~ inv_wishart(nu,D);
@@ -232,9 +234,11 @@ options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho","alphaw",
-                        "alphag","alphat","alphabs","alphabd","alphal","alphah",
-                        "sigma2waist","sigma2glu","sigma2tri","sigma2bps",
-                        "sigma2ldl","sigma2hdl","sigma2bpd"),
+                        #"alphag","alphat","alphal",
+                        "alphabs","alphabd","alphah",
+                        "sigma2waist","sigma2bps",
+                        #"sigma2glu","sigma2tri","sigma2ldl",
+                        "sigma2hdl","sigma2bpd"),
                        iter=2000)
 summary(rs)
 save(rs,file="stanout.RData")
