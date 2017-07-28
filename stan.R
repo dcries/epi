@@ -5,6 +5,7 @@ library(reshape)
 #setwd("C:\\Users\\dcries\\github\\epi")
 setwd("/home/dcries")
 nhanes <- read.csv("epi/nhanes_complete.csv")
+#nhanes <- read.csv("NHANES_complete.csv")
 names(nhanes) <- tolower(names(nhanes))
 nhanes$weekend <- 0
 nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
@@ -29,6 +30,13 @@ data{
   vector[n2] y2;
   int pk; //number of covariates plus intercept
   matrix[N,pk] X;
+  real waist[N];
+  real lglu[N];
+  real ltri[N];
+  real lbps[N];
+  real ldl[N];
+  real hdl[N];
+  real bpd[N];
   //real<lower=0> age[N];
   //int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
@@ -44,53 +52,36 @@ parameters{
   vector[pk] gamma;
 //    real gamma1;
 //real gamma2;
-vector[pk] beta;
+  vector[pk] beta;
+  vector[4] alphaw;
+  vector[4] alphag;
+  vector[4] alphat;
+  vector[4] alphabs;
+  vector[3] alphal;
+  vector[3] alphabd;
+  vector[2] alphah;
+
 //real beta1;
 //real beta2;
-cov_matrix[2] Sigma;
-real<lower=0> sigma2e;
-real<lower=-1,upper=1> rho;
-matrix[N,2] b;
-//real mu2;
-//real<lower=0> sigma2;
+  cov_matrix[2] Sigma;
+  real<lower=0> sigma2e;
+  real<lower=-1,upper=1> rho;
+  matrix[N,2] b;
+  real<lower=0> sigma2waist;
+  real<lower=0> sigma2glu;
+  real<lower=0> sigma2tri;
+  real<lower=0> sigma2bps;
+  real<lower=0> sigma2bpd;
+  real<lower=0> sigma2ldl;
+  real<lower=0> sigma2hdl;
+
 }
 transformed parameters{
-cov_matrix[k] ar1mat[N];
-
-
-//for (m in 1:k){
-//  ar1mat[m,m] = sigma2e;
-//}
-
-//for (m in 1:(k-1)) {
-//  for (n in (m+1):k) {
-//    ar1mat[m,n] = sigma2e * pow(rho,abs(m-n));
-//    ar1mat[n,m] = ar1mat[m,n];
-//  }
-//}
-
-//for(i in 1:N){
-  //for (m in 1:k){
-    //ar1mat[i,m,m] = sigma2e;
- // }
-//}
-//respecify ar1mat, nonzeropos, numnonzeros
-//for(i in 1:N){
-  //for (m in 1:(numnonzeros[i]-1)) {
-    //for (n in (m+1):numnonzeros[i]) {
-      //ar1mat[i,m,n] = 0;//sigma2e * pow(rho,nonzeropos[i,n]-nonzeropos[i,m]);
-      //ar1mat[i,n,m] = 0;//ar1mat[i,m,n];
-    //}
-  //}
-//}
+  cov_matrix[k] ar1mat[N];
 
 for(i in 1:N){
   for (m in 1:k){
     ar1mat[i,m,m] = sigma2e;
-    //for(n in (m+1):k){
-    //ar1mat[i,m,n] = sigma2e*pow(rho,abs(m-n));
-    //ar1mat[i,n,m] = sigma2e*pow(rho,abs(m-n));
-    //}
   }
 }
 //respecify ar1mat, nonzeropos, numnonzeros
@@ -107,14 +98,43 @@ for(i in 1:N){
 model{
 
 //matrix[N,k] mu;
-vector[N] mu;
-vector[N] p;
+  vector[N] T; //usual
+  vector[N] mu;
+  vector[N] p;
+  vector[N] muwaist;
+  vector[N] mulglu;
+  vector[N] multri;
+  vector[N] mulbps;
+  vector[N] mubpd;
+  vector[N] muhdl;
+  vector[N] muldl;
+
+
   int pos;
   pos = 1;
 
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
+    T[i] = p[i]*mu[i];
+
+    muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(T[i]-alphaw[4])));
+    mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(T[i]-alphag[4])));
+    multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(T[i]-alphat[4])));
+    mulbps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(T[i]-alphabs[4])));
+    muldl[i] = alphal[1] + alphal[2]*T[i] + alphal[3]*pow(T[i],2);
+    mubpd[i] = alphabd[1] + alphabd[2]*T[i] + alphabd[3]*pow(T[i],2);
+    muhdl[i] = alphah[1] + alphah[2]*T[i];
+
+    waist[i] ~ normal(muwaist[i],sigma2waist);
+    lglu[i] ~ normal(mulglu[i],sigma2glu);
+    ltri[i] ~ normal(multri[i],sigma2tri);
+    lbps[i] ~ normal(mulbps[i],sigma2bps);
+    ldl[i] ~ normal(muldl[i],sigma2ldl);
+    hdl[i] ~ normal(muhdl[i],sigma2hdl);
+    bpd[i] ~ normal(mubpd[i],sigma2bpd);
+
+
     b[i] ~ multi_normal(zeros,Sigma);
 
     for(j in 1:k){
@@ -134,43 +154,38 @@ vector[N] p;
   }
 
 
+
+
 //  for(j in 1:k){
 //    for(i in 1:N){
 //      mu[i,j] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
 //    }
 //  }
 
-// for(i in 1:N){
-    //y[i] ~ multi_normal(row(mu,i),ar1mat);
-   // b[i] ~ multi_normal(zeros,Sigma);
-  //}
 
-//would need to change dimension of mu
-//  for(i in 1:N){
-  //    mu[i] = beta0 + beta1*age[i] + beta2*gender[i];
- // }
-
-// need to define ind, change y--so it only includes non-zeros
-
-  //for(i in 1:N){
-   // segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //pos = pos + numnonzeros[i];
-  //}
-//for(i in 1:n2){
-//y2[i] ~ normal(mu2,sigma2);
-//}
-
-//mu2 ~ normal(0,1000);
-//sigma2 ~ inv_gamma(1,1);
 //  rho ~ uniform(-1,1);
   sigma2e ~ inv_gamma(1,1);
+  sigma2waist ~ inv_gamma(1,1);
+  sigma2glu ~ inv_gamma(1,1);
+  sigma2tri ~ inv_gamma(1,1);
+  sigma2bps ~ inv_gamma(1,1);
+  sigma2bpd ~ inv_gamma(1,1);
+  sigma2ldl ~ inv_gamma(1,1);
+  sigma2hdl ~ inv_gamma(1,1);
+
  beta ~ normal(0,100); //implies independent priors for beta ?
 //  beta1 ~ normal(0,100);
 //  beta2 ~ normal(0,100);
   gamma ~ normal(0,100);
 //  gamma1 ~ normal(0,100);
 //  gamma2 ~ normal(0,100);
+  alphaw ~ normal(0,100);
+  alphag ~ normal(0,100);
+  alphat ~ normal(0,100);
+  alphabs ~ normal(0,100);
+  alphal ~ normal(0,100);
+  alphabd ~ normal(0,100);
+  alphah ~ normal(0,100);
   Sigma ~ inv_wishart(nu,D);
 }
 "
@@ -192,7 +207,15 @@ for(i in 2:ncol(nonzeropos)){
     nonzeropos[,i] <- temp
 }
 
-x <- model.matrix(~age+sex+as.factor(race)+weekend+first5,data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
+x <- model.matrix(~age+as.factor(sex)+as.factor(race),data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
+
+waist <- meas7$waist[!duplicated(meas7$id)]
+lglu <- log(meas7$glu[!duplicated(meas7$id)])
+ltri <- log(meas7$tri[!duplicated(meas7$id)])
+lbps <- log(meas7$bps[!duplicated(meas7$id)])
+ldl <- meas7$ldl[!duplicated(meas7$id)]
+hdl <- meas7$hdl[!duplicated(meas7$id)]
+bpd <- meas7$bpd[!duplicated(meas7$id)]
 
 
 dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
@@ -200,14 +223,18 @@ dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x)
+         X=x,pk=ncol(x),waist=waist,lglu=lglu,ltri=ltri,lbps=lbps,ldl=ldl,
+         hdl=hdl,bpd=bpd
 )
 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho"),
+rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho","alphaw",
+                        "alphag","alphat","alphabs","alphabd","alphal","alphah",
+                        "sigma2waist","sigma2glu","sigma2tri","sigma2bps",
+                        "sigma2ldl","sigma2hdl","sigma2bpd"),
                        iter=2000)
 summary(rs)
 save(rs,file="stanout.RData")
