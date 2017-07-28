@@ -33,10 +33,10 @@ data{
   int pk; //number of covariates plus intercept
   matrix[N,pk] X;
   real waist[N];
-  real lglu[N];
-  real ltri[N];
+  //real lglu[N];
+  //real ltri[N];
   real lbps[N];
-  real ldl[N];
+  //real ldl[N];
   real hdl[N];
   real bpd[N];
   //real<lower=0> age[N];
