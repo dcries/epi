@@ -55,13 +55,13 @@ parameters{
 //    real gamma1;
 //real gamma2;
   vector[pk] beta;
-  //vector[4] alphaw;
+  vector[4] alphaw;
   //vector[4] alphag;
   //vector[4] alphat;
-  //vector[4] alphabs;
+  vector[4] alphabs;
   //vector[3] alphal;
-  //vector[3] alphabd;
-  //vector[2] alphah;
+  vector[3] alphabd;
+  vector[2] alphah;
 
 //real beta1;
 //real beta2;
@@ -69,13 +69,13 @@ parameters{
   real<lower=0> sigma2e;
   real<lower=-1,upper=1> rho;
   matrix[N,2] b;
-  //real<lower=0> sigma2waist;
+  real<lower=0> sigma2waist;
   //real<lower=0> sigma2glu;
   //real<lower=0> sigma2tri;
-  //real<lower=0> sigma2bps;
-  //real<lower=0> sigma2bpd;
+  real<lower=0> sigma2bps;
+  real<lower=0> sigma2bpd;
   //real<lower=0> sigma2ldl;
-  //real<lower=0> sigma2hdl;
+  real<lower=0> sigma2hdl;
 
 }
 transformed parameters{
@@ -104,12 +104,12 @@ model{
   vector[N] mu;
   vector[N] Tstar; // usual ^ 1/4
   vector[N] p;
-  //vector[N] muwaist;
+  vector[N] muwaist;
   //vector[N] mulglu;
   //vector[N] multri;
-  //vector[N] mubps;
-  //vector[N] mubpd;
-  //vector[N] muhdl;
+  vector[N] mubps;
+  vector[N] mubpd;
+  vector[N] muhdl;
   //vector[N] muldl;
 
 
@@ -119,24 +119,24 @@ model{
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
-    //T[i] = pow(mu[i],4.0) + 6*sigma2e*pow(mu[i],2.0);
-    //Tstar[i] = p[i]*pow(T[i],0.25);
+    T[i] = pow(mu[i],4.0) + 6*sigma2e*pow(mu[i],2.0);
+    Tstar[i] = p[i]*pow(T[i],0.25);
 
-    //muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
+    muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
     //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
     //multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(Tstar[i]-alphat[4])));
-    //mubps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(Tstar[i]-alphabs[4])));
+    mubps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(Tstar[i]-alphabs[4])));
     //muldl[i] = alphal[1] + alphal[2]*Tstar[i] + alphal[3]*pow(Tstar[i],2);
-    //mubpd[i] = alphabd[1] + alphabd[2]*Tstar[i] + alphabd[3]*pow(Tstar[i],2);
-    //muhdl[i] = alphah[1] + alphah[2]*Tstar[i];
+    mubpd[i] = alphabd[1] + alphabd[2]*Tstar[i] + alphabd[3]*pow(Tstar[i],2);
+    muhdl[i] = alphah[1] + alphah[2]*Tstar[i];
 
-    //waist[i] ~ normal(muwaist[i],sigma2waist);
+    waist[i] ~ normal(muwaist[i],sigma2waist);
     //lglu[i] ~ normal(mulglu[i],sigma2glu);
     //ltri[i] ~ normal(multri[i],sigma2tri);
-    //bps[i] ~ normal(mubps[i],sigma2bps);
+    bps[i] ~ normal(mubps[i],sigma2bps);
     //ldl[i] ~ normal(muldl[i],sigma2ldl);
-    //hdl[i] ~ normal(muhdl[i],sigma2hdl);
-    //bpd[i] ~ normal(mubpd[i],sigma2bpd);
+    hdl[i] ~ normal(muhdl[i],sigma2hdl);
+    bpd[i] ~ normal(mubpd[i],sigma2bpd);
 
 
     b[i] ~ multi_normal(zeros,Sigma);
@@ -169,13 +169,13 @@ model{
 
 //  rho ~ uniform(-1,1);
   sigma2e ~ inv_gamma(1,1);
-  //sigma2waist ~ inv_gamma(1,1);
+  sigma2waist ~ inv_gamma(1,1);
   //sigma2glu ~ inv_gamma(1,1);
   //sigma2tri ~ inv_gamma(1,1);
-  //sigma2bps ~ inv_gamma(1,1);
-  //sigma2bpd ~ inv_gamma(1,1);
+  sigma2bps ~ inv_gamma(1,1);
+  sigma2bpd ~ inv_gamma(1,1);
   //sigma2ldl ~ inv_gamma(1,1);
-  //sigma2hdl ~ inv_gamma(1,1);
+  sigma2hdl ~ inv_gamma(1,1);
 
  beta ~ normal(0,100); //implies independent priors for beta ?
 //  beta1 ~ normal(0,100);
@@ -183,13 +183,13 @@ model{
   gamma ~ normal(0,100);
 //  gamma1 ~ normal(0,100);
 //  gamma2 ~ normal(0,100);
-  //alphaw ~ normal(0,100);
+  alphaw ~ normal(0,100);
   //alphag ~ normal(0,100);
   //alphat ~ normal(0,100);
-  //alphabs ~ normal(0,100);
+  alphabs ~ normal(0,100);
   //alphal ~ normal(0,100);
-  //alphabd ~ normal(0,100);
-  //alphah ~ normal(0,100);
+  alphabd ~ normal(0,100);
+  alphah ~ normal(0,100);
   Sigma ~ inv_wishart(nu,D);
 }
 "
@@ -235,14 +235,13 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho","alphaw",
                         #"alphag","alphat","alphal",
-                        #"alphabs","alphabd","alphah",
-                        #"sigma2waist","sigma2bps",
+                        "alphabs","alphabd","alphah",
+                        "sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
-                        #"sigma2hdl","sigma2bpd"
-                        ),
+                        "sigma2hdl","sigma2bpd"),
                        iter=2000)
 summary(rs)
-save(rs,file="stanout.RData")
+save(rs,file="stanout_full.RData")
 
