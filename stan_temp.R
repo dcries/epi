@@ -189,8 +189,8 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta0","beta1","beta2","sigma2e"),
-                       iter=200,chains=1,init=list(beta0=1))
+rs <- sampling(ms,dat,c("beta","sigma2e"),
+                       iter=200,chains=1,init=list(sigma2e=1))
 summary(rs)
 save(rs,file="stanout2.RData")
 
