@@ -66,7 +66,7 @@ parameters{
 //real beta1;
 //real beta2;
   cov_matrix[2] Sigma;
-  real<lower=0> sigma2e;
+  real<lower=0> sigmae;
   real<lower=-1,upper=1> rho;
   matrix[N,2] b;
   //real<lower=0> sigma2waist;
@@ -83,14 +83,14 @@ transformed parameters{
 
 for(i in 1:N){
   for (m in 1:k){
-    ar1mat[i,m,m] = sigma2e;
+    ar1mat[i,m,m] = pow(sigmae,2.0);
   }
 }
 //respecify ar1mat, nonzeropos, numnonzeros
 for(i in 1:N){
   for (m in 1:(k-1)) {
     for (n in (m+1):k) {
-      ar1mat[i,m,n] = sigma2e * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,m,n] = pow(sigmae,2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
       ar1mat[i,n,m] = ar1mat[i,m,n];
     }
   }
@@ -119,7 +119,7 @@ model{
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
-    //T[i] = pow(mu[i],4.0) + 6*sigma2e*pow(mu[i],2.0);
+    //T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
     //Tstar[i] = p[i]*pow(T[i],0.25);
 
     //muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
@@ -148,7 +148,7 @@ model{
       }
       else{
         //increment_log_prob(bernoulli_log(1,p[i]));
-        target += bernoulli_lpmf(1|p[i]);// + normal_lpdf(y[i][j]|mu[i],sigma2e);
+        target += bernoulli_lpmf(1|p[i]);// + normal_lpdf(y[i][j]|mu[i],sigmae);
       }
     }
     if(numnonzeros[i]>0){
@@ -168,7 +168,7 @@ model{
 
 
 //  rho ~ uniform(-1,1);
-  sigma2e ~ inv_gamma(1,1);
+  sigmae ~ cauchy(0,1);
   //sigma2waist ~ inv_gamma(1,1);
   //sigma2glu ~ inv_gamma(1,1);
   //sigma2tri ~ inv_gamma(1,1);
@@ -235,7 +235,7 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigma2e","Sigma","rho"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
