@@ -122,10 +122,10 @@ model{
     T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
     Tstar[i] = p[i]*pow(T[i],0.25);
 
-    muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
-    //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
-    //multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(Tstar[i]-alphat[4])));
-    //mubps[i] = alphabs[1]-alphabs[2]/(1+exp(-alphabs[3]*(Tstar[i]-alphabs[4])));
+    muwaist[i] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]-alphaw[3])));
+    //mulglu[i] = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar[i]-alphag[3])));
+    //multri[i] = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar[i]-alphat[3])));
+    //mubps[i] = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar[i]-alphabs[3])));
     //muldl[i] = alphal[1] + alphal[2]*Tstar[i] + alphal[3]*pow(Tstar[i],2);
     //mubpd[i] = alphabd[1] + alphabd[2]*Tstar[i] + alphabd[3]*pow(Tstar[i],2);
     muhdl[i] = alphah[1] + alphah[2]*Tstar[i];
