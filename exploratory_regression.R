@@ -14,17 +14,19 @@ df=data.frame(x=seq(from=0,to=4,by=0.1))
 df$bps=137.256-18.388/(1+exp(-4.602*(df$x-1.389)))
 qplot(data=indlevel,x=m,y=bps) + geom_smooth() + geom_line(data=df,aes(x=x,y=bps),col="red") 
 
-mglu <- nls(glu~L2-L/(1+exp(-k*(m-x0))),start=list(L=20,k=3,x0=1.2,L2=120),data=indlevel)
+#mglu <- nls(glu~L2-L/(1+exp(-k*(m-x0))),start=list(L=20,k=3,x0=1.2,L2=120),data=indlevel)
+mglu <- nls(log(glu)~L2-L/(1+exp(-k*(m-x0))),start=list(L=.5,k=3,x0=1.2,L2=log(120)),data=indlevel)
 df$glu=coef(mglu)["L2"]-coef(mglu)["L"]/(1+exp(-coef(mglu)["k"]*(df$x-coef(mglu)["x0"])))
-qplot(data=indlevel,x=m,y=glu) + geom_smooth() + geom_line(data=df,aes(x=x,y=glu),col="red") 
+qplot(data=indlevel,x=m,y=log(glu)) + geom_smooth() + geom_line(data=df,aes(x=x,y=glu),col="red") 
 
 mwaist <- nls(waist~L2-L/(1+exp(-k*(m-x0))),start=list(L=20,k=3,x0=1.2,L2=110),data=indlevel)
 df$waist=coef(mwaist)["L2"]-coef(mwaist)["L"]/(1+exp(-coef(mwaist)["k"]*(df$x-coef(mwaist)["x0"])))
 qplot(data=indlevel,x=m,y=waist) + geom_smooth() + geom_line(data=df,aes(x=x,y=waist),col="red") 
 
-mtri <- nls(tri~L2-L/(1+exp(-k*(m-x0))),start=list(L=30,k=3,x0=1.5,L2=150),data=indlevel)
+#mtri <- nls(tri~L2-L/(1+exp(-k*(m-x0))),start=list(L=30,k=3,x0=1.5,L2=150),data=indlevel)
+mtri <- nls(log(tri)~L2-L/(1+exp(-k*(m-x0))),start=list(L=.5,k=3,x0=1.5,L2=5),data=indlevel)
 df$tri=coef(mtri)["L2"]-coef(mtri)["L"]/(1+exp(-coef(mtri)["k"]*(df$x-coef(mtri)["x0"])))
-qplot(data=indlevel,x=m,y=tri) + geom_smooth() + geom_line(data=df,aes(x=x,y=tri),col="red") + ylim(c(0,750))
+qplot(data=indlevel,x=m,y=log(tri)) + geom_smooth() + geom_line(data=df,aes(x=x,y=tri),col="red") #+ ylim(c(0,750))
 
 qplot(data=indlevel,x=m,y=ldl) + geom_smooth()
 qplot(data=indlevel,x=m,y=hdl) + geom_smooth()
