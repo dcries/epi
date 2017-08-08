@@ -256,9 +256,9 @@ rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho","alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd",
                         "alphah",
-                        "sigmawaist",#"sigma2bps",
-                        #"sigma2glu","sigma2tri","sigma2ldl",
-                        "sigma2hdl"#,"sigma2bpd"
+                        "sigmawaist",#"sigmabps",
+                        #"sigmaglu","sigmatri","sigmaldl",
+                        "sigmahdl"#,"sigmabpd"
                         ),
                        iter=200,chains=3,init=list(start1,start2,start3))
 summary(rs)
