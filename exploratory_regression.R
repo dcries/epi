@@ -35,3 +35,5 @@ qplot(data=indlevel,x=m,y=bpd) + geom_smooth()
 qplot(data=nhanes,x=modvigmin,y=ldl) + geom_smooth()
 qplot(data=nhanes,x=modvigmin,y=hdl) + geom_smooth()
 qplot(data=nhanes,x=modvigmin,y=bpd) + geom_smooth()
+
+summary(lm(hdl~m,data=indlevel))

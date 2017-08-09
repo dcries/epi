@@ -260,7 +260,8 @@ rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho","alphaw",
                         #"sigmaglu","sigmatri","sigmaldl",
                         "sigmahdl"#,"sigmabpd"
                         ),
-                       iter=200,chains=3,init=list(start1,start2,start3))
+                       iter=200,chains=3,init=list(start1,start2,start3),
+               control=list(adapt_delta=0.99,max_treedepth=15))
 summary(rs)
 save(rs,file="stanout_full.RData")
 
