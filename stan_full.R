@@ -230,7 +230,7 @@ hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 
 
-dat=list(y=(yc[,3:9]),  N      = length(unique(meas7$id)),
+dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          k      = 6, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
