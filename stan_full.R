@@ -231,7 +231,7 @@ bpd <- meas7$bpd[!duplicated(meas7$id)]
 
 
 dat=list(y=(yc[,3:9]),  N      = length(unique(meas7$id)),
-         k      = 7, age= meas7$age[!duplicated(meas7$id)],
+         k      = 6, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),

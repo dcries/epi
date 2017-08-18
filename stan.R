@@ -16,8 +16,16 @@ nhanes$first5[nhanes$rep==7] <- 2
 nhanes$active <- 1
 nhanes$active[nhanes$modvigmin ==0] <- 0
 
+nhanes <- subset(nhanes,rep!=7)
+m1 <- lm(modvigmin^.25~(weekend)+first5,data=nhanes)
+wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5])^.25)
+w1 <- nhanes$modvigmin^.25
+what <- predict(m1)
+w <- (1/what)*w1*wbar
+nhanes$modvigmin2 <- w
+
 nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
-meas7 <- subset(nhanes, id %in% unique(id)[nrep==7]) #individuals with all 7 days
+meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 
 
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
@@ -194,18 +202,18 @@ model{
 }
 "
 
-ym <- melt(meas7[,c("modvigmin","rep","id")],id.vars=c("id","rep"))
+ym <- melt(meas7[,c("modvigmin2","rep","id")],id.vars=c("id","rep"))
 yc <- cast(ym,id+variable~rep)
 nonzeros <- (meas7 %>% group_by(id) %>% summarise(n=sum(active)))$n
 a1=meas7$rep[meas7$active==1]
 a2=cumsum(nonzeros)
 
-nonzeropos <- matrix(0,ncol=length(unique(meas7$id)),nrow=7)
+nonzeropos <- matrix(0,ncol=length(unique(meas7$id)),nrow=6)
 nonzeropos[,1] <- a1[1:nonzeros[1]]
 for(i in 2:ncol(nonzeropos)){
     temp <- a1[(a2[i-1]+1):a2[i]]
-    if(length(temp)<7){
-      n0 <- 7-length(temp)
+    if(length(temp)<6){
+      n0 <- 6-length(temp)
       temp <- c(temp,rep(0,n0))
     }
     nonzeropos[,i] <- temp
@@ -222,11 +230,11 @@ hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 
 
-dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
-         k      = 7, age= meas7$age[!duplicated(meas7$id)],
+dat=list(y=(yc[,3:9]),  N      = length(unique(meas7$id)),
+         k      = 6, age= meas7$age[!duplicated(meas7$id)],
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
+         y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
          X=x,pk=ncol(x),waist=waist,lglu=lglu,ltri=ltri,bps=bps,ldl=ldl,
          hdl=hdl,bpd=bpd
 )
