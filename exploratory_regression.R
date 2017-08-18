@@ -2,8 +2,19 @@ indlevel <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),s=sd(m
 indlevel$agegroup <- 1;indlevel$agegroup[indlevel$age>29] <- 2;indlevel$agegroup[indlevel$age>45] <- 3;indlevel$agegroup[indlevel$age>63] <- 4;
 
 
+a <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin),s=sd(modvigmin))
+q1=qplot(data=a,x=m) + xlab('Observed Mean Minutes in MVPA') + theme_bw()
+q2=qplot(data=indlevel,x=m,y=s) + xlab('Observed Mean Minutes in MVPA (Transformed)') + ylab("Standard Deviation") +theme_bw()
+grid.arrange(q1,q2,nrow=1)
 
-
+p1 <- qplot(data=indlevel,x=m,y=log(glu))+ylab("log Glucose") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p2 <- qplot(data=indlevel,x=m,y=waist)+ylab("Waist") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p3 <- qplot(data=indlevel,x=m,y=log(tri))+ylab("log Triglycerides") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p4 <- qplot(data=indlevel,x=m,y=ldl)+ylab("LDL") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p5 <- qplot(data=indlevel,x=m,y=hdl)+ylab("HDL") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p6 <- qplot(data=indlevel,x=m,y=bps)+ylab("Blood Pressure (S)") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+p7 <- qplot(data=indlevel,x=m,y=bpd)+ylab("Blood Pressure (D)") + xlab("Mean Transformed MVPA Minutes") + geom_smooth() + theme_bw()
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
 
 plot(a$m,a$s)
 
