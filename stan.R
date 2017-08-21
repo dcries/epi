@@ -84,6 +84,8 @@ parameters{
   //real<lower=0> sigma2bpd;
   //real<lower=0> sigma2ldl;
   //real<lower=0> sigma2hdl;
+  vector[N] Tstar; // usual ^ 1/4
+
 
 }
 transformed parameters{
@@ -110,7 +112,6 @@ model{
 //matrix[N,k] mu;
   vector[N] T; //usual
   vector[N] mu;
-  vector[N] Tstar; // usual ^ 1/4
   vector[N] p;
   //vector[N] muwaist;
   //vector[N] mulglu;
