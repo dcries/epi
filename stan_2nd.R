@@ -119,6 +119,14 @@ for(i in 1:N){
 }
 "
 
+waist <- meas7$waist[!duplicated(meas7$id)]
+lglu <- log(meas7$glu[!duplicated(meas7$id)])
+ltri <- log(meas7$tri[!duplicated(meas7$id)])
+bps <- (meas7$bps[!duplicated(meas7$id)])
+ldl <- meas7$ldl[!duplicated(meas7$id)]
+hdl <- meas7$hdl[!duplicated(meas7$id)]
+bpd <- meas7$bpd[!duplicated(meas7$id)]
+
 dat=list(N      = length(unique(meas7$id)),
          #age= meas7$age[!duplicated(meas7$id)],
          #gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
