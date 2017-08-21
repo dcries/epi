@@ -84,12 +84,15 @@ parameters{
   //real<lower=0> sigma2bpd;
   //real<lower=0> sigma2ldl;
   //real<lower=0> sigma2hdl;
-  vector[N] Tstar; // usual ^ 1/4
 
 
 }
 transformed parameters{
   cov_matrix[k] ar1mat[N];
+  vector[N] Tstar; // usual ^ 1/4
+  vector[N] T; //usual
+  vector[N] mu;
+  vector[N] p;
 
 for(i in 1:N){
   for (m in 1:k){
@@ -106,13 +109,17 @@ for(i in 1:N){
   }
 }
 
+  for(i in 1:N){
+    p[i] = Phi(X[i,]*gamma+b[i,1]);
+    mu[i] = X[i,]*beta + b[i,2];
+    T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
+    Tstar[i] = p[i]*pow(T[i],0.25);
+  }
 }
 model{
 
 //matrix[N,k] mu;
-  vector[N] T; //usual
-  vector[N] mu;
-  vector[N] p;
+
   //vector[N] muwaist;
   //vector[N] mulglu;
   //vector[N] multri;
@@ -126,10 +133,6 @@ model{
   pos = 1;
 
   for(i in 1:N){
-    p[i] = Phi(X[i,]*gamma+b[i,1]);
-    mu[i] = X[i,]*beta + b[i,2];
-    T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
-    Tstar[i] = p[i]*pow(T[i],0.25);
 
     //muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
     //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
