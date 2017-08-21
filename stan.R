@@ -127,8 +127,8 @@ model{
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
-    //T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
-    //Tstar[i] = p[i]*pow(T[i],0.25);
+    T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
+    Tstar[i] = p[i]*pow(T[i],0.25);
 
     //muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
     //mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
@@ -243,7 +243,7 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
