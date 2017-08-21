@@ -155,7 +155,7 @@ start4 <- list(alphag=c(0.2642,2.4081,2.4433,5.7228),
                alphabs=c( 28.388,   3.602 ,  2.389, 157.256 ))
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho","alphaw",
+rs <- sampling(ms,dat,c("alphaw",
                         "alphag","alphat","alphal",
                         "alphabs","alphabd",
                         "alphah",
