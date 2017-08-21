@@ -28,7 +28,8 @@ meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 day
 
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)),] #remove NAs for waist
 
-Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin)))$m)^.25
+#Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin)))$m)^.25
+Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin2)))$m)
 
 models <- "
 data{
@@ -81,7 +82,7 @@ model{
   vector[N] muhdl;
   vector[N] muldl;
 
-
+for(i in 1:N){
   muwaist[i] = alphaw[1]-alphaw[2]/(1+exp(-alphaw[3]*(Tstar[i]-alphaw[4])));
   mulglu[i] = alphag[1]-alphag[2]/(1+exp(-alphag[3]*(Tstar[i]-alphag[4])));
   multri[i] = alphat[1]-alphat[2]/(1+exp(-alphat[3]*(Tstar[i]-alphat[4])));
@@ -97,7 +98,7 @@ model{
   ldl[i] ~ normal(muldl[i],sigmaldl);
   hdl[i] ~ normal(muhdl[i],sigmahdl);
   bpd[i] ~ normal(mubpd[i],sigmabpd);
-
+}
 
   sigmawaist ~ cauchy(0,1);
   sigmaglu ~ cauchy(0,1);
