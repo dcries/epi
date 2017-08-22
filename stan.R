@@ -40,13 +40,13 @@ data{
   vector[n2] y2;
   int pk; //number of covariates plus intercept
   matrix[N,pk] X;
-  real waist[N];
+  //real waist[N];
   //real lglu[N];
   //real ltri[N];
-  real bps[N];
+  //real bps[N];
   //real ldl[N];
-  real hdl[N];
-  real bpd[N];
+  //real hdl[N];
+  //real bpd[N];
   //real<lower=0> age[N];
   //int<lower=0> gender[N];
   int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
@@ -239,7 +239,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),waist=waist,lglu=lglu,ltri=ltri,bps=bps,ldl=ldl,
+         X=x,pk=ncol(x),
          hdl=hdl,bpd=bpd
 )
 
