@@ -28,7 +28,7 @@ nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 
 
-meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
+#meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
 
 models <- "
 data{
