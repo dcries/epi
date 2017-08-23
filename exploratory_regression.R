@@ -1,4 +1,21 @@
-indlevel <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),s=sd(modvigmin^(1/4)),glu=glu[1],waist=waist[1],ldl=ldl[1],hdl=hdl[1],bps=bps[1],bpd=bpd[1],tri=tri[1],gender=sex[1],race=race[1],age=age[1],n=length(id))
+nhanes$weekend <- 0
+nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
+nhanes$first5 <- 0
+nhanes$first5[nhanes$rep==6] <- 1
+nhanes$first5[nhanes$rep==7] <- 2
+
+nhanes$active <- 1
+nhanes$active[nhanes$modvigmin ==0] <- 0
+
+nhanes <- subset(nhanes,rep!=7)
+m1 <- lm(modvigmin^.25~(weekend)+first5,data=nhanes)
+wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5])^.25)
+w1 <- nhanes$modvigmin^.25
+what <- predict(m1)
+w <- (1/what)*w1*wbar
+nhanes$modvigmin2 <- w
+
+indlevel <- nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^(1/4)),m2=mean(modvigmin2),s=sd(modvigmin^(1/4)),glu=glu[1],waist=waist[1],ldl=ldl[1],hdl=hdl[1],bps=bps[1],bpd=bpd[1],tri=tri[1],gender=sex[1],race=race[1],age=age[1],n=length(id))
 indlevel$agegroup <- 1;indlevel$agegroup[indlevel$age>29] <- 2;indlevel$agegroup[indlevel$age>45] <- 3;indlevel$agegroup[indlevel$age>63] <- 4;
 
 

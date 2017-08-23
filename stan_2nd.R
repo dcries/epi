@@ -35,6 +35,7 @@ models <- "
 data{
   int<lower=0> N; //number of individuals
   vector[N] Tstar; // usual ^ 1/4
+  //vector[N] sdT;//
 
   real waist[N];
   real lglu[N];
@@ -69,6 +70,7 @@ parameters{
   real<lower=0> sigmaldl;
   real<lower=0> sigmahdl;
 
+  //vector[N] appx;
 }
 
 
@@ -81,6 +83,8 @@ model{
   vector[N] mubpd;
   vector[N] muhdl;
   vector[N] muldl;
+
+  //vector[N] mu[7]; //7 for number of regressions
 
 for(i in 1:N){
     muwaist[i] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]-alphaw[3])));
@@ -98,7 +102,18 @@ for(i in 1:N){
   ldl[i] ~ normal(muldl[i],sigmaldl);
   hdl[i] ~ normal(muhdl[i],sigmahdl);
   bpd[i] ~ normal(mubpd[i],sigmabpd);
+
 }
+
+  //muwaist = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*((Tstar+appx-alphaw[3])));
+  //mulglu = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar+appx-alphag[3])));
+  //multri = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar+appx-alphat[3])));
+  //mubps = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar+appx-alphabs[3])));
+  //muldl = alphal[1] + alphal[2]*(Tstar+appx) + alphal[3]*pow(Tstar+appx,2);
+  //mubpd = alphabd[1] + alphabd[2]*(Tstar+appx) + alphabd[3]*pow(Tstar+appx,2);
+  //muhdl = alphah[1] + alphah[2]*(Tstar+appx);
+
+  //appx ~ normal(0,sdT);
 
   sigmawaist ~ cauchy(0,1);
   sigmaglu ~ cauchy(0,1);
