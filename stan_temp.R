@@ -169,7 +169,7 @@ hdl <- meas7$hdl[!duplicated(meas7$id)]
 
 #Tstar <- meas7$Tstar[!duplicated(meas7$id)]
 #sdT <- meas7$std[!duplicated(meas7$id)]
-MetS <- t(cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
+MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
 
 dat=list(N      = length(unique(meas7$id)),
