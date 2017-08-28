@@ -73,7 +73,9 @@ vector[pk] beta;
 
 //real beta1;
 //real beta2;
-cov_matrix[2] Sigma;
+//cov_matrix[2] Sigma;
+corr_matrix[2] L;
+vector<lower=0>[2] sigmab;
 real<lower=0> sigmae;
 real<lower=-1,upper=1> rho;
 matrix[N,2] b;
@@ -151,7 +153,7 @@ for(i in 1:N){
 //bpd[i] ~ normal(mubpd[i],sigma2bpd);
 
 
-b[i] ~ multi_normal(zeros,Sigma);
+b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 
 for(j in 1:k){
 if(y[i][j] == 0){
@@ -202,7 +204,9 @@ gamma ~ normal(0,100);
 //alphal ~ normal(0,100);
 //alphabd ~ normal(0,100);
 //alphah ~ normal(0,100);
-Sigma ~ inv_wishart(nu,D);
+//Sigma ~ inv_wishart(nu,D);
+L ~ lkj_corr(1.0);
+sigmab ~ cuachy(0,1);
 }
 "
 
@@ -247,14 +251,14 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigmae","Sigma","rho","Tstar"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","sigmae","L","sigmab","rho","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
 ),
-iter=2000)
+iter=4000)
 summary(rs)
 save(rs,file="stanout_imp1.RData")
 
