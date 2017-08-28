@@ -167,8 +167,8 @@ ldl <- meas7$ldl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- meas7$hdl[!duplicated(meas7$id)]
 
-Tstar <- meas7$Tstar[!duplicated(meas7$id)]
-sdT <- meas7$std[!duplicated(meas7$id)]
+#Tstar <- meas7$Tstar[!duplicated(meas7$id)]
+#sdT <- meas7$std[!duplicated(meas7$id)]
 MetS <- t(cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
 
