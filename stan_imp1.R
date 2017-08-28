@@ -206,7 +206,7 @@ gamma ~ normal(0,100);
 //alphah ~ normal(0,100);
 //Sigma ~ inv_wishart(nu,D);
 L ~ lkj_corr(1.0);
-sigmab ~ cuachy(0,1);
+sigmab ~ cauchy(0,1);
 }
 "
 
