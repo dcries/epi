@@ -42,7 +42,7 @@ df$bps=coef(mbps2)[4]-coef(mbps2)[1]/(1+exp(-coef(mbps2)[2]*(df$x-coef(mbps2)[3]
 qplot(data=indlevel,x=m,y=bps) + geom_smooth() + geom_line(data=df,aes(x=x,y=bps),col="red") 
 df$glu=coef(mglu)["L2"]-coef(mglu)["L"]/(1+exp(-coef(mglu)["k"]*(df$x-coef(mglu)["x0"])))
 qplot(data=indlevel,x=m,y=log(glu)) + geom_smooth() + geom_line(data=df,aes(x=x,y=glu),col="red") 
-df$waist=coef(mwaist)["L2"]-coef(mwaist)["L"]/(1+exp(-coef(mwaist)["k"]*(df$x-coef(mwaist)["x0"])))
+df$waist=coef(mwaist2)["L2"]-coef(mwaist2)["L"]/(1+exp(-coef(mwaist2)["k"]*(df$x-coef(mwaist2)["x0"])))
 qplot(data=indlevel,x=m,y=waist) + geom_smooth() + geom_line(data=df,aes(x=x,y=waist),col="red") 
 df$tri=coef(mtri)["L2"]-coef(mtri)["L"]/(1+exp(-coef(mtri)["k"]*(df$x-coef(mtri)["x0"])))
 qplot(data=indlevel,x=m,y=log(tri)) + geom_smooth() + geom_line(data=df,aes(x=x,y=tri),col="red") #+ ylim(c(0,750))

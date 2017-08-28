@@ -35,7 +35,8 @@ models <- "
 data{
   int<lower=0> N; //number of individuals
   vector[N] Tstar; // usual ^ 1/4
-  //vector[N] sdT;//
+  //vector[N] sdT;// vector of standard deviation parameters of Tstar 
+  //vector[7] MetS[N]; 7xN matrix of MetS data
 
   real waist[N];
   real lglu[N];
@@ -71,6 +72,8 @@ parameters{
   real<lower=0> sigmahdl;
 
   //vector[N] appx;
+  //vector<lower=0>[7] sigmar;
+  //corr_matrix[7] Lr;
 }
 
 
@@ -84,7 +87,7 @@ model{
   vector[N] muhdl;
   vector[N] muldl;
 
-  //vector[N] mu[7]; //7 for number of regressions
+  //vector[7] mu[N]; //7 for number of regressions
 
 for(i in 1:N){
     muwaist[i] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]-alphaw[3])));
@@ -102,6 +105,18 @@ for(i in 1:N){
   ldl[i] ~ normal(muldl[i],sigmaldl);
   hdl[i] ~ normal(muhdl[i],sigmahdl);
   bpd[i] ~ normal(mubpd[i],sigmabpd);
+
+
+  //mu[i,1] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*((Tstar[i]+appx[i]-alphaw[3])));
+  //mu[i,2] = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar[i]+appx[i]-alphag[3])));
+  //mu[i,3] = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar[i]+appx[i]-alphat[3])));
+  //mu[i,4] = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar[i]+appx[i]-alphabs[3])));
+  //mu[i,5] = alphal[1] + alphal[2]*(Tstar[i]+appx[i]) + alphal[3]*pow(Tstar[i]+appx[i],2);
+  //mu[i,6] = alphabd[1] + alphabd[2]*(Tstar[i]+appx[i]) + alphabd[3]*pow(Tstar[i]+appx[i],2);
+  //mu[i,7] = alphah[1] + alphah[2]*(Tstar[i]+appx[i]);
+
+  //MetS[i] ~ multi_normal(mu[i],diag_matrix(sigmar)*Lr*diag_matrix(sigmar));
+  
 
 }
 
@@ -131,6 +146,9 @@ for(i in 1:N){
   alphal ~ normal(0,100);
   alphabd ~ normal(0,100);
   alphah ~ normal(0,100);
+
+  //sigmar ~ cauchy(0,1);
+  //Lr ~ lkj_corr(1.0);
 }
 "
 

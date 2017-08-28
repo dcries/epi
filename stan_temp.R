@@ -1,196 +1,211 @@
 library(rstan)
 library(dplyr)
-library(reshape)
-
-#setwd("C:\\Users\\dcries\\github\\epi")
 setwd("/home/dcries")
-nhanes <- read.csv("epi/nhanes_complete.csv")
-names(nhanes) <- tolower(names(nhanes))
-nhanes$weekend <- 0
-nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
-nhanes$first5 <- 0
-nhanes$first5[nhanes$rep==6] <- 1
-nhanes$first5[nhanes$rep==7] <- 2
+imp1 <- read.csv("epi/NHANES_accel_imp1.csv")
+Tstar <- read.csv("tstar.csv")
+sdT <- read.csv("sdT.csv")
 
-nhanes$active <- 1
-nhanes$active[nhanes$modvigmin ==0] <- 0
+#nhanes <- read.csv("NHANES_complete.csv")
+names(imp1) <- tolower(names(imp1))
+imp1$weekend <- 0
+imp1$weekend[imp1$dow %in% c(1,7)] <- 1
+imp1$first5 <- 0
+imp1$first5[imp1$rep==6] <- 1
+imp1$first5[imp1$rep==7] <- 2
 
-nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
-meas7 <- subset(nhanes, id %in% unique(id)[nrep==7]) #individuals with all 7 days
+imp1$active <- 1
+imp1$active[imp1$modvigmin ==0] <- 0
+
+imp1 <- subset(imp1,rep!=7)
+m1 <- lm(modvigmin^.25~(weekend)+first5,data=imp1)
+wbar <- mean((imp1$modvigmin[imp1$rep <= 5])^.25)
+w1 <- imp1$modvigmin^.25
+what <- predict(m1)
+w <- (1/what)*w1*wbar
+imp1$modvigmin2 <- w
+
+nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
+meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
+
+#meas7$Tstar <- rep(colMeans(r[,21:7938]),each=6) # is from 
+#meas7$std <- apply(r[,21:7938],2,sd)
+
+
+meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)),] #remove NAs for waist
+
+#Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin)))$m)^.25
+#Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin2)))$m)
+
 
 
 models <- "
 data{
-  int<lower=0> N; //number of individuals
-  int<lower=0> k; // number of obs per individual
-  int<lower=0> n2; //total number of non-zero obs
-  //real<lower=0> y[N];
-  vector[k] y[N];
-  vector[n2] y2;
-  //real<lower=0> age[N];
-  //int<lower=0> gender[N];
-  int p;
-  matrix[N,p] X;
-  int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
-  matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
-  real nu;
-  matrix[2,2] D;
+int<lower=0> N; //number of individuals
+vector[N] Tstar; // usual ^ 1/4
+vector[N] sdT;// vector of standard deviation parameters of Tstar 
+vector[7] MetS[N]; //7xN matrix of MetS data
+
+//real waist[N];
+//real lglu[N];
+//real ltri[N];
+//real bps[N];
+//real ldl[N];
+//real hdl[N];
+//real bpd[N];
+//real<lower=0> age[N];
+//int<lower=0> gender[N];
+
 }
 transformed data{
-  vector[2] zeros;
-  zeros = rep_vector(0,2);
+//vector[2] zeros;
+//zeros = rep_vector(0,2);
 }
 parameters{
-//  real gamma0;
-//    real gamma1;
-//real gamma2;
-vector[p] beta;
-//real beta1;
-//real beta2;
-//cov_matrix[2] Sigma;
-real<lower=0> sigma2e;
-real<lower=-1,upper=1> rho;
-//matrix[N,2] b;
-//real mu2;
-//real<lower=0> sigma2;
-}
-transformed parameters{
-cov_matrix[k] ar1mat[N];
-//matrix[k,k] ar1mat[N];
+vector[4] alphaw;
+vector[4] alphag;
+vector[4] alphat;
+vector[4] alphabs;
+vector[3] alphal;
+vector[3] alphabd;
+vector[2] alphah;
 
 
-//for (m in 1:(k-1)) {
- // for (n in (m+1):k) {
-   // ar1mat[m,n] = sigma2e * pow(rho,abs(m-n));
-   // ar1mat[n,m] = ar1mat[m,n];
-  //}
-//}
+//real<lower=0> sigmawaist;
+//real<lower=0> sigmaglu;
+//real<lower=0> sigmatri;
+//real<lower=0> sigmabps;
+//real<lower=0> sigmabpd;
+//real<lower=0> sigmaldl;
+//real<lower=0> sigmahdl;
 
-for(i in 1:N){
-  for (m in 1:k){
-    ar1mat[i,m,m] = sigma2e;
-    //for(n in (m+1):k){
-     //ar1mat[i,m,n] = sigma2e*pow(rho,abs(m-n));
-     //ar1mat[i,n,m] = sigma2e*pow(rho,abs(m-n));
-    //}
-  }
-}
-//respecify ar1mat, nonzeropos, numnonzeros
-for(i in 1:N){
-  for (m in 1:(k-1)) {
-    for (n in (m+1):k) {
-      ar1mat[i,m,n] = sigma2e * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
-      ar1mat[i,n,m] = ar1mat[i,m,n];
-    }
-  }
+vector[N] appx;
+vector<lower=0>[7] sigmar;
+corr_matrix[7] Lr;
 }
 
-}
+
 model{
 
-//matrix[N,k] mu;
-vector[N] mu;
-//vector[N] p;
-  int pos;
-  pos = 1;
+//vector[N] muwaist;
+//vector[N] mulglu;
+//vector[N] multri;
+//vector[N] mubps;
+//vector[N] mubpd;
+//vector[N] muhdl;
+//vector[N] muldl;
 
- // for(i in 1:N){
-   // p[i] = Phi(gamma*X[i,]+b[i,1]);
-   // mu[i] = beta*X[i,] + b[i,2];
-   // for(j in 1:k){
-    //  if(y[i][j] == 0){
-        //increment_log_prob(bernoulli_log(0,p[i]));
-    //    target += bernoulli_lpmf(0|p[i]);
-    //  }
-    //  else{
-        //increment_log_prob(bernoulli_log(1,p[i]));
-      //  target += bernoulli_lpmf(1|p[i]) + normal_lpdf(y[i][j]|mu[i],sigma2e);
-     // }
-    //}
-  // target += multi_normal_lpdf(segment(y2,pos,numnonzeros[i])|rep_vector(mu[i],numnonzeros[i]),diag_matrix(rep_vector(sigma2e,numnonzeros[i])));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-  // pos = pos + numnonzeros[i];
- // }
+vector[7] mu[N]; //7 for number of regressions
+
+for(i in 1:N){
+//muwaist[i] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]-alphaw[3])));
+//mulglu[i] = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar[i]-alphag[3])));
+//multri[i] = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar[i]-alphat[3])));
+//mubps[i] = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar[i]-alphabs[3])));
+//muldl[i] = alphal[1] + alphal[2]*Tstar[i] + alphal[3]*pow(Tstar[i],2);
+//mubpd[i] = alphabd[1] + alphabd[2]*Tstar[i] + alphabd[3]*pow(Tstar[i],2);
+//muhdl[i] = alphah[1] + alphah[2]*Tstar[i];
+
+//waist[i] ~ normal(muwaist[i],sigmawaist);
+//lglu[i] ~ normal(mulglu[i],sigmaglu);
+//ltri[i] ~ normal(multri[i],sigmatri);
+//bps[i] ~ normal(mubps[i],sigmabps);
+//ldl[i] ~ normal(muldl[i],sigmaldl);
+//hdl[i] ~ normal(muhdl[i],sigmahdl);
+//bpd[i] ~ normal(mubpd[i],sigmabpd);
 
 
-//  for(j in 1:k){
-//    for(i in 1:N){
-//      mu[i,j] = beta0 + beta1*age[i] + beta2*gender[i] + b[i,2];
-//    }
-//  }
+mu[i,1] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]+appx[i]-alphaw[3])));
+mu[i,2] = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar[i]+appx[i]-alphag[3])));
+mu[i,3] = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar[i]+appx[i]-alphat[3])));
+mu[i,4] = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar[i]+appx[i]-alphabs[3])));
+mu[i,5] = alphal[1] + alphal[2]*(Tstar[i]+appx[i]) + alphal[3]*pow(Tstar[i]+appx[i],2);
+mu[i,6] = alphabd[1] + alphabd[2]*(Tstar[i]+appx[i]) + alphabd[3]*pow(Tstar[i]+appx[i],2);
+mu[i,7] = alphah[1] + alphah[2]*(Tstar[i]+appx[i]);
 
-// for(i in 1:N){
-    //y[i] ~ multi_normal(row(mu,i),ar1mat);
-    //b[i] ~ multi_normal(zeros,Sigma);
- // }
+MetS[i] ~ multi_normal(mu[i],diag_matrix(sigmar)*Lr*diag_matrix(sigmar));
 
-//would need to change dimension of mu
-  for(i in 1:N){
-      mu[i] = X[i,]*beta;
-  }
 
-// need to define ind, change y--so it only includes non-zeros
-
-  for(i in 1:N){
-    if(numnonzeros[i]>1){
-    segment(y2,pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //segment(y[i],pos,numnonzeros[i]) ~ multi_normal(rep_vector(mu[i],numnonzeros[i]),block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //y[i] ~ multi_normal(rep_vector(mu[i],7),diag_matrix(rep_vector(sigma2e,7)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
-    //segment(y2,pos,k) ~ multi_normal(rep_vector(mu[i],k),ar1mat[i]);//diag_matrix(rep_vector(sigma2e,k)));//block(ar1mat[i],1,1,numnonzeros[i],numnonzeros[i]));
 }
-    pos = pos + numnonzeros[i];
 
- //   }
-  }
+//muwaist = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*((Tstar+appx-alphaw[3])));
+//mulglu = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar+appx-alphag[3])));
+//multri = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar+appx-alphat[3])));
+//mubps = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar+appx-alphabs[3])));
+//muldl = alphal[1] + alphal[2]*(Tstar+appx) + alphal[3]*pow(Tstar+appx,2);
+//mubpd = alphabd[1] + alphabd[2]*(Tstar+appx) + alphabd[3]*pow(Tstar+appx,2);
+//muhdl = alphah[1] + alphah[2]*(Tstar+appx);
+
+appx ~ normal(0,sdT);
+
+//sigmawaist ~ cauchy(0,1);
+//sigmaglu ~ cauchy(0,1);
+//sigmatri ~ cauchy(0,1);
+//sigmabps ~ cauchy(0,1);
+//sigmabpd ~ cauchy(0,1);
+//sigmaldl ~ cauchy(0,1);
+//sigmahdl ~ cauchy(0,1);
 
 
-//mu2 ~ normal(0,1000);
-//sigma2 ~ inv_gamma(1,1);
-//  rho ~ uniform(-1,1);
-  sigma2e ~ inv_gamma(1,1);
- beta ~ normal(0,100);
-  //beta1 ~ normal(0,100);
-  //beta2 ~ normal(0,100);
-  //gamma0 ~ normal(0,100);
-  //gamma1 ~ normal(0,100);
-  //gamma2 ~ normal(0,100);
-  //Sigma ~ inv_wishart(nu,D);
+alphaw ~ normal(0,100);
+alphag ~ normal(0,100);
+alphat ~ normal(0,100);
+alphabs ~ normal(0,100);
+alphal ~ normal(0,100);
+alphabd ~ normal(0,100);
+alphah ~ normal(0,100);
+
+sigmar ~ cauchy(0,1);
+Lr ~ lkj_corr(1.0);
 }
 "
 
-ym <- melt(meas7[,c("modvigmin","rep","id")],id.vars=c("id","rep"))
-yc <- cast(ym,id+variable~rep)
-nonzeros <- (meas7 %>% group_by(id) %>% summarise(n=sum(active)))$n
-a1=meas7$rep[meas7$active==1]
-a2=cumsum(nonzeros)
+waist <- meas7$waist[!duplicated(meas7$id)]
+lglu <- log(meas7$glu[!duplicated(meas7$id)])
+ltri <- log(meas7$tri[!duplicated(meas7$id)])
+bps <- (meas7$bps[!duplicated(meas7$id)])
+ldl <- meas7$ldl[!duplicated(meas7$id)]
+bpd <- meas7$bpd[!duplicated(meas7$id)]
+hdl <- meas7$hdl[!duplicated(meas7$id)]
 
-nonzeropos <- matrix(0,ncol=length(unique(meas7$id)),nrow=7)
-nonzeropos[,1] <- a1[1:nonzeros[1]]
-for(i in 2:ncol(nonzeropos)){
-    temp <- a1[(a2[i-1]+1):a2[i]]
-    if(length(temp)<7){
-      n0 <- 7-length(temp)
-      temp <- c(temp,rep(0,n0))
-    }
-    nonzeropos[,i] <- temp
-}
+Tstar <- meas7$Tstar[!duplicated(meas7$id)]
+sdT <- meas7$std[!duplicated(meas7$id)]
+MetS <- t(cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
-x <- model.matrix(~age+sex+as.factor(race)+weekend+first5,data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
 
-dat=list(y=(yc[,3:9])^(1/4),  N      = length(unique(meas7$id)),
-         k      = 7, age= meas7$age[!duplicated(meas7$id)],
-         gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
-         numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
-         y2=(meas7$modvigmin[meas7$modvigmin>0])^(1/4),n2=sum(meas7$modvigmin>0),
-         X=x,p=ncol(x)
-         #y2=(meas7$modvigmin)^(1/4),n2=length(meas7$modvigmin)
+dat=list(N      = length(unique(meas7$id)),
+         #age= meas7$age[!duplicated(meas7$id)],
+         #gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
+         Tstar=Tstar$x,sdT=sdT$x,MetS=MetS
 )
- 
+
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","sigma2e"),
-                       iter=200,chains=1,init=list(sigma2e=1))
-summary(rs)
-save(rs,file="stanout2.RData")
+start1 <- list(alphag=c(0.1642,3.4081,1.4433,4.7228),
+               alphaw=c(10.445,   3.230,   2.033, 101.517 ),
+               alphat=c(0.2805, 4.4733, 1.8297, 4.9261 ),
+               alphabs=c( 18.388,   4.602 ,  1.389, 137.256 ))
+start2 <- list(alphag=c(0.1242,4.4081,1.1433,3.7228),
+               alphaw=c(8.445,   2.230,   1.033, 80.517 ),
+               alphat=c(0.1805, 3.4733, 1.1297, 3.9261 ),
+               alphabs=c( 12.388,   3.602 ,  1.189, 120.256 ))
+start3 <- list(alphag=c(0.3642,5.4081,1.9433,5.7228),
+               alphaw=c(11.445,   4.230,   2.933, 111.517 ),
+               alphat=c(0.3805, 5.4733, 2.8297,5.9261 ),
+               alphabs=c( 19.388,   5.602 ,  2.389, 147.256 ))
+start4 <- list(alphag=c(0.2642,2.4081,2.4433,5.7228),
+               alphaw=c(9.445,   4.230,   1.033, 121.517 ),
+               alphat=c(0.2205, 6.4733, 2.8297, 5.9261 ),
+               alphabs=c( 28.388,   3.602 ,  2.389, 157.256 ))
 
+ms <- stan_model(model_code=models)
+rs <- sampling(ms,dat,c("alphaw",
+                        "alphag","alphat","alphal",
+                        "alphabs","alphabd",
+                        "alphah",
+                        "Lr","sigmar"
+),
+iter=1000,chains=4,init=list(start1,start2,start3,start4),
+control=list(adapt_delta=0.99,max_treedepth=15))
+#summary(rs)
+save(rs,file="stanout_temp.RData")
