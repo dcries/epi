@@ -192,7 +192,7 @@ samp <- sample(1:length(unique(meas7$id)),1000)
 dat=list(N      = length(samp),
          #age= meas7$age[!duplicated(meas7$id)],
          #gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
-         Tstar=Tstar$x[samp],sdT=sdT$x[samp],MetS=MetS[samp]
+         Tstar=Tstar$x[samp],sdT=sdT$x[samp],MetS=MetS[samp,]
 )
 
 rstan_options(auto_write = TRUE)
