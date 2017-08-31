@@ -146,25 +146,7 @@ appx ~ normal(0,sdT);
 //sigmahdl ~ cauchy(0,1);
 
 
-alphaw[1] ~ normal(10,4);
-alphaw[2] ~ normal(3,.5);
-alphaw[3] ~ normal(2,.3);
-alphaw[4] ~ normal(100,5);
 
-alphabs[1] ~ normal(18,3);
-alphabs[2] ~ normal(4,.45);
-alphabs[3] ~ normal(1.3,.2);
-alphabs[4] ~ normal(137,5);
-
-alphag[1] ~ normal(0.16,.053);
-alphag[2] ~ normal(3.6,.5);
-alphag[3] ~ normal(1.4,.25);
-alphag[4] ~ normal(4.7,1);
-
-alphat[1] ~ normal(.27,.06);
-alphat[2] ~ normal(4.88,.5);
-alphat[3] ~ normal(1.81,.2);
-alphat[4] ~ normal(4.92,.5);
 
 
 alphal ~ normal(0,100);
@@ -226,4 +208,4 @@ rs <- sampling(ms,dat,c("alphaw",
 iter=2000,chains=2,init=list(start1,start2),
 control=list(adapt_delta=0.99,max_treedepth=15))
 #summary(rs)
-save(rs,file="stanout_temp_red.RData")
+save(rs,file="stanout_temp_red2.RData")
