@@ -166,10 +166,25 @@ appx ~ normal(0,sdT);
 //alphat[3] ~ normal(1.81,.2);
 //alphat[4] ~ normal(4.92,.5);
 
-alphaw ~ uniform(-200,200);
-alphag ~ uniform(-200,200);
-alphat ~ uniform(-200,200);
-alphabs ~ uniform(-200,200);
+alphaw[1] ~ normal(10,8);
+alphaw[2] ~ normal(3,1.5);
+alphaw[3] ~ normal(2,1);
+alphaw[4] ~ normal(100,15);
+
+alphabs[1] ~ normal(18,10);
+alphabs[2] ~ normal(4,2);
+alphabs[3] ~ normal(1.3,1);
+alphabs[4] ~ normal(137,20);
+
+alphag[1] ~ normal(0.16,.15);
+alphag[2] ~ normal(3.6,2);
+alphag[3] ~ normal(1.4,1);
+alphag[4] ~ normal(4.7,3);
+
+alphat[1] ~ normal(.27,.2);
+alphat[2] ~ normal(4.88,2);
+alphat[3] ~ normal(1.81,1);
+alphat[4] ~ normal(4.92,2);
 
 alphal ~ normal(0,100);
 alphabd ~ normal(0,100);
