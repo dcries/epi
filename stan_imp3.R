@@ -17,12 +17,17 @@ imp1$active <- 1
 imp1$active[imp1$modvigmin ==0] <- 0
 
 imp1 <- subset(imp1,rep!=7)
-m1 <- lm(modvigmin^.25~(weekend)+first5,data=imp1)
-wbar <- mean((imp1$modvigmin[imp1$rep <= 5])^.25)
-w1 <- imp1$modvigmin^.25
+# m1 <- lm(modvigmin^.25~(weekend)+first5,data=nhanes)
+# wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5])^.25)
+# w1 <- nhanes$modvigmin^.25
+# what <- predict(m1)
+# w <- (1/what)*w1*wbar
+m1 <- lm(modvigmin~(weekend)+first5,data=nhanes)
+wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5]))
+w1 <- nhanes$modvigmin
 what <- predict(m1)
 w <- (1/what)*w1*wbar
-imp1$modvigmin2 <- w
+nhanes$modvigmin2 <- w^.25
 
 nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
