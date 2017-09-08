@@ -119,8 +119,8 @@ for(i in 1:N){
   for(i in 1:N){
     p[i] = Phi(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
-    T[i] = pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0);
-    Tstar[i] = p[i]*pow(T[i],0.25);
+    T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
+    Tstar[i] = pow(T[i],0.25);
   }
 }
 model{
@@ -265,5 +265,5 @@ rs <- sampling(ms,dat,c("beta","gamma","sigmae","L","sigmab","rho","Tstar"#,"alp
                         ),
                        iter=4000)
 summary(rs)
-save(rs,file="stanout.RData")
+save(rs,file="/ptmp/dcries/stanout.RData")
 
