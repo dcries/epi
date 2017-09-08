@@ -27,7 +27,7 @@ wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5]))
 w1 <- nhanes$modvigmin
 what <- predict(m1)
 w <- (1/what)*w1*wbar
-nhanes$modvigmin2 <- w^.25
+imp1$modvigmin2 <- w^.25
 nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 
