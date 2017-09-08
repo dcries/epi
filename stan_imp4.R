@@ -22,9 +22,9 @@ imp1 <- subset(imp1,rep!=7)
 # w1 <- nhanes$modvigmin^.25
 # what <- predict(m1)
 # w <- (1/what)*w1*wbar
-m1 <- lm(modvigmin~(weekend)+first5,data=nhanes)
-wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5]))
-w1 <- nhanes$modvigmin
+m1 <- lm(modvigmin~(weekend)+first5,data=imp1)
+wbar <- mean((imp1$modvigmin[imp1$rep <= 5]))
+w1 <- imp1$modvigmin
 what <- predict(m1)
 w <- (1/what)*w1*wbar
 imp1$modvigmin2 <- w^.25
