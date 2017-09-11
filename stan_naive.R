@@ -130,7 +130,6 @@ MetS[i] ~ multi_normal(mu[i],diag_matrix(sigmar)*Lr*diag_matrix(sigmar));
 //mubpd = alphabd[1] + alphabd[2]*(Tstar+appx) + alphabd[3]*pow(Tstar+appx,2);
 //muhdl = alphah[1] + alphah[2]*(Tstar+appx);
 
-appx ~ normal(0,sdT);
 
 //sigmawaist ~ cauchy(0,1);
 //sigmaglu ~ cauchy(0,1);
