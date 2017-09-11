@@ -2,7 +2,7 @@ library(rstan)
 library(dplyr)
 setwd("/home/dcries")
 
-imp1 <- read.csv("epi/nhanes_complete.csv")
+imp1 <- read.csv("epi/NHANES_accel_imp1.csv")
 names(imp1) <- tolower(names(imp1))
 imp1$weekend <- 0
 imp1$weekend[imp1$dow %in% c(1,7)] <- 1
@@ -238,4 +238,4 @@ rs <- sampling(ms,dat,c("alphaw",
 iter=2000,chains=4,init=list(start1,start2,start3,start4),
 control=list(adapt_delta=0.99,max_treedepth=15))
 #summary(rs)
-save(rs,file="/ptmp/dcries/stanout_naive.RData")
+save(rs,file="/ptmp/dcries/stanout_naive_imp1.RData")
