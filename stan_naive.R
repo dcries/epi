@@ -2,7 +2,7 @@ library(rstan)
 library(dplyr)
 setwd("/home/dcries")
 
-imp1 <- read.csv("/epi/nhanes_complete.csv")
+imp1 <- read.csv("epi/nhanes_complete.csv")
 names(imp1) <- tolower(names(imp1))
 imp1$weekend <- 0
 imp1$weekend[imp1$dow %in% c(1,7)] <- 1
