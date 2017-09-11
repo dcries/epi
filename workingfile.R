@@ -9,6 +9,7 @@ setwd("C:\\Users\\dcries\\github\\epi")
 nhanes <- read.csv("NHANES_complete.csv")
 
 names(nhanes) <- tolower(names(nhanes))
+nhanes$a <- 1;nhanes$a[nhanes$age>=35] <- 2;nhanes$a[nhanes$age>=50] <- 3;nhanes$a[nhanes$age>=65] <- 4
 nhanes$weekend <- 0
 nhanes$weekend[nhanes$dow %in% c(1,7)] <- 1
 nhanes$first5 <- 0
@@ -44,6 +45,18 @@ a1 %>% group_by(g,a) %>% summarise(m=mean(s))
 a1 %>% group_by(a,r) %>% summarise(m=mean(s))
 
 a2 <- a1 %>% group_by(age) %>% summarise(m=mean(s))
+a3 <- a1 %>% group_by(age,r) %>% summarise(m=mean(s))
+
+qplot(data=a2,x=age,y=m)  + geom_smooth()
+qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
+
+
+m1 <- nls(m~L2+L/(1+exp(-k*(age-x0))),start=list(L=.6,k=2,x0=52,L2=.7),data=a2)
+num <- 18:85
+eval <- coef(m1)["L2"]+coef(m1)["L"]/(1+exp(-coef(m1)["k"]*(num-coef(m1)["x0"])))
+qplot(data=a2,x=age,y=m)  + geom_smooth() + geom_line(aes(x=num,y=eval),colour="red")
+
+
 m2 <- lm(m~age,data=a2)
 plot(predict(m2),resid(m2));abline(a=0,b=0)
 plot(a2$age,a2$m);lines(a2$age,predict(m2),col="red")
@@ -58,3 +71,13 @@ m1c <- lme(w~1,data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="M
 mm <- lme(w~1,data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 mf <- lme(w~1,data=subset(nhanes,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
+mr1 <- lme(w~1,data=subset(nhanes,race==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr2 <- lme(w~1,data=subset(nhanes,race==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr3 <- lme(w~1,data=subset(nhanes,race==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr4 <- lme(w~1,data=subset(nhanes,race==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr5 <- lme(w~1,data=subset(nhanes,race==5),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+
+ma1 <- lme(w~1,data=subset(nhanes,a==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma2 <- lme(w~1,data=subset(nhanes,a==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma3 <- lme(w~1,data=subset(nhanes,a==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma4 <- lme(w~1,data=subset(nhanes,a==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
