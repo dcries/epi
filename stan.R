@@ -219,10 +219,10 @@ b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(.7,1);
-  theta[2] ~ normal(.15,.5);
-  theta[3] ~ normal(55,5);
-  theta[4] ~ normal(.7,1);
+  theta[1] ~ normal(.7,.1);
+  theta[2] ~ normal(.15,.01);
+  theta[3] ~ normal(55,1);
+  theta[4] ~ normal(.7,.1);
 }
 "
 
@@ -279,7 +279,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alph
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
                         ),init=list(start1,start2,start3,start4),
-                       iter=4000)
+                       iter=200)
 summary(rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 

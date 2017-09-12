@@ -29,8 +29,39 @@ d = nhanes %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],tr
 #-------------
 
 a=nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^.25),
-        g=sex[1],r=race[1],age=age[1],n=length(sex),s=(n-1)*var(modvigmin^.25))
+        g=sex[1],r=race[1],age=age[1],n=length(sex),s=(n-1)*var(modvigmin^.25),
+        glu=glu[1],tri=tri[1],waist=waist[1],bps=bps[1],bpd=bpd[1],ldl=ldl[1],hdl=hdl[1],a=a[1])
 
+#for mean function needing to split parameters by gender, etc
+qplot(data=a,x=m,y=waist,group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=waist,group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=waist,group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=log(tri),group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=log(tri),group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=log(tri),group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=log(glu),group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=log(glu),group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=log(glu),group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=bps,group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=bps,group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=bps,group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=bpd,group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=bpd,group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=bpd,group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=ldl,group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=ldl,group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=ldl,group=as.factor(a)) +geom_smooth()
+
+qplot(data=a,x=m,y=hdl,group=as.factor(g)) +geom_smooth()
+qplot(data=a,x=m,y=hdl,group=as.factor(r)) +geom_smooth()
+qplot(data=a,x=m,y=hdl,group=as.factor(a)) +geom_smooth()
+
+#for variance
 a1 <- a[a$n>1,]
 a1$a <- 1;a1$a[a1$age>=35] <- 2;a1$a[a1$age>=50] <- 3;a1$a[a1$age>=65] <- 4
 # sum(a1$s[a1$g==1])/sum(a1$g==1);sum(a1$s[a1$g==2])/sum(a1$g==2)
@@ -47,6 +78,7 @@ a1 %>% group_by(a,r) %>% summarise(m=mean(s))
 a2 <- a1 %>% group_by(age) %>% summarise(m=mean(s))
 a3 <- a1 %>% group_by(age,r) %>% summarise(m=mean(s))
 
+#plot age versus avg variance, appears to be s shape curve
 qplot(data=a2,x=age,y=m)  + geom_smooth()
 qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
 

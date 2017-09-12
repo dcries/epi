@@ -80,7 +80,7 @@ vector[pk] beta;
 //cov_matrix[2] Sigma;
 corr_matrix[2] L;
 vector<lower=0>[2] sigmab;
-real<lower=0> sigmae;
+//real<lower=0> sigmae;
 real<lower=-1,upper=1> rho;
 matrix[N,2] b;
 //real<lower=0> sigma2waist;
@@ -90,6 +90,7 @@ matrix[N,2] b;
 //real<lower=0> sigma2bpd;
 //real<lower=0> sigma2ldl;
 //real<lower=0> sigma2hdl;
+  vector[4] theta;
 
 
 }
@@ -99,18 +100,22 @@ vector[N] Tstar; // usual ^ 1/4
 vector[N] T; //usual
 vector[N] mu;
 vector[N] p;
+vector<lower=0>[N] sigmae;
 
 for(i in 1:N){
+  sigmae[i] = theta[4]-theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
 for (m in 1:k){
-ar1mat[i,m,m] = pow(sigmae,2.0);
+//ar1mat[i,m,m] = pow(sigmae,2.0);
+ar1mat[i,m,m] = sigmae[i];
 }
 }
 //respecify ar1mat, nonzeropos, numnonzeros
 for(i in 1:N){
 for (m in 1:(k-1)) {
 for (n in (m+1):k) {
-ar1mat[i,m,n] = pow(sigmae,2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
-ar1mat[i,n,m] = ar1mat[i,m,n];
+      //ar1mat[i,m,n] = pow(sigmae[i],2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,n,m] = ar1mat[i,m,n];
 }
 }
 }
@@ -118,7 +123,8 @@ ar1mat[i,n,m] = ar1mat[i,m,n];
 for(i in 1:N){
 p[i] = Phi(X[i,]*gamma+b[i,1]);
 mu[i] = X[i,]*beta + b[i,2];
-T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
+    //T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
+    T[i] = p[i]*(pow(mu[i],4.0) + 6*sigmae[i]*pow(mu[i],2.0));
 Tstar[i] = pow(T[i],0.25);
 }
 }
@@ -186,7 +192,7 @@ pos = pos + numnonzeros[i];
 
 
 //  rho ~ uniform(-1,1);
-sigmae ~ cauchy(0,1);
+//sigmae ~ cauchy(0,1);
 //sigma2waist ~ inv_gamma(1,1);
 //sigma2glu ~ inv_gamma(1,1);
 //sigma2tri ~ inv_gamma(1,1);
@@ -211,6 +217,11 @@ gamma ~ normal(0,100);
 //Sigma ~ inv_wishart(nu,D);
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
+
+  theta[1] ~ normal(.7,1);
+  theta[2] ~ normal(.15,.5);
+  theta[3] ~ normal(55,5);
+  theta[4] ~ normal(.7,1);
 }
 "
 
@@ -254,14 +265,19 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
+start1 <- list(theta=c(.72,.14,55.90,.69))
+start2 <- list(theta=c(.62,.08,45.90,.49))
+start3 <- list(theta=c(.82,.18,65.90,1.69))
+start4 <- list(theta=c(.82,.10,50.90,.99))
+
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigmae","L","sigmab","rho","Tstar"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-),
+),init=list(start1,start2,start3,start4),
 iter=4000)
 summary(rs)
 save(rs,file="/pmtp/dcries/stanout_imp1.RData")
