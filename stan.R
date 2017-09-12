@@ -219,10 +219,10 @@ b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(.7,.1);
-  theta[2] ~ normal(.15,.1);
-  theta[3] ~ normal(55,1);
-  theta[4] ~ normal(.7,.1);
+  theta[1] ~ normal(.7,.01);
+  theta[2] ~ normal(.15,.01);
+  theta[3] ~ normal(55,.1);
+  theta[4] ~ normal(.7,.01);
 }
 "
 
