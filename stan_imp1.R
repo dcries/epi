@@ -57,6 +57,8 @@ int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individua
 matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
 real nu;
 matrix[2,2] D;
+  vector[4] theta;
+
 }
 transformed data{
 vector[2] zeros;
@@ -90,7 +92,7 @@ matrix[N,2] b;
 //real<lower=0> sigma2bpd;
 //real<lower=0> sigma2ldl;
 //real<lower=0> sigma2hdl;
-  vector[4] theta;
+ // vector[4] theta;
 
 
 }
@@ -271,7 +273,7 @@ start3 <- list(theta=c(.82,.18,65.90,1.69))
 start4 <- list(theta=c(.82,.10,50.90,.99))
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
