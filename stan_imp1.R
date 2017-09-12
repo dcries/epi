@@ -260,7 +260,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),theta=c(0.1092,  0.1924, 58.0150,  0.1735),
+         X=x,pk=ncol(x),theta=c(.175,.161,56.67,.209),
          hdl=hdl,bpd=bpd
 )
 
@@ -280,7 +280,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
 ),
-iter=200)
+iter=1000)
 summary(rs)
 save(rs,file="/pmtp/dcries/stanout_imp1.RData")
 

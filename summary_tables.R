@@ -58,3 +58,7 @@ varmem <- mem[,74:80]
 
 colMeans(varnaive)
 colMeans(varmem)
+
+
+
+#--------------------

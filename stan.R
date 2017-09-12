@@ -219,10 +219,10 @@ b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(.11,.01);
-  theta[2] ~ normal(.19,.01);
-  theta[3] ~ normal(58,.1);
-  theta[4] ~ normal(.17,.01);
+  theta[1] ~ normal(.175,.1);
+  theta[2] ~ normal(.161,.1);
+  theta[3] ~ normal(56.6,1);
+  theta[4] ~ normal(.209,.1);
 }
 "
 
@@ -266,10 +266,10 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-start1 <- list(theta=c(.11,.19,58.01,.17))
-start2 <- list(theta=c(.08,.15,57,.14))
-start3 <- list(theta=c(.14,.22,59,1.2))
-start4 <- list(theta=c(.12,.17,58.5,.15))
+start1 <- list(theta=c(.175,.161,56.67,.209))
+start2 <- list(theta=c(.160,.150,55.67,.19))
+start3 <- list(theta=c(.19,.18,58,.23))
+start4 <- list(theta=c(.18,.15,56.5,.19))
 
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alphaw",
@@ -279,7 +279,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alph
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
                         ),init=list(start1,start2,start3,start4),
-                       iter=200)
+                       iter=2000)
 summary(rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 
