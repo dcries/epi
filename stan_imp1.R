@@ -218,10 +218,10 @@ gamma ~ normal(0,100);
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(.7,1);
-  theta[2] ~ normal(.15,.5);
-  theta[3] ~ normal(55,5);
-  theta[4] ~ normal(.7,1);
+  //theta[1] ~ normal(.7,1);
+  //theta[2] ~ normal(.15,.5);
+  //theta[3] ~ normal(55,5);
+  //theta[4] ~ normal(.7,1);
 }
 "
 
@@ -258,7 +258,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),
+         X=x,pk=ncol(x),theta=c(.72,.14,55.90,.69)
          hdl=hdl,bpd=bpd
 )
 
@@ -277,8 +277,8 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alph
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-),init=list(start1,start2,start3,start4),
-iter=4000)
+),
+iter=200)
 summary(rs)
 save(rs,file="/pmtp/dcries/stanout_imp1.RData")
 
