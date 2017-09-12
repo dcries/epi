@@ -51,7 +51,7 @@ matrix[N,pk] X;
 //real ldl[N];
 //real hdl[N];
 //real bpd[N];
-//real<lower=0> age[N];
+real<lower=0> age[N];
 //int<lower=0> gender[N];
 int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
 matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
