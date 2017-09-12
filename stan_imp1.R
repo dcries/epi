@@ -103,7 +103,7 @@ vector[N] p;
 vector<lower=0>[N] sigmae;
 
 for(i in 1:N){
-  sigmae[i] = theta[4]-theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
 for (m in 1:k){
 //ar1mat[i,m,m] = pow(sigmae,2.0);
 ar1mat[i,m,m] = sigmae[i];

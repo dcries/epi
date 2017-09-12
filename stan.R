@@ -104,7 +104,7 @@ transformed parameters{
 
 
 for(i in 1:N){
-  sigmae[i] = theta[4]-theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
   for (m in 1:k){
     ar1mat[i,m,m] = sigmae[i];//pow(sigmae,2.0);
     //ar1mat[i,m,m] = pow(sigmae,2.0);
@@ -220,7 +220,7 @@ L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
   theta[1] ~ normal(.7,.1);
-  theta[2] ~ normal(.15,.01);
+  theta[2] ~ normal(.15,.1);
   theta[3] ~ normal(55,1);
   theta[4] ~ normal(.7,.1);
 }
