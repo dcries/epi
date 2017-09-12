@@ -219,10 +219,10 @@ b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(.7,.01);
-  theta[2] ~ normal(.15,.01);
-  theta[3] ~ normal(55,.1);
-  theta[4] ~ normal(.7,.01);
+  theta[1] ~ normal(.11,.01);
+  theta[2] ~ normal(.19,.01);
+  theta[3] ~ normal(58,.1);
+  theta[4] ~ normal(.17,.01);
 }
 "
 
@@ -266,10 +266,10 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-start1 <- list(theta=c(.72,.14,55.90,.69))
-start2 <- list(theta=c(.62,.08,45.90,.49))
-start3 <- list(theta=c(.82,.18,65.90,1.69))
-start4 <- list(theta=c(.82,.10,50.90,.99))
+start1 <- list(theta=c(.11,.19,58.01,.17))
+start2 <- list(theta=c(.08,.15,57,.14))
+start3 <- list(theta=c(.14,.22,59,1.2))
+start4 <- list(theta=c(.12,.17,58.5,.15))
 
 ms <- stan_model(model_code=models)
 rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alphaw",

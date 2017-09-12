@@ -28,8 +28,8 @@ d = nhanes %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],tr
 
 #-------------
 
-a=nhanes %>% group_by(id) %>% summarise(m=mean(modvigmin^.25),
-        g=sex[1],r=race[1],age=age[1],n=length(sex),s=(n-1)*var(modvigmin^.25),
+a=nhanes %>% group_by(id) %>% summarise(m=mean(w),
+        g=sex[1],r=race[1],age=age[1],n=length(sex),s=(n-1)*var(w),
         glu=glu[1],tri=tri[1],waist=waist[1],bps=bps[1],bpd=bpd[1],ldl=ldl[1],hdl=hdl[1],a=a[1])
 
 #for mean function needing to split parameters by gender, etc

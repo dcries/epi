@@ -260,7 +260,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),theta=c(.72,.14,55.90,.69),
+         X=x,pk=ncol(x),theta=c(0.1092,  0.1924, 58.0150,  0.1735),
          hdl=hdl,bpd=bpd
 )
 
