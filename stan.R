@@ -292,6 +292,6 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2hdl","sigma2bpd"
                         ),init=list(start1,start1,start1,start1),
                        iter=200)
-summary(rs)
+(rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 
