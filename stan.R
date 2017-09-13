@@ -58,17 +58,17 @@ data{
   matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
   real nu;
   matrix[2,2] D;
-  //vector[4] theta;
+  vector[4] theta;
 
 }
 transformed data{
   vector[2] zeros;
-  //vector<lower=0>[N] sigmae;
+  vector<lower=0>[N] sigmae;
 
   zeros = rep_vector(0,2);
-  //for(i in 1:N){
-  //  sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
-  //}
+  for(i in 1:N){
+    sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  }
 
 }
 parameters{
@@ -99,7 +99,7 @@ vector<lower=0>[2] sigmab;
   //real<lower=0> sigma2bpd;
   //real<lower=0> sigma2ldl;
   //real<lower=0> sigma2hdl;
-  vector[4] theta;
+  //vector[4] theta;
 
 }
 transformed parameters{
@@ -108,11 +108,11 @@ transformed parameters{
   vector[N] T; //usual
   vector[N] mu;
   vector[N] p;
-  vector<lower=0>[N] sigmae;
+  //vector<lower=0>[N] sigmae;
 
 
 for(i in 1:N){
-  sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
   for (m in 1:k){
     ar1mat[i,m,m] = sigmae[i];//pow(sigmae,2.0);
     //ar1mat[i,m,m] = pow(sigmae,2.0);
@@ -231,10 +231,10 @@ sigmab ~ cauchy(0,1);
   //theta[2] ~ normal(.161,.1);
  // theta[3] ~ normal(56.6,1);
   //theta[4] ~ normal(.209,.1);
-  theta[1] ~ uniform(.175,.176);
-  theta[2] ~ uniform(.16,.162);
-  theta[3] ~ uniform(56.6,56.7);
-  theta[4] ~ uniform(.20,.21);
+  //theta[1] ~ uniform(.175,.176);
+  //theta[2] ~ uniform(.16,.162);
+  //theta[3] ~ uniform(56.6,56.7);
+  //theta[4] ~ uniform(.20,.21);
 }
 "
 
@@ -290,7 +290,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-                        ),init=list(start1,start1,start1,start1),
+                        ),
                        iter=200)
 (rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
