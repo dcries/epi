@@ -114,8 +114,8 @@ qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
 #different values of rho
 m1c <- lme(w~1,data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
-mm <- lme(w~1,data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mf <- lme(w~1,data=subset(nhanes,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mm <- lme(w~age+as.factor(race),data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mf <- lme(w~age+as.factor(race),data=subset(nhanes,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
 mr1 <- lme(w~1,data=subset(nhanes,race==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 mr2 <- lme(w~1,data=subset(nhanes,race==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
