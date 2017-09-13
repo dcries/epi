@@ -271,7 +271,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
          X=x,pk=ncol(x),theta=c(.175,.161,56.67,.209),
-         hdl=hdl,bpd=bpd
+         hdl=hdl,bpd=bpd,cg=corrgroup
 )
 
 rstan_options(auto_write = TRUE)
