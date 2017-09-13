@@ -30,7 +30,8 @@ w <- (1/what)*w1*wbar
 imp1$modvigmin2 <- w^.25
 nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
-
+meas7$a <- 1;meas7$a[meas7$age>=35] <- 2;meas7$a[meas7$age>=50] <- 3;meas7$a[meas7$age>=65] <- 4
+meas7$corrg <- 1;meas7$corrg[meas7$race %in% c(1,2) & meas7$a != 4] <- 2;meas7$corrg[meas7$race %in% c(3:5) & meas7$a == 4] <- 3;meas7$corrg[meas7$race %in% c(1,2) & meas7$a == 4] <- 4;
 
 #meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
 
@@ -58,11 +59,17 @@ matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
 real nu;
 matrix[2,2] D;
   vector[4] theta;
+int cg[N]; //correlation group
 
 }
 transformed data{
 vector[2] zeros;
+vector<lower=0>[N] sigmae;
 zeros = rep_vector(0,2);
+
+  for(i in 1:N){
+    sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  }
 }
 parameters{
 vector[pk] gamma;
@@ -83,7 +90,9 @@ vector[pk] beta;
 corr_matrix[2] L;
 vector<lower=0>[2] sigmab;
 //real<lower=0> sigmae;
-real<lower=-1,upper=1> rho;
+//real<lower=-1,upper=1> rho;
+vector <lower=-1,upper=1>[4] rho;
+
 matrix[N,2] b;
 //real<lower=0> sigma2waist;
 //real<lower=0> sigma2glu;
@@ -102,10 +111,10 @@ vector[N] Tstar; // usual ^ 1/4
 vector[N] T; //usual
 vector[N] mu;
 vector[N] p;
-vector<lower=0>[N] sigmae;
+//vector<lower=0>[N] sigmae;
 
 for(i in 1:N){
-  sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+  //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
 for (m in 1:k){
 //ar1mat[i,m,m] = pow(sigmae,2.0);
 ar1mat[i,m,m] = sigmae[i];
@@ -116,7 +125,7 @@ for(i in 1:N){
 for (m in 1:(k-1)) {
 for (n in (m+1):k) {
       //ar1mat[i,m,n] = pow(sigmae[i],2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
-      ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho[cg[i]],nonzeropos[i,n]-nonzeropos[i,m]),0);
       ar1mat[i,n,m] = ar1mat[i,m,n];
 }
 }
@@ -253,6 +262,7 @@ bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- meas7$ldl[!duplicated(meas7$id)]
 hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
+corrgroup <- meas7$corrg[!duplicated(meas7$id)]
 
 
 dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
@@ -282,5 +292,5 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
 ),
 iter=1000)
 summary(rs)
-save(rs,file="/pmtp/dcries/stanout_imp1.RData")
+save(rs,file="/ptmp/dcries/stanout_imp1.RData")
 
