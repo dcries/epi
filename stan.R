@@ -58,7 +58,7 @@ data{
   matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
   real nu;
   matrix[2,2] D;
-  vector[4] theta;
+  //vector[4] theta;
 
 }
 transformed data{
