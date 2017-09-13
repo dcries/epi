@@ -67,7 +67,9 @@ transformed data{
 
   zeros = rep_vector(0,2);
   for(i in 1:N){
-    sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+    //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+    sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
+
   }
 
 }
@@ -271,7 +273,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),
+         X=x,pk=ncol(x), theta=c(.2662,-.00806,.0002099,-1.625e-06),
          hdl=hdl,bpd=bpd
 )
 
@@ -291,7 +293,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
                         ),
-                       iter=200)
+                       iter=1000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 
