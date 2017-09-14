@@ -116,20 +116,20 @@ qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
 # plot(a2$age,a2$m);lines(a2$age,predict(m3),col="red")
 
 #different values of rho
-m1c <- lme(w~1,data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+m1c <- lme(w~1,data=nhanes2,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
-mm <- lme(w~1,data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mf <- lme(w~age+as.factor(race),data=subset(nhanes,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mm <- lme(w~1,data=subset(nhanes2,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mf <- lme(w~age+as.factor(race),data=subset(nhanes2,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
-mr1 <- lme(w~1,data=subset(nhanes,race==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mr2 <- lme(w~1,data=subset(nhanes,race==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mr3 <- lme(w~1,data=subset(nhanes,race==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mr4 <- lme(w~1,data=subset(nhanes,race==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-mr5 <- lme(w~1,data=subset(nhanes,race==5),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr1 <- lme(w~1,data=subset(nhanes2,race==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr2 <- lme(w~1,data=subset(nhanes2,race==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr3 <- lme(w~1,data=subset(nhanes2,race==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr4 <- lme(w~1,data=subset(nhanes2,race==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mr5 <- lme(w~1,data=subset(nhanes2,race==5),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
-ma1 <- lme(w~1,data=subset(nhanes,a==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-ma2 <- lme(w~1,data=subset(nhanes,a==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-ma3 <- lme(w~1,data=subset(nhanes,a==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
-ma4 <- lme(w~1,data=subset(nhanes,a==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma1 <- lme(w~1,data=subset(nhanes2,a==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma2 <- lme(w~1,data=subset(nhanes2,a==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma3 <- lme(w~1,data=subset(nhanes2,a==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+ma4 <- lme(w~1,data=subset(nhanes2,a==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
 

@@ -137,7 +137,7 @@ for(i in 1:N){
 }
 
   for(i in 1:N){
-    p[i] = Phi(X[i,]*gamma+b[i,1]);
+    p[i] = inv_logit(X[i,]*gamma+b[i,1]);
     mu[i] = X[i,]*beta + b[i,2];
     //T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
     T[i] = p[i]*(pow(mu[i],4.0) + 6*sigmae[i]*pow(mu[i],2.0));
@@ -299,7 +299,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
                         ),
-                       iter=200)
+                       iter=2000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 
