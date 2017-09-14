@@ -112,7 +112,7 @@ vector[N] Tstar; // usual ^ 1/4
 vector[N] T; //usual
 vector[N] mu;
 vector[N] p;
-//vector<lower=0>[N] sigmae;
+vector<lower=0>[N] sigmae;
 
 for(i in 1:N){
   //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
