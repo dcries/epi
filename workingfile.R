@@ -24,7 +24,6 @@ w <- (1/what)*w1*wbar
 
 nhanes$w <- w^.25
 
-d = nhanes %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],tri=tri[1],bps=bps[1],bpd=bpd[1],hdl=hdl[1],ldl=ldl[1],n=length(w))
 
 #-------------
 a=nhanes %>% group_by(id) %>% summarise(m=mean(w),
@@ -61,20 +60,25 @@ qplot(data=a,x=m,y=hdl,group=as.factor(r)) +geom_smooth()
 qplot(data=a,x=m,y=hdl,group=as.factor(a)) +geom_smooth()
 
 #for variance
-mfull <- lme(w~age+as.factor(race)+as.factor(sex),data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="REML")
+nhanes2 <- subset(nhanes,w>0)
+d = nhanes2 %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],tri=tri[1],bps=bps[1],bpd=bpd[1],hdl=hdl[1],ldl=ldl[1],n=length(w))
+
+mfull <- lme(w~age+as.factor(race)+as.factor(sex),data=nhanes2,random=~1|id,correlation=corAR1(form=~1|id),method="REML")
 rf <- NULL
 rfs <- unlist(ranef(mfull))
-for(i in 1:length(unique(nhanes$id))){
+for(i in 1:length(unique(nhanes2$id))){
   rf <- c(rf,rep(rfs[i],d$n[i]))
 }
-nhanes$w2 <- nhanes$w - predict(mfull) - rf
-agevar=nhanes %>% group_by(age) %>% summarise(v=var(w2))
+nhanes2$w2 <- nhanes2$w - predict(mfull) - rf
+agevar=nhanes2 %>% group_by(age) %>% summarise(v=var(w2))
 
 qplot(data=agevar,x=age,y=v)  + geom_smooth()
 
-m1 <- nls(v~L2+L/(1+exp(-k*(age-x0))),start=list(L=.21,k=2,x0=55,L2=.24),data=agevar)
+m1 <- lm(v~age+I(age^2)+I(age^3),data=agevar)
 num <- 18:85
-eval <- coef(m1)["L2"]+coef(m1)["L"]/(1+exp(-coef(m1)["k"]*(num-coef(m1)["x0"])))
+eval <- predict(m1)
+# m1 <- nls(v~L2+L/(1+exp(-k*(age-x0))),start=list(L=.21,k=2,x0=55,L2=.24),data=agevar)
+# eval <- coef(m1)["L2"]+coef(m1)["L"]/(1+exp(-coef(m1)["k"]*(num-coef(m1)["x0"])))
 qplot(data=agevar,x=age,y=v)  + geom_smooth() + geom_line(aes(x=num,y=eval),colour="red")
 
 
@@ -114,7 +118,7 @@ qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
 #different values of rho
 m1c <- lme(w~1,data=nhanes,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
-mm <- lme(w~age+as.factor(race),data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mm <- lme(w~1,data=subset(nhanes,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 mf <- lme(w~age+as.factor(race),data=subset(nhanes,sex==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
 mr1 <- lme(w~1,data=subset(nhanes,race==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")

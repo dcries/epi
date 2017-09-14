@@ -31,6 +31,8 @@ nhanes$modvigmin2 <- w^.25
 
 nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
+meas7$a <- 1;meas7$a[meas7$age>=35] <- 2;meas7$a[meas7$age>=50] <- 3;meas7$a[meas7$age>=65] <- 4
+meas7$corrg <- 1;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a != 4] <- 2;meas7$corrg[meas7$race %in% c(3:4) & meas7$a == 4] <- 3;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a == 4] <- 4;
 
 
 #meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
@@ -59,6 +61,7 @@ data{
   real nu;
   matrix[2,2] D;
   vector[4] theta;
+  int cg[N]; //correlation group
 
 }
 transformed data{
@@ -92,7 +95,9 @@ parameters{
 corr_matrix[2] L;
 vector<lower=0>[2] sigmab;
   //real<lower=0> sigmae;
-  real<lower=-1,upper=1> rho;
+  //real<lower=-1,upper=1> rho;
+  vector <lower=-1,upper=1>[4] rho;
+
   matrix[N,2] b;
   //real<lower=0> sigma2waist;
   //real<lower=0> sigma2glu;
@@ -125,7 +130,7 @@ for(i in 1:N){
   for (m in 1:(k-1)) {
     for (n in (m+1):k) {
       //ar1mat[i,m,n] = pow(sigmae[i],2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
-      ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+      ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho[cg[i]],nonzeropos[i,n]-nonzeropos[i,m]),0);
       ar1mat[i,n,m] = ar1mat[i,m,n];
     }
   }
@@ -266,6 +271,7 @@ bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- meas7$ldl[!duplicated(meas7$id)]
 hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
+corrgroup <- meas7$corrg[!duplicated(meas7$id)]
 
 
 dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
@@ -274,7 +280,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
          X=x,pk=ncol(x), theta=c(.2662,-.00806,.0002099,-1.625e-06),
-         hdl=hdl,bpd=bpd
+         hdl=hdl,bpd=bpd,cg=corrgroup
 )
 
 rstan_options(auto_write = TRUE)
@@ -293,7 +299,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
                         ),
-                       iter=1000)
+                       iter=200)
 (rs)
 save(rs,file="/ptmp/dcries/stanout.RData")
 
