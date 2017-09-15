@@ -32,7 +32,7 @@ nhanes$modvigmin2 <- w^.25
 nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 meas7$a <- 1;meas7$a[meas7$age>=35] <- 2;meas7$a[meas7$age>=50] <- 3;meas7$a[meas7$age>=65] <- 4
-meas7$corrg <- 1;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a != 4] <- 2;meas7$corrg[meas7$race %in% c(3:4) & meas7$a == 4] <- 3;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a == 4] <- 4;
+meas7$corrg <- 1;meas7$corrg[meas7$a == 4] <- 2
 
 
 #meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
@@ -60,18 +60,18 @@ data{
   matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
   real nu;
   matrix[2,2] D;
-  //vector[4] theta;
+  vector[4] theta;
   int cg[N]; //correlation group
 
 }
 transformed data{
   vector[2] zeros;
-  //vector<lower=0>[N] sigmae;
+  vector<lower=0>[N] sigmae;
 
   zeros = rep_vector(0,2);
   //for(i in 1:N){
     //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
-   // sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
+   sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
 
   //}
 
@@ -106,7 +106,7 @@ vector<lower=0>[2] sigmab;
   //real<lower=0> sigma2bpd;
   //real<lower=0> sigma2ldl;
   //real<lower=0> sigma2hdl;
-  vector[4] theta;
+  //vector[4] theta;
 
 }
 transformed parameters{
@@ -115,12 +115,12 @@ transformed parameters{
   vector[N] T; //usual
   vector[N] mu;
   vector[N] p;
-  vector<lower=0>[N] sigmae;
+  //vector<lower=0>[N] sigmae;
 
 
 for(i in 1:N){
   //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
-   sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
+  // sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
   for (m in 1:k){
     ar1mat[i,m,m] = sigmae[i];//pow(sigmae,2.0);
     //ar1mat[i,m,m] = pow(sigmae,2.0);
@@ -235,10 +235,6 @@ b[i] ~ multi_normal(zeros,diag_matrix(sigmab)*L*diag_matrix(sigmab));
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
 
-  theta[1] ~ normal(0,5);
-  theta[2] ~ normal(0,5);
- theta[3] ~ normal(0,5);
-  theta[4] ~ normal(0,5);
   //theta[1] ~ uniform(.175,.176);
   //theta[2] ~ uniform(.16,.162);
   //theta[3] ~ uniform(56.6,56.7);
@@ -263,7 +259,7 @@ for(i in 2:ncol(nonzeropos)){
     nonzeropos[,i] <- temp
 }
 
-x <- model.matrix(~age+as.factor(sex)+as.factor(race),data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
+x <- model.matrix(~age+as.factor(sex)+as.factor(race)+as.factor(education),data=meas7[!duplicated(meas7$id),c("age","sex","race","education","weekend","first5")])
 
 waist <- meas7$waist[!duplicated(meas7$id)]
 lglu <- log(meas7$glu[!duplicated(meas7$id)])
@@ -281,7 +277,7 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
          X=x,pk=ncol(x), #theta=c(.2662,-.00806,.0002099,-1.625e-06),
-         hdl=hdl,bpd=bpd,cg=corrgroup
+         hdl=hdl,bpd=bpd,cg=corrgroup,theta=c(2.662e-01,   -8.060e-03,    2.099e-04,   -1.625e-06)
 )
 
 rstan_options(auto_write = TRUE)
@@ -293,13 +289,13 @@ start3 <- list(theta=c(.19,.18,58,.23))
 start4 <- list(theta=c(.18,.15,56.5,.19))
 
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","theta","Tstar"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-                        ),init=list(start1,start1,start1,start1),
+                        ), chains=10,
                        iter=2000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout.RData")

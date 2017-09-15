@@ -80,3 +80,15 @@ names(meds) <- c("id","bpmed")
 complete=left_join(nhanes,meds)
 
 write.csv(complete,file="nhanes_complete.csv",row.names=FALSE)
+
+
+#----------------
+setwd("\\\\my.files.iastate.edu\\Users\\dcries\\Downloads")
+
+# demo1 <- read.xport("DEMO_C.XPT")
+# demo2 <- read.xport("DEMO_D.XPT")
+# names(demo1)[1] <- "id";names(demo2)[1] <- "id";
+# demo <- rbind(demo1[,c("id","DMDHREDU")],demo2[,c("id","DMDHREDU")])
+# d=left_join(nhanes,demo)
+# names(d)[38] <- "education"
+# write.csv(d,file="nhanes_complete.csv",row.names=FALSE)
