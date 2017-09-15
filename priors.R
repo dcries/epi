@@ -38,25 +38,25 @@ names(pa)[-1] <- c("modact","walked","paqlevel")
 
 #blood pressure
 pabp <- left_join(pa,bp)
-pabp[complete.cases(pabp),] %>% group_by(modact) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1)/sqrt(n))
-pabp[complete.cases(pabp),] %>% group_by(walked) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1)/sqrt(n))
-pabp[complete.cases(pabp),] %>% group_by(paqlevel) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1)/sqrt(n))
+pabp[complete.cases(pabp),] %>% group_by(modact) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1))
+pabp[complete.cases(pabp),] %>% group_by(walked) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1))
+pabp[complete.cases(pabp),] %>% group_by(paqlevel) %>% summarise(ms = mean(bps1),md=mean(bpd1),n=length(bps1),s=sd(bps1))
 
 
 #waist
 pawaist <- left_join(pa,waist)
-pawaist[complete.cases(pawaist),] %>% group_by(modact) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist)/sqrt(n))
-pawaist[complete.cases(pawaist),] %>% group_by(walked) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist)/sqrt(n))
-pawaist[complete.cases(pawaist),] %>% group_by(paqlevel) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist)/sqrt(n))
+pawaist[complete.cases(pawaist),] %>% group_by(modact) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist))
+pawaist[complete.cases(pawaist),] %>% group_by(walked) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist))
+pawaist[complete.cases(pawaist),] %>% group_by(paqlevel) %>% summarise(ms = mean(waist),n=length(waist),s=sd(waist))
 
 #tri
 patri <- left_join(pa,tri)
-patri[complete.cases(patri),] %>% group_by(modact) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri))/sqrt(n))
-patri[complete.cases(patri),] %>% group_by(walked) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri))/sqrt(n))
-patri[complete.cases(patri),] %>% group_by(paqlevel) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri))/sqrt(n))
+patri[complete.cases(patri),] %>% group_by(modact) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri)))
+patri[complete.cases(patri),] %>% group_by(walked) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri)))
+patri[complete.cases(patri),] %>% group_by(paqlevel) %>% summarise(mt = mean(log(tri)),ml=mean(ldl),md=mean(hdl),n=length(tri),s=sd(log(tri)))
 
 #glu
 paglu <- left_join(pa,glu)
-paglu[complete.cases(paglu),] %>% group_by(modact) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu))/sqrt(n))
-paglu[complete.cases(paglu),] %>% group_by(walked) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu))/sqrt(n))
-paglu[complete.cases(paglu),] %>% group_by(paqlevel) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu))/sqrt(n))
+paglu[complete.cases(paglu),] %>% group_by(modact) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu)))
+paglu[complete.cases(paglu),] %>% group_by(walked) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu)))
+paglu[complete.cases(paglu),] %>% group_by(paqlevel) %>% summarise(mt = mean(log(glu)),n=length(glu),s=sd(log(glu)))
