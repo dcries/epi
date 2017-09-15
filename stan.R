@@ -69,11 +69,11 @@ transformed data{
   vector<lower=0>[N] sigmae;
 
   zeros = rep_vector(0,2);
-  //for(i in 1:N){
+  for(i in 1:N){
     //sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
    sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
 
-  //}
+  }
 
 }
 parameters{

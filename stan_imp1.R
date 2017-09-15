@@ -31,7 +31,7 @@ imp1$modvigmin2 <- w^.25
 nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 meas7$a <- 1;meas7$a[meas7$age>=35] <- 2;meas7$a[meas7$age>=50] <- 3;meas7$a[meas7$age>=65] <- 4
-meas7$corrg <- 1;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a != 4] <- 2;meas7$corrg[meas7$race %in% c(3:4) & meas7$a == 4] <- 3;meas7$corrg[meas7$race %in% c(1,2,5) & meas7$a == 4] <- 4;
+meas7$corrg <- 1;meas7$corrg[meas7$a == 4] <- 2
 
 #meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
 
@@ -291,7 +291,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-),init=list(start1,start1,start1,start1),
+),chains=8,
 iter=1000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout_imp1.RData")
