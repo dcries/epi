@@ -7,6 +7,7 @@ setwd("/home/dcries")
 imp1 <- read.csv("epi/NHANES_accel_imp1.csv")
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
+imp1 <- imp1[!is.na(imp1$education),]
 imp1$weekend <- 0
 imp1$weekend[imp1$dow %in% c(1,7)] <- 1
 imp1$first5 <- 0
