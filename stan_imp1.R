@@ -93,7 +93,7 @@ corr_matrix[2] L;
 vector<lower=0>[2] sigmab;
 //real<lower=0> sigmae;
 //real<lower=-1,upper=1> rho;
-vector <lower=-1,upper=1>[4] rho;
+vector <lower=-1,upper=1>[2] rho;
 
 matrix[N,2] b;
 //real<lower=0> sigma2waist;
@@ -293,7 +293,7 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
 ),chains=8,
-iter=1000)
+iter=4000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout_imp1.RData")
 
