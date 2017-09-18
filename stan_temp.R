@@ -31,7 +31,7 @@ meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 #meas7$std <- apply(r[,21:7938],2,sd)
 
 
-meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)),] #remove NAs for waist
+meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)) & (!is.na(meas7$education)),] #remove NAs for waist
 
 #Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin)))$m)^.25
 #Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin2)))$m)
