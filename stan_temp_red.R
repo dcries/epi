@@ -31,7 +31,7 @@ meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
 #meas7$std <- apply(r[,21:7938],2,sd)
 
 
-meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)),] #remove NAs for waist
+meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri))& (!is.na(meas7$education)),] #remove NAs for waist
 
 #Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin)))$m)^.25
 #Tstar <- ((meas7 %>% group_by(id) %>% summarise(m=mean(modvigmin2)))$m)
@@ -146,25 +146,25 @@ appx ~ normal(0,sdT);
 //sigmahdl ~ cauchy(0,1);
 
 
-alphaw[1] ~ normal(10,8);
+alphaw[1] ~ normal(7,8);
 alphaw[2] ~ normal(3,1.5);
-alphaw[3] ~ normal(2,1);
-alphaw[4] ~ normal(100,15);
+alphaw[3] ~ normal(2.11,.4);
+alphaw[4] ~ normal(98,17);
 
-alphabs[1] ~ normal(18,10);
+alphabs[1] ~ normal(5,10);
 alphabs[2] ~ normal(4,2);
-alphabs[3] ~ normal(1.3,1);
-alphabs[4] ~ normal(137,20);
+alphabs[3] ~ normal(2.11,.4);
+alphabs[4] ~ normal(125,22);
 
-alphag[1] ~ normal(0.16,.15);
+alphag[1] ~ normal(0.05,.15);
 alphag[2] ~ normal(3.6,2);
-alphag[3] ~ normal(1.4,1);
-alphag[4] ~ normal(4.7,3);
+alphag[3] ~ normal(2.11,.4);
+alphag[4] ~ normal(4.62,.25);
 
-alphat[1] ~ normal(.27,.2);
+alphat[1] ~ normal(.12,.2);
 alphat[2] ~ normal(4.88,2);
-alphat[3] ~ normal(1.81,1);
-alphat[4] ~ normal(4.92,2);
+alphat[3] ~ normal(2.11,.4);
+alphat[4] ~ normal(4.73,.6);
 
 //  alphaw ~ uniform(-200,200);
 //  alphag ~ uniform(-200,200);
