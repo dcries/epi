@@ -229,5 +229,5 @@ rs <- sampling(ms,dat,c("alphaw",
 ),
 iter=2000,chains=2,init=list(start1,start2),
 control=list(adapt_delta=0.99,max_treedepth=15))
-#summary(rs)
+(rs)
 save(rs,file="stanout_temp_red.RData")

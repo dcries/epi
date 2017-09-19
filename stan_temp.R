@@ -241,7 +241,7 @@ rs <- sampling(ms,dat,c("alphaw",
                         "alphah",
                         "Lr","sigmar"
 ),
-iter=300,chains=2,init=list(start1,start2),
+iter=1000,chains=2,init=list(start1,start2),
 control=list(adapt_delta=0.99,max_treedepth=15))
-#summary(rs)
+(rs)
 save(rs,file="stanout_temp.RData")
