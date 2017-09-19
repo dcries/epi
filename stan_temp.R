@@ -131,8 +131,8 @@ MetS[i] ~ multi_normal(mu[i],diag_matrix(sigmar)*Lr*diag_matrix(sigmar));
 //mulglu = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar+appx-alphag[3])));
 //multri = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar+appx-alphat[3])));
 //mubps = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar+appx-alphabs[3])));
-//muldl = alphal[1] + alphal[2]*(Tstar+appx) + alphal[3]*pow(Tstar+appx,2);
-//mubpd = alphabd[1] + alphabd[2]*(Tstar+appx) + alphabd[3]*pow(Tstar+appx,2);
+//muldl = alphal[1] + alphal[2]*(Tstar+appx) ;//+ alphal[3]*pow(Tstar+appx,2);
+//mubpd = alphabd[1] + alphabd[2]*(Tstar+appx) ;//+ alphabd[3]*pow(Tstar+appx,2);
 //muhdl = alphah[1] + alphah[2]*(Tstar+appx);
 
 appx ~ normal(0,sdT);
