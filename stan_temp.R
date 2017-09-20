@@ -2,8 +2,8 @@ library(rstan)
 library(dplyr)
 setwd("/home/dcries")
 imp1 <- read.csv("epi/NHANES_accel_imp1.csv")
-Tstar <- read.csv("epi/tstar.csv")
-sdT <- read.csv("epi/sdT.csv")
+Tstar <- read.csv("epi/tstar_imp1.csv")
+sdT <- read.csv("epi/sdT_imp1.csv")
 
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
@@ -241,7 +241,7 @@ rs <- sampling(ms,dat,c("alphaw",
                         "alphah",
                         "Lr","sigmar"
 ),
-iter=1000,chains=2,init=list(start1,start2),
+iter=1000,chains=3,init=list(start1,start2,start3),
 control=list(adapt_delta=0.99,max_treedepth=15))
 (rs)
 save(rs,file="stanout_temp.RData")
