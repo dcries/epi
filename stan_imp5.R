@@ -7,6 +7,7 @@ setwd("/home/dcries")
 imp1 <- read.csv("epi/NHANES_accel_imp5.csv")
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
+imp1 <- imp1[!is.na(imp1$education),]
 imp1$weekend <- 0
 imp1$weekend[imp1$dow %in% c(1,7)] <- 1
 imp1$first5 <- 0
@@ -28,10 +29,10 @@ w1 <- imp1$modvigmin
 what <- predict(m1)
 w <- (1/what)*w1*wbar
 imp1$modvigmin2 <- w^.25
-
 nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6]) #individuals with all 7 days
-
+meas7$a <- 1;meas7$a[meas7$age>=35] <- 2;meas7$a[meas7$age>=50] <- 3;meas7$a[meas7$age>=65] <- 4
+meas7$corrg <- 1;meas7$corrg[meas7$a == 4] <- 2
 
 #meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)),] #remove NAs for waist
 
@@ -52,16 +53,25 @@ matrix[N,pk] X;
 //real ldl[N];
 //real hdl[N];
 //real bpd[N];
-//real<lower=0> age[N];
+real<lower=0> age[N];
 //int<lower=0> gender[N];
 int<lower=0> numnonzeros[N]; //number of nonzero minutes days for each individual
 matrix[N,k] nonzeropos; //position of nonzero minutes for each indivudal
 real nu;
 matrix[2,2] D;
+vector[4] theta;
+int cg[N]; //correlation group
+
 }
 transformed data{
 vector[2] zeros;
+vector<lower=0>[N] sigmae;
 zeros = rep_vector(0,2);
+
+for(i in 1:N){
+//sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
+}
 }
 parameters{
 vector[pk] gamma;
@@ -81,8 +91,10 @@ vector[pk] beta;
 //cov_matrix[2] Sigma;
 corr_matrix[2] L;
 vector<lower=0>[2] sigmab;
-real<lower=0> sigmae;
-real<lower=-1,upper=1> rho;
+//real<lower=0> sigmae;
+//real<lower=-1,upper=1> rho;
+vector <lower=-1,upper=1>[2] rho;
+
 matrix[N,2] b;
 //real<lower=0> sigma2waist;
 //real<lower=0> sigma2glu;
@@ -91,6 +103,7 @@ matrix[N,2] b;
 //real<lower=0> sigma2bpd;
 //real<lower=0> sigma2ldl;
 //real<lower=0> sigma2hdl;
+//vector[4] theta;
 
 
 }
@@ -100,26 +113,32 @@ vector[N] Tstar; // usual ^ 1/4
 vector[N] T; //usual
 vector[N] mu;
 vector[N] p;
+//vector<lower=0>[N] sigmae;
 
 for(i in 1:N){
+//sigmae[i] = theta[4]+theta[1]/(1+exp(-theta[2]*(age[i]-theta[3])));
+//sigmae[i] = theta[1] + theta[2]*age[i] + theta[3]*pow(age[i],2.0) + theta[4]*pow(age[i],3.0);
 for (m in 1:k){
-ar1mat[i,m,m] = pow(sigmae,2.0);
+//ar1mat[i,m,m] = pow(sigmae,2.0);
+ar1mat[i,m,m] = sigmae[i];
 }
 }
 //respecify ar1mat, nonzeropos, numnonzeros
 for(i in 1:N){
 for (m in 1:(k-1)) {
 for (n in (m+1):k) {
-ar1mat[i,m,n] = pow(sigmae,2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+//ar1mat[i,m,n] = pow(sigmae[i],2.0) * if_else(n<=numnonzeros[i],pow(rho,nonzeropos[i,n]-nonzeropos[i,m]),0);
+ar1mat[i,m,n] = sigmae[i] * if_else(n<=numnonzeros[i],pow(rho[cg[i]],nonzeropos[i,n]-nonzeropos[i,m]),0);
 ar1mat[i,n,m] = ar1mat[i,m,n];
 }
 }
 }
 
 for(i in 1:N){
-p[i] = Phi(X[i,]*gamma+b[i,1]);
+p[i] = inv_logit(X[i,]*gamma+b[i,1]);
 mu[i] = X[i,]*beta + b[i,2];
-T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
+//T[i] = p[i]*(pow(mu[i],4.0) + 6*pow(sigmae,2.0)*pow(mu[i],2.0));
+T[i] = p[i]*(pow(mu[i],4.0) + 6*sigmae[i]*pow(mu[i],2.0));
 Tstar[i] = pow(T[i],0.25);
 }
 }
@@ -187,7 +206,7 @@ pos = pos + numnonzeros[i];
 
 
 //  rho ~ uniform(-1,1);
-sigmae ~ cauchy(0,1);
+//sigmae ~ cauchy(0,1);
 //sigma2waist ~ inv_gamma(1,1);
 //sigma2glu ~ inv_gamma(1,1);
 //sigma2tri ~ inv_gamma(1,1);
@@ -212,6 +231,11 @@ gamma ~ normal(0,100);
 //Sigma ~ inv_wishart(nu,D);
 L ~ lkj_corr(1.0);
 sigmab ~ cauchy(0,1);
+
+//theta[1] ~ normal(0,5);
+//theta[2] ~ normal(0,5);
+//theta[3] ~ normal(0,5);
+//theta[4] ~ normal(0,5);
 }
 "
 
@@ -232,7 +256,7 @@ for(i in 2:ncol(nonzeropos)){
   nonzeropos[,i] <- temp
 }
 
-x <- model.matrix(~age+as.factor(sex)+as.factor(race),data=meas7[!duplicated(meas7$id),c("age","sex","race","weekend","first5")])
+x <- model.matrix(~age+as.factor(sex)+as.factor(race)+as.factor(education),data=meas7[!duplicated(meas7$id),c("age","sex","race","education","weekend","first5")])
 
 waist <- meas7$waist[!duplicated(meas7$id)]
 lglu <- log(meas7$glu[!duplicated(meas7$id)])
@@ -241,6 +265,7 @@ bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- meas7$ldl[!duplicated(meas7$id)]
 hdl <- meas7$hdl[!duplicated(meas7$id)]
 bpd <- meas7$bpd[!duplicated(meas7$id)]
+corrgroup <- meas7$corrg[!duplicated(meas7$id)]
 
 
 dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
@@ -248,22 +273,27 @@ dat=list(y=(yc[,3:8]),  N      = length(unique(meas7$id)),
          gender= meas7$sex[!duplicated(meas7$id)],nu=3,D=diag(2),
          numnonzeros=nonzeros,nonzeropos=t(nonzeropos),
          y2=(meas7$modvigmin2[meas7$modvigmin2>0]),n2=sum(meas7$modvigmin>0),
-         X=x,pk=ncol(x),
-         hdl=hdl,bpd=bpd
+         X=x,pk=ncol(x),theta=c(.2662,-.00806,.0002099,-1.625e-06),
+         hdl=hdl,bpd=bpd,cg=corrgroup
 )
-
+#theta=c(.175,.161,56.67,.209),
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
+start1 <- list(theta=c(2.662e-01,   -8.060e-03,    2.099e-04,   -1.625e-06))
+start2 <- list(theta=c(.62,.08,45.90,.49))
+start3 <- list(theta=c(.82,.18,65.90,1.69))
+start4 <- list(theta=c(.82,.10,50.90,.99))
+
 ms <- stan_model(model_code=models)
-rs <- sampling(ms,dat,c("beta","gamma","sigmae","L","sigmab","rho","Tstar"#,"alphaw",
+rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"alphag","alphat","alphal",
                         #"alphabs","alphabd","alphah",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-),
+),chains=8,
 iter=4000)
-summary(rs)
+(rs)
 save(rs,file="/ptmp/dcries/stanout_imp5.RData")
 

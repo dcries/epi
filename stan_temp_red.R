@@ -118,8 +118,8 @@ mu[i,1] = alphaw[4]-alphaw[1]/(1+exp(-alphaw[2]*(Tstar[i]+appx[i]-alphaw[3])));
 mu[i,2] = alphag[4]-alphag[1]/(1+exp(-alphag[2]*(Tstar[i]+appx[i]-alphag[3])));
 mu[i,3] = alphat[4]-alphat[1]/(1+exp(-alphat[2]*(Tstar[i]+appx[i]-alphat[3])));
 mu[i,4] = alphabs[4]-alphabs[1]/(1+exp(-alphabs[2]*(Tstar[i]+appx[i]-alphabs[3])));
-mu[i,5] = alphal[1] + alphal[2]*(Tstar[i]+appx[i]) + alphal[3]*pow(Tstar[i]+appx[i],2);
-mu[i,6] = alphabd[1] + alphabd[2]*(Tstar[i]+appx[i]) + alphabd[3]*pow(Tstar[i]+appx[i],2);
+mu[i,5] = alphal[1] + alphal[2]*(Tstar[i]+appx[i]) ;//+ alphal[3]*pow(Tstar[i]+appx[i],2);
+mu[i,6] = alphabd[1] + alphabd[2]*(Tstar[i]+appx[i]);// + alphabd[3]*pow(Tstar[i]+appx[i],2);
 mu[i,7] = alphah[1] + alphah[2]*(Tstar[i]+appx[i]);
 
 MetS[i] ~ multi_normal(mu[i],diag_matrix(sigmar)*Lr*diag_matrix(sigmar));
