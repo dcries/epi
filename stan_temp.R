@@ -156,15 +156,15 @@ alphabs[2] ~ normal(4,2);
 alphabs[3] ~ normal(2.11,.4);
 alphabs[4] ~ normal(125,22);
 
-alphag[1] ~ normal(0.05,.15);
-alphag[2] ~ normal(3.6,2);
-alphag[3] ~ normal(2.11,.4);
-alphag[4] ~ normal(4.62,.25);
+alphag[1] ~ normal(0.16,.15);//normal(0.05,.15);
+alphag[2] ~ normal(3.6,2);//normal(3.6,2);
+alphag[3] ~ normal(1.4,1);//normal(2.11,.4);
+alphag[4] ~ normal(4.7,3);//normal(4.62,.25);
 
-alphat[1] ~ normal(.27,.2);//normal(.12,.2); 
-alphat[2] ~ normal(4.88,2);//normal(4.88,2);
-alphat[3] ~ normal(1.81,1);//normal(2.11,.4);
-alphat[4] ~ normal(4.92,2);//normal(4.73,.6);
+alphat[1] ~ normal(.12,.2); 
+alphat[2] ~ normal(4.88,2);
+alphat[3] ~ normal(2.11,.4);
+alphat[4] ~ normal(4.73,.6);
 
 //alphaw[1] ~ normal(10,8);
 //alphaw[2] ~ normal(3,1.5);
