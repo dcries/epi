@@ -85,6 +85,12 @@ swaist <- postmeans[74];sglu <- postmeans[75];stri <- postmeans[76];sbps <- post
 sbpd <- postmeans[78];sldl <- postmeans[79];shdl <- postmeans[80];
 
 qplot(data=metsrf,y=(waist-pwaist)/swaist,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(log(glu)-pglu)/sglu,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(log(tri)-ptri)/stri,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(bps-pbps)/sbps,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(bpd-pbpd)/sbpd,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(ldl-pldl)/sldl,x=tstar) + geom_smooth()
+qplot(data=metsrf,y=(hdl-phdl)/shdl,x=tstar) + geom_smooth()
 
 
 qqnorm((metsrf$waist-metsrf$pwaist)/swaist);qqline((metsrf$waist-metsrf$pwaist)/swaist)
