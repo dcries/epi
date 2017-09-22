@@ -33,8 +33,8 @@ waist <- postmeans[4]-postmeans[1]/(1+exp(-postmeans[2]*(x-postmeans[3])))
 glu <- postmeans[8]-postmeans[5]/(1+exp(-postmeans[6]*(x-postmeans[7])))
 tri <- postmeans[12]-postmeans[9]/(1+exp(-postmeans[10]*(x-postmeans[11])))
 bps <- postmeans[19]-postmeans[16]/(1+exp(-postmeans[17]*(x-postmeans[18])))
-bpd <- postmeans[20] + postmeans[21]*x + postmeans[22]*x^2
-ldl <- postmeans[13] + postmeans[14]*x + postmeans[15]*x^2
+bpd <- postmeans[20] + postmeans[21]*x #+ postmeans[22]*x^2
+ldl <- postmeans[13] + postmeans[14]*x #+ postmeans[15]*x^2
 hdl <- postmeans[23] + postmeans[24]*x 
 
 naivewaist <- naivemeans[4]-naivemeans[1]/(1+exp(-naivemeans[2]*(x-naivemeans[3])))

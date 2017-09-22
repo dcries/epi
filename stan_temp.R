@@ -151,13 +151,13 @@ alphaw[2] ~ normal(3,1.5);
 alphaw[3] ~ normal(2.11,.4);
 alphaw[4] ~ normal(98,17);
 
-alphabs[1] ~ normal(5,10);
-alphabs[2] ~ normal(4,2);
-alphabs[3] ~ normal(2.11,.4);
-alphabs[4] ~ normal(125,22);
+alphabs[1] ~ normal(18,5);
+alphabs[2] ~ normal(3,1);
+alphabs[3] ~ normal(1.3,1);
+alphabs[4] ~ normal(130,7);
 
-alphag[1] ~ normal(0.16,.15);//normal(0.05,.15);
-alphag[2] ~ normal(3.6,2);//normal(3.6,2);
+alphag[1] ~ normal(0.16,.08);//normal(0.05,.15);
+alphag[2] ~ normal(3.6,.7);//normal(3.6,2);
 alphag[3] ~ normal(1.4,1);//normal(2.11,.4);
 alphag[4] ~ normal(4.7,3);//normal(4.62,.25);
 
@@ -241,7 +241,7 @@ rs <- sampling(ms,dat,c("alphaw",
                         "alphah",
                         "Lr","sigmar"
 ),
-iter=1000,chains=3,init=list(start1,start2,start3),
+iter=2000,chains=3,init=list(start1,start2,start3),
 control=list(adapt_delta=0.99,max_treedepth=15))
 (rs)
-save(rs,file="stanout_temp.RData")
+save(rs,file="/ptmp/dcries/stanout_temp.RData")

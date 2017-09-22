@@ -95,7 +95,7 @@ mcmc_epi <- function(y,tstar,start,prior,nsim=1000){
     
     beta[i,] <- currentbeta
     Sigma[,,i] <- currentSigma
-    if(i%%1000) {print(i)}
+    if(i%%1000==0) {print(i)}
   }
   return(list(beta=beta,Sigma=Sigma,propcov=propcov))
 }
