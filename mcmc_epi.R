@@ -77,10 +77,13 @@ mcmc_epi <- function(y,tstar,start,prior,nsim=1000){
   currentbeta <- start$beta
   currentSigma <- start$Sigma
   
-  propcov <- diag(length(currentbeta))*0.0001
+  propcov <- diag(length(currentbeta))*0.001#c(0.19417804, 0.16545763, 0.05248711, 0.12492467, 0.09873737, 0.95936123, 0.39518984,
+  #                                       0.10511951, 0.05803895, 0.28383415, 0.15711622, 0.08748341, 0.26572027, 0.29792434,
+  #                                        0.28819422, 0.18381364, 0.10871763, 0.40371974, 0.08333541, 0.39665253, 0.51419485,
+  #                                        0.06119402)
   for(i in 1:nsim){
     #``update tstar"
-    propb <- mvrnorm(1,mu=currentbeta,Sigma=propcov)
+    propb <- mvrnorm(1,mu=currentbeta,Sigma=2.4^2*propcov/22)
     logr <- logl_b(y,tstar[i,],propb,currentSigma,bm,bcov) - logl_b(y,tstar[i,],currentbeta,currentSigma,bm,bcov)
     if(log(runif(1))<logr){
       currentbeta <- propb
@@ -88,6 +91,9 @@ mcmc_epi <- function(y,tstar,start,prior,nsim=1000){
     
     if((i < 5000) & (i > 20) & (i%%20==0)){
       propcov <- cov(beta[(1:i-1),])
+      if(any(diag(propcov)==0)){
+        stop("Var Prop = 0")
+      }
     }
     currentmeanb <- calc_meanb(tstar[i,],currentbeta)
     
@@ -95,7 +101,8 @@ mcmc_epi <- function(y,tstar,start,prior,nsim=1000){
     
     beta[i,] <- currentbeta
     Sigma[,,i] <- currentSigma
-    if(i%%1000==0) {print(i)}
+    if(i%%100==0) {print(i)}
+    print(i)
   }
   return(list(beta=beta,Sigma=Sigma,propcov=propcov))
 }
@@ -106,4 +113,4 @@ start <- list(beta=c(10.445,   3.230,   2.033, 101.517,0.1642,3.4081,1.4433,4.72
               Sigma=diag(7)*c(15^2,.16^2,.54^2,18^2,36^2,14^2,16^2))
 prior <- list(bm=c(rep(0,22)),bcov=diag(22)*1000,d=8,D=diag(7))
 
-out <- mcmc_epi(MetS,tstar2,start,prior,10000)
+out <- mcmc_epi(MetS,tstar2,start,prior,42)

@@ -76,28 +76,25 @@ double logl_b(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat Sigma,
   means.col(4) = beta[18] + beta[19]*tstar;
   means.col(5) = beta[12] + beta[13]*tstar;
   means.col(6) = beta[20] + beta[21]*tstar;
-  std::cout << "a\n";
   for(int i=0;i<n;i++){
     ll += dmvnrm_arma(y.row(i).t(),means.row(i),Sigma,true);
   }
-  std::cout << "c\n";
-  
+
   ll += dmvnrm_arma(beta,priormean.t(),priorcov,true);
   return ll;
 }
 
 arma::mat calc_mean(arma::vec tstar, arma::vec beta){
   int n;
-  int p = beta.size();
   n = tstar.size();
-  arma::mat means(7,n);
-  means.row(0) = beta[3]-beta[0]/(1.0+exp(-beta[1]*(tstar-beta[2])));
-  means.row(1) = beta[7]-beta[4]/(1.0+exp(-beta[5]*(tstar-beta[6])));
-  means.row(2) = beta[11]-beta[8]/(1.0+exp(-beta[9]*(tstar-beta[10])));
-  means.row(3) =  beta[17]-beta[14]/(1.0+exp(-beta[15]*(tstar-beta[16])));
-  means.row(4) = beta[18] + beta[19]*tstar;
-  means.row(5) = beta[12] + beta[13]*tstar;
-  means.row(6) = beta[20] + beta[21]*tstar;
+  arma::mat means(n,7);
+  means.col(0) = beta[3]-beta[0]/(1.0+exp(-beta[1]*(tstar-beta[2])));
+  means.col(1) = beta[7]-beta[4]/(1.0+exp(-beta[5]*(tstar-beta[6])));
+  means.col(2) = beta[11]-beta[8]/(1.0+exp(-beta[9]*(tstar-beta[10])));
+  means.col(3) =  beta[17]-beta[14]/(1.0+exp(-beta[15]*(tstar-beta[16])));
+  means.col(4) = beta[18] + beta[19]*tstar;
+  means.col(5) = beta[12] + beta[13]*tstar;
+  means.col(6) = beta[20] + beta[21]*tstar;
   return means;
 }
 
@@ -115,11 +112,12 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
   
   int n = y.n_rows;
   int p = bm.size();
+  int k = y.n_cols;
   int ntstar = tstar.n_rows;
   
   //storage
-  arma::mat beta(p,nsim);
-  arma::cube Sigma;
+  arma::mat beta(nsim,p);
+  arma::cube Sigma(k,k,nsim);
   
   //arma::ivec index(nsim);
   // arma::ivec index2(ntstar);
@@ -133,7 +131,7 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
   Rcpp::IntegerVector frame = Rcpp::Range(1, ntstar);
   Rcpp::NumericVector wts = Rcpp::rep(1.0/ntstar,ntstar);//Rcpp::runif(n, 0.0, 1.0);
   index = Rcpp::RcppArmadillo::sample(frame, nsim, false, wts / Rcpp::sum(wts));
-  std::cout << "1\n";
+  //std::cout << "1\n";
   
   arma::vec propb(p);
   double logr;
@@ -143,14 +141,14 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
   
   for(int i=0;i<nsim;i++){
     //update tstar
-    propb = (mvrnormArma(1,currentbeta,propcov)).row(0).t();
+    propb = (mvrnormArma(1,currentbeta,0.2618*propcov)).row(0).t();
     
     
     logrprop = logl_b(y,tstar.row(index[i]).t(),propb,currentSigma,bm,bcov); 
-    std::cout << "2\n";
+    //std::cout << "2\n";
     
-    logr = logl_b(y,tstar.row(index[i]),currentbeta,currentSigma,bm,bcov);
-    std::cout << "3\n";
+    logr = logl_b(y,tstar.row(index[i]).t(),currentbeta,currentSigma,bm,bcov);
+    //std::cout << "3\n";
     
     logacceptprob = logrprop - logr;
     if(log(R::runif(0,1))<logacceptprob){
@@ -159,18 +157,20 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
     if((i<burn) && (i>20) && (i%20==0)){
       propcov = cov(beta.rows(0,i-1));
     }
-    std::cout << "4\n";
+    //std::cout << "4\n";
     
-    currentmeans = calc_mean(tstar.row(index[i]),currentbeta);
-    std::cout << "5\n";
+    currentmeans = calc_mean(tstar.row(index[i]).t(),currentbeta);
+    //std::cout << "5\n";
     
     currentSigma = rinvwish(1,n+d,D+(y-currentmeans).t()*(y-currentmeans));
+    //std::cout << "6\n";
     
-    beta.row(i) = currentbeta;
+    beta.row(i) = currentbeta.t();
+    //std::cout << "7\n";
+    
     Sigma.slice(i) = currentSigma;
-    std::cout << "6\n";
     
-    if(i % 10==0){
+    if(i % 100==0){
       std::cout << "i= " << i << "\n";
     }
   }
