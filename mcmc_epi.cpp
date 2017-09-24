@@ -72,9 +72,9 @@ double logl_b(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat Sigma,
   means.col(0) = beta[3]-beta[0]/(1.0+exp(-beta[1]*(tstar-beta[2])));
   means.col(1) = beta[7]-beta[4]/(1.0+exp(-beta[5]*(tstar-beta[6])));
   means.col(2) = beta[11]-beta[8]/(1.0+exp(-beta[9]*(tstar-beta[10])));
-  means.col(3) =  beta[17]-beta[14]/(1.0+exp(-beta[15]*(tstar-beta[16])));
-  means.col(4) = beta[18] + beta[19]*tstar;
-  means.col(5) = beta[12] + beta[13]*tstar;
+  means.col(3) =  beta[15]-beta[12]/(1.0+exp(-beta[13]*(tstar-beta[14])));
+  means.col(4) = beta[16] + beta[17]*tstar;
+  means.col(5) = beta[18] + beta[19]*tstar;
   means.col(6) = beta[20] + beta[21]*tstar;
   for(int i=0;i<n;i++){
     ll += dmvnrm_arma(y.row(i).t(),means.row(i),Sigma,true);
@@ -91,9 +91,9 @@ arma::mat calc_mean(arma::vec tstar, arma::vec beta){
   means.col(0) = beta[3]-beta[0]/(1.0+exp(-beta[1]*(tstar-beta[2])));
   means.col(1) = beta[7]-beta[4]/(1.0+exp(-beta[5]*(tstar-beta[6])));
   means.col(2) = beta[11]-beta[8]/(1.0+exp(-beta[9]*(tstar-beta[10])));
-  means.col(3) =  beta[17]-beta[14]/(1.0+exp(-beta[15]*(tstar-beta[16])));
-  means.col(4) = beta[18] + beta[19]*tstar;
-  means.col(5) = beta[12] + beta[13]*tstar;
+  means.col(3) =  beta[15]-beta[12]/(1.0+exp(-beta[13]*(tstar-beta[14])));
+  means.col(4) = beta[16] + beta[17]*tstar;
+  means.col(5) = beta[18] + beta[19]*tstar;
   means.col(6) = beta[20] + beta[21]*tstar;
   return means;
 }
@@ -128,9 +128,9 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
   //   probs[i] = 1.0/ntstar;
   // }
   Rcpp::IntegerVector index;
-  Rcpp::IntegerVector frame = Rcpp::Range(1, ntstar);
+  Rcpp::IntegerVector frame = Rcpp::Range(0, ntstar-1);
   Rcpp::NumericVector wts = Rcpp::rep(1.0/ntstar,ntstar);//Rcpp::runif(n, 0.0, 1.0);
-  index = Rcpp::RcppArmadillo::sample(frame, nsim, false, wts / Rcpp::sum(wts));
+  index = Rcpp::RcppArmadillo::sample(frame, nsim, true, wts / Rcpp::sum(wts));
   //std::cout << "1\n";
   
   arma::vec propb(p);
@@ -170,7 +170,7 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
     
     Sigma.slice(i) = currentSigma;
     
-    if(i % 100==0){
+    if(i % 1000==0){
       std::cout << "i= " << i << "\n";
     }
   }

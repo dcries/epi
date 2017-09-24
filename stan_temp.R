@@ -161,7 +161,7 @@ alphag[2] ~ normal(3.6,.7);//normal(3.6,2);
 alphag[3] ~ normal(1.4,1);//normal(2.11,.4);
 alphag[4] ~ normal(4.7,3);//normal(4.62,.25);
 
-alphat[1] ~ normal(.12,.2); 
+alphat[1] ~ normal(.12,.1); 
 alphat[2] ~ normal(4.88,2);
 alphat[3] ~ normal(2.11,.4);
 alphat[4] ~ normal(4.73,.6);
