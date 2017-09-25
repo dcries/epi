@@ -141,7 +141,7 @@ List mcmc_epi(arma::mat y, arma::mat tstar, List start, List prior, int nsim,int
   
   for(int i=0;i<nsim;i++){
     //update tstar
-    propb = (mvrnormArma(1,currentbeta,0.2618*propcov)).row(0).t();
+    propb = (mvrnormArma(1,currentbeta,0.15*propcov)).row(0).t();
     
     
     logrprop = logl_b(y,tstar.row(index[i]).t(),propb,currentSigma,bm,bcov); 
