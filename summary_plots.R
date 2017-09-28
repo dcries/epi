@@ -1,5 +1,6 @@
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
 
 setwd("C:/Users/dcries/workspace2")
 nhanes <- read.csv("../github/epi/NHANES_complete.csv")
@@ -21,8 +22,9 @@ nhanes$w <- w^.25
 load("stanout_naive.RData")
 naive <- as.matrix(rs)
 naivemeans <- colMeans(naive)
-load("stanout_temp.RData")
-
+load("stanout_temp2.RData") #!!!!!!!!!!!
+out$beta <- out$beta[50000:100000,]
+out$Sigma <- out$Sigma[,,50000:100000]
 indmeans <- nhanes %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],
                                                   tri=tri[1],bps=bps[1],bpd=bpd[1],hdl=hdl[1],ldl=ldl[1],n=length(w))
 
@@ -43,14 +45,14 @@ naivebpd <- naivemeans[20] + naivemeans[21]*x + naivemeans[22]*x^2
 naiveldl <- naivemeans[13] + naivemeans[14]*x + naivemeans[15]*x^2
 naivehdl <- naivemeans[23] + naivemeans[24]*x 
 
-ggplot() + geom_point(data=indmeans,aes(x=m,y=waist))  + geom_line(aes(x=x,y=naivewaist),colour="red",size=2)+ geom_line(aes(x=x,y=waist),colour="blue",size=2) + theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu)))  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2)+ geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=naivetri),colour="red",size=2) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=bps)) + geom_line(aes(x=x,y=naivebps),colour="red",size=2) + geom_line(aes(x=x,y=bps),colour="blue",size=2) + theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=bpd))  + geom_line(aes(x=x,y=naivebpd),colour="red",size=2) + geom_line(aes(x=x,y=bpd),colour="blue",size=2)+ theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=ldl))  + geom_line(aes(x=x,y=naiveldl),colour="red",size=2) + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw()
-ggplot() + geom_point(data=indmeans,aes(x=m,y=hdl))  + geom_line(aes(x=x,y=naivehdl),colour="red",size=2) + geom_line(aes(x=x,y=hdl),colour="blue",size=2)+ theme_bw()
-
+p1=ggplot() + geom_point(data=indmeans,aes(x=m,y=waist))  + geom_line(aes(x=x,y=naivewaist),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=waist),colour="blue",size=2) + theme_bw()
+p2=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu)))  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw()
+p3=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=naivetri),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw()
+p4=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(bps))) + geom_line(aes(x=x,y=naivebps),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bps),colour="blue",size=2) + theme_bw()
+p5=ggplot() + geom_point(data=indmeans,aes(x=m,y=bpd))  + geom_line(aes(x=x,y=naivebpd),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bpd),colour="blue",size=2)+ theme_bw()
+p6=ggplot() + geom_point(data=indmeans,aes(x=m,y=sqrt(ldl)))  + geom_line(aes(x=x,y=naiveldl),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw()
+p7=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(hdl)))  + geom_line(aes(x=x,y=naivehdl),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=hdl),colour="blue",size=2)+ theme_bw()
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
 
 #load("stanout_second.RData") ???
 # dat <- as.matrix(rs)
@@ -88,56 +90,58 @@ ggplot() + geom_point(data=indmeans,aes(x=m,y=hdl))  + geom_line(aes(x=x,y=naive
 
 #----------
 #resiudal calculations
-tstar <- read.csv("../github/epi/tstar.csv")
-
-nhanes <- subset(nhanes,rep!=7)
-m1 <- lm(modvigmin~(weekend)+first5,data=nhanes)
-wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5]))
-w1 <- nhanes$modvigmin
-what <- predict(m1)
-w <- (1/what)*w1*wbar
-nhanes$w <- w^.25
-nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
-meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
-indmeans2 <- meas7 %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],
-                                                  tri=tri[1],bps=bps[1],bpd=bpd[1],hdl=hdl[1],ldl=ldl[1],n=length(w),age=age[1])
-
-metsrf <- indmeans2[(!is.na(indmeans2$waist)) & (!is.na(indmeans2$bps)) & (!is.na(indmeans2$bpd)) & (!is.na(indmeans2$hdl)) & (!is.na(indmeans2$ldl)) & (!is.na(indmeans2$glu)) & (!is.na(indmeans2$tri)) ,] #remove NAs for waist
-metsrf$tstar <- tstar$x
-
-metsrf$pwaist <- mean(out$beta[,4])-mean(out$beta[,1])/(1+exp(-mean(out$beta[,2])*(metsrf$tstar-mean(out$beta[,3]))))
-metsrf$pglu <- mean(out$beta[,8])-mean(out$beta[,5])/(1+exp(-mean(out$beta[,6])*(metsrf$tstar-mean(out$beta[,7]))))
-metsrf$ptri <- mean(out$beta[,12])-mean(out$beta[,9])/(1+exp(-mean(out$beta[,10])*(metsrf$tstar-mean(out$beta[,11]))))
-metsrf$pbps <- mean(out$beta[,16])-mean(out$beta[,13])/(1+exp(-mean(out$beta[,14])*(metsrf$tstar-mean(out$beta[,15]))))
-metsrf$pldl <- mean(out$beta[,17]) + mean(out$beta[,18])*metsrf$tstar #+ mean(out$beta[,22])*metsrf$tstar^2
-metsrf$pbpd <- mean(out$beta[,19]) + mean(out$beta[,20])*metsrf$tstar #+ mean(out$beta[,15])*metsrf$tstar^2
-metsrf$phdl <- mean(out$beta[,21]) + mean(out$beta[,22])*metsrf$tstar 
-swaist <- mean(sqrt(out$Sigma[1,1,]));sglu <- mean(sqrt(out$Sigma[2,2,]));stri <- mean(sqrt(out$Sigma[3,3,]));sbps <- mean(sqrt(out$Sigma[4,4,]));
-sbpd <- mean(sqrt(out$Sigma[6,6,]));sldl <- mean(sqrt(out$Sigma[5,5,]));shdl <- mean(sqrt(out$Sigma[7,7,]));
-
-
-# metsrf$pwaist <- postmeans[4]-postmeans[1]/(1+exp(-postmeans[2]*(metsrf$tstar-postmeans[3])))
-# metsrf$pglu <- postmeans[8]-postmeans[5]/(1+exp(-postmeans[6]*(metsrf$tstar-postmeans[7])))
-# metsrf$ptri <- postmeans[12]-postmeans[9]/(1+exp(-postmeans[10]*(metsrf$tstar-postmeans[11])))
-# metsrf$pbps <- postmeans[19]-postmeans[16]/(1+exp(-postmeans[17]*(metsrf$tstar-postmeans[18])))
-# metsrf$pbpd <- postmeans[20] + postmeans[21]*metsrf$tstar + postmeans[22]*metsrf$tstar^2
-# metsrf$pldl <- postmeans[13] + postmeans[14]*metsrf$tstar + postmeans[15]*metsrf$tstar^2
-# metsrf$phdl <- postmeans[23] + postmeans[24]*metsrf$tstar 
-# swaist <- postmeans[74];sglu <- postmeans[75];stri <- postmeans[76];sbps <- postmeans[77];
-#sbpd <- postmeans[78];sldl <- postmeans[79];shdl <- postmeans[80];
-
-qplot(data=metsrf,y=(waist-pwaist)/swaist,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(log(glu)-pglu)/sglu,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(log(tri)-ptri)/stri,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(bps-pbps)/sbps,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(bpd-pbpd)/sbpd,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(ldl-pldl)/sldl,x=tstar) + geom_smooth()
-qplot(data=metsrf,y=(hdl-phdl)/shdl,x=tstar) + geom_smooth()
-
-
-qqnorm((metsrf$waist-metsrf$pwaist)/swaist);qqline((metsrf$waist-metsrf$pwaist)/swaist)
-qqnorm((log(metsrf$glu)-metsrf$pglu)/sglu);qqline((log(metsrf$glu)-metsrf$pglu)/sglu)
-qqnorm((log(metsrf$tri)-metsrf$ptri)/stri);qqline((log(metsrf$tri)-metsrf$ptri)/stri)
-qqnorm((metsrf$bps-metsrf$pbps)/sbps);qqline((metsrf$bps-metsrf$pbps)/sbps)
-qqnorm((metsrf$bpd-metsrf$pbpd)/sbpd);qqline((metsrf$bpd-metsrf$pbpd)/sbpd)
-qqnorm((metsrf$ldl-metsrf$pldl)/sldl);qqline((metsrf$ldl-metsrf$pldl)/sldl)
+# tstar <- read.csv("../github/epi/tstar.csv")
+# 
+# nhanes <- subset(nhanes,rep!=7)
+# m1 <- lm(modvigmin~(weekend)+first5,data=nhanes)
+# wbar <- mean((nhanes$modvigmin[nhanes$rep <= 5]))
+# w1 <- nhanes$modvigmin
+# what <- predict(m1)
+# w <- (1/what)*w1*wbar
+# nhanes$w <- w^.25
+# nrep <- (nhanes %>% group_by(id) %>% summarise(n=length(id)))$n
+# meas7 <- subset(nhanes, id %in% unique(id)[nrep==6]) #individuals with all 7 days
+# indmeans2 <- meas7 %>% group_by(id) %>% summarise(m=mean(w),glu=glu[1],waist=waist[1],
+#                                                   tri=tri[1],bps=bps[1],bpd=bpd[1],hdl=hdl[1],ldl=ldl[1],n=length(w),age=age[1])
+# 
+# metsrf <- indmeans2[(!is.na(indmeans2$waist)) & (!is.na(indmeans2$bps)) & (!is.na(indmeans2$bpd)) & (!is.na(indmeans2$hdl)) & (!is.na(indmeans2$ldl)) & (!is.na(indmeans2$glu)) & (!is.na(indmeans2$tri)) ,] #remove NAs for waist
+# metsrf$tstar <- tstar$x
+# 
+# metsrf$pwaist <- mean(out$beta[,4])-mean(out$beta[,1])/(1+exp(-mean(out$beta[,2])*(metsrf$tstar-mean(out$beta[,3]))))
+# metsrf$pglu <- mean(out$beta[,8])-mean(out$beta[,5])/(1+exp(-mean(out$beta[,6])*(metsrf$tstar-mean(out$beta[,7]))))
+# metsrf$ptri <- mean(out$beta[,12])-mean(out$beta[,9])/(1+exp(-mean(out$beta[,10])*(metsrf$tstar-mean(out$beta[,11]))))
+# metsrf$pbps <- mean(out$beta[,16])-mean(out$beta[,13])/(1+exp(-mean(out$beta[,14])*(metsrf$tstar-mean(out$beta[,15]))))
+# metsrf$pldl <- mean(out$beta[,17]) + mean(out$beta[,18])*metsrf$tstar #+ mean(out$beta[,22])*metsrf$tstar^2
+# metsrf$pbpd <- mean(out$beta[,19]) + mean(out$beta[,20])*metsrf$tstar #+ mean(out$beta[,15])*metsrf$tstar^2
+# metsrf$phdl <- mean(out$beta[,21]) + mean(out$beta[,22])*metsrf$tstar 
+# swaist <- mean(sqrt(out$Sigma[1,1,]));sglu <- mean(sqrt(out$Sigma[2,2,]));stri <- mean(sqrt(out$Sigma[3,3,]));sbps <- mean(sqrt(out$Sigma[4,4,]));
+# sbpd <- mean(sqrt(out$Sigma[6,6,]));sldl <- mean(sqrt(out$Sigma[5,5,]));shdl <- mean(sqrt(out$Sigma[7,7,]));
+# 
+# 
+# # metsrf$pwaist <- postmeans[4]-postmeans[1]/(1+exp(-postmeans[2]*(metsrf$tstar-postmeans[3])))
+# # metsrf$pglu <- postmeans[8]-postmeans[5]/(1+exp(-postmeans[6]*(metsrf$tstar-postmeans[7])))
+# # metsrf$ptri <- postmeans[12]-postmeans[9]/(1+exp(-postmeans[10]*(metsrf$tstar-postmeans[11])))
+# # metsrf$pbps <- postmeans[19]-postmeans[16]/(1+exp(-postmeans[17]*(metsrf$tstar-postmeans[18])))
+# # metsrf$pbpd <- postmeans[20] + postmeans[21]*metsrf$tstar + postmeans[22]*metsrf$tstar^2
+# # metsrf$pldl <- postmeans[13] + postmeans[14]*metsrf$tstar + postmeans[15]*metsrf$tstar^2
+# # metsrf$phdl <- postmeans[23] + postmeans[24]*metsrf$tstar 
+# # swaist <- postmeans[74];sglu <- postmeans[75];stri <- postmeans[76];sbps <- postmeans[77];
+# #sbpd <- postmeans[78];sldl <- postmeans[79];shdl <- postmeans[80];
+# 
+# p1=qplot(data=metsrf,y=(waist-pwaist)/swaist,x=tstar) + geom_smooth()
+# p2=qplot(data=metsrf,y=(log(glu)-pglu)/sglu,x=tstar) + geom_smooth()
+# p3=qplot(data=metsrf,y=(log(tri)-ptri)/stri,x=tstar) + geom_smooth()
+# p4=qplot(data=metsrf,y=(bps-pbps)/sbps,x=tstar) + geom_smooth()
+# p5=qplot(data=metsrf,y=(bpd-pbpd)/sbpd,x=tstar) + geom_smooth()
+# p6=qplot(data=metsrf,y=(ldl-pldl)/sldl,x=tstar) + geom_smooth()
+# p7=qplot(data=metsrf,y=(hdl-phdl)/shdl,x=tstar) + geom_smooth()
+# grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
+# 
+# par(mfrow=c(4,2))
+# qqnorm((metsrf$waist-metsrf$pwaist)/swaist);qqline((metsrf$waist-metsrf$pwaist)/swaist)
+# qqnorm((log(metsrf$glu)-metsrf$pglu)/sglu);qqline((log(metsrf$glu)-metsrf$pglu)/sglu)
+# qqnorm((log(metsrf$tri)-metsrf$ptri)/stri);qqline((log(metsrf$tri)-metsrf$ptri)/stri)
+# qqnorm((metsrf$bps-metsrf$pbps)/sbps);qqline((metsrf$bps-metsrf$pbps)/sbps)
+# qqnorm((metsrf$bpd-metsrf$pbpd)/sbpd);qqline((metsrf$bpd-metsrf$pbpd)/sbpd)
+# qqnorm((metsrf$ldl-metsrf$pldl)/sldl);qqline((metsrf$ldl-metsrf$pldl)/sldl)
+# qqnorm((metsrf$hdl-metsrf$phdl)/shdl);qqline((metsrf$hdl-metsrf$phdl)/shdl)
