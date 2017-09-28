@@ -183,9 +183,13 @@ arma::ivec sample_zeta(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube
   
   for(int i=0;i<n;i++){
     for(int j=0;j<k;j++){
+      // if((i==1 )| (i==15) | (i==600) | (i== 2000)){
+      //   std::cout << "for i=" << i << " log pi=" << log(pi[j]) << "\n";
+      //   std::cout << "dmvnorm = " << dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true) << "\n";
+      // }
       probs[j] = log(pi[j]) + dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true);
     }
-    probs = probs/sum(probs);
+    probs = exp(probs-log(sum(exp(probs))));
     temp = Rcpp::RcppArmadillo::sample(frame, 1, true, probs);
     out[i] = temp[0];
   }
@@ -198,6 +202,10 @@ arma::vec sample_pi(arma::ivec zeta, arma::vec a){
   arma::ivec counts(k);
   arma::vec out;
   
+  for(int i=0;i<k;i++){
+    counts[i] = 0;
+  }
+  
   for(int i=0;i<n;i++){
     for(int j=0;j<k;j++){
       if(zeta[i]==j){
@@ -205,7 +213,9 @@ arma::vec sample_pi(arma::ivec zeta, arma::vec a){
       }
     }
   }
+  //std::cout << counts << "\n";
   out = rdirich(a+counts);
+  //std::cout << out << "\n";
   return out;
 }
 
@@ -259,17 +269,17 @@ arma::vec sample_beta(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat la
 // [[Rcpp::export]]
 List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int K, int nsim,int burn){
   
-  std::cout << "1\n";
+  //std::cout << "1\n";
   arma::vec currentbeta         = as<arma::vec>(start["currentbeta"]);
   arma::ivec currentzeta         = as<arma::ivec>(start["currentzeta"]);
   arma::vec currentpi         = as<arma::vec>(start["currentpi"]);
   arma::mat currentlambda             = as<arma::mat>(start["currentlambda"]);
-  std::cout << "2\n";
+  //std::cout << "2\n";
   
-  arma::vec Sigmadiag        = as<arma::vec>(start["Sigmadiag"]);
+  arma::mat Sigmadiag        = as<arma::mat>(start["Sigmadiag"]);
   arma::mat propcov             = as<arma::mat>(start["propcov"]);
   
-  std::cout << "3\n";
+  //std::cout << "3\n";
   
   arma::vec bm            = as<arma::vec>(prior["bm"]);
   arma::mat bcov            = as<arma::mat>(prior["bcov"]);
@@ -278,7 +288,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   arma::mat D               = as<arma::mat>(prior["D"]);
   double d            = as<double>(prior["d"]);
   arma::vec a            = as<arma::vec>(prior["a"]);
-  std::cout << "4\n";
+  //std::cout << "4\n";
   
   
   int n = y.n_rows;
@@ -288,18 +298,20 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   
   arma::cube currentSigma = arma::zeros(k,k,K);
   for(int i=0;i<K;i++){
-    currentSigma.slice(i).diag() = Sigmadiag;
+    currentSigma.slice(i).diag() = Sigmadiag.col(i);
   }
-  std::cout << "5\n";
+  //std::cout << "5\n";
   
   
   //storage
   arma::mat beta(nsim,p);
   arma::cube Sigma(k,k,nsim);
+  arma::cube sds(nsim,k,K);
   arma::mat pi(nsim,K);
   arma::cube lambda(nsim,k,K);
   arma::imat zeta(nsim,n);
-  std::cout << "6\n";
+  arma::cube cormat(nsim,0.5*k*(k-1),K);
+  //std::cout << "6\n";
   
   //arma::ivec index(nsim);
   // arma::ivec index2(ntstar);
@@ -314,12 +326,12 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   Rcpp::NumericVector wts = Rcpp::rep(1.0/ntstar,ntstar);//Rcpp::runif(n, 0.0, 1.0);
   index = Rcpp::RcppArmadillo::sample(frame, nsim, true, wts / Rcpp::sum(wts));
   //std::cout << "1\n";
-  std::cout << "7\n";
+  //std::cout << "7\n";
   
   arma::cube currentmeans(n,k,K);
   arma::mat currentspecificmean;
   arma::mat currentmeansnoint;// = calc_mean_noint(tstar.row(index[0]).t(),currentbeta);
-  std::cout << "8\n";
+  //std::cout << "8\n";
   
   for(int j=0;j<K;j++){
     currentmeans.slice(j) = calc_mean(tstar.row(index[0]).t(),currentbeta,currentlambda.col(j));
@@ -327,38 +339,39 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   
   for(int i=0;i<nsim;i++){
     currentmeansnoint = calc_mean_noint(tstar.row(index[i]).t(),currentbeta);
-    std::cout << "9\n";
+    //std::cout << "9\n";
     
     //update tstar
     currentzeta = sample_zeta(y, currentpi, currentmeans, currentSigma);
-    std::cout << "10\n";
+    //std::cout << "10\n";
     
     currentpi = sample_pi(currentzeta,a);
-    std::cout << "11\n";
+    //std::cout << "11\n";
     
     currentspecificmean = calc_specific_mean(tstar.row(index[i]).t(),currentbeta,currentlambda,currentzeta);
-    std::cout << "12\n";
+    //std::cout << "12\n";
     
     for(int j=0;j<K;j++){
       currentSigma.slice(j) = sample_Sigma(subset(y,currentzeta,j),subset(currentspecificmean,currentzeta,j),D,d,(which(currentzeta,j)).size());
     }
-    std::cout << "13\n";
+    
+    //std::cout << "13\n";
     
     for(int j=0;j<K;j++){
       currentlambda.col(j) = sample_lambda(subset(y,currentzeta,j),subset(currentmeansnoint,currentzeta,j),currentSigma.slice(j),lm,lcov);
     }
-    std::cout << "14\n";
     
-    //std::cout << "4\n";
+    //std::cout << "14\n";
     
-    for(int j=0;j<K;j++){
-      currentmeans.slice(j) = calc_mean(tstar.row(index[i]).t(),currentbeta,currentlambda.col(j));
-    }
-    std::cout << "15\n";
+    //std::cout << "15\n";
     
     
     currentbeta = sample_beta(y,tstar.row(index[i]).t(),currentbeta,currentlambda,
                               currentzeta,currentSigma,currentpi,propcov,bm,bcov);
+    
+    for(int j=0;j<K;j++){
+      currentmeans.slice(j) = calc_mean(tstar.row(index[i]).t(),currentbeta,currentlambda.col(j));
+    }
       
     //std::cout << "5\n";
     if((i<burn) && (i>20) && (i%20==0)){
@@ -369,15 +382,22 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     beta.row(i) = currentbeta.t();
     zeta.row(i) = currentzeta.t();
     //std::cout << "7\n";
-    std::cout << "16\n";
+    //std::cout << "16\n";
     
     Sigma.slice(i) = currentSigma.slice(0);
     pi.row(i) = currentpi.t();
     
+    
     for(int j=0;j<K;j++){
       lambda.slice(j).row(i) = currentlambda.col(j).t();
+      sds.slice(j).row(i) = sqrt(currentSigma.slice(j).diag().t());
+      for(int l=1;l<K;l++){
+        for(int ll=l;ll<K;ll++){
+          cormat(l,ll,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
+        }
+      }
     }
-    std::cout << "17\n";
+    //std::cout << "17\n";
     
     if(i % 1000==0){
       std::cout << "i= " << i << "\n";
@@ -390,6 +410,8 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     Named("lambda") = lambda,
     Named("pi") = pi,
     Named("zeta") = zeta,
+    Named("sds") = sds,
+    Named("cormat") = cormat,
     Named("propcov") = propcov);
 } 
 

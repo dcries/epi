@@ -41,10 +41,15 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
 ),
   currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(4.908,K),
                        rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
-  Sigmadiag=c(15^2,.16^2,.54^2,36^2,18^2,14^2,16^2),
-  currentzeta=sample(1:K,nrow(MetS),replace=TRUE,rep(1/K,K)),
+  Sigmadiag=matrix(c(15^2,.16^2,.54^2,36^2,18^2,14^2,16^2,
+                     25^2,.50^2,2^2,49^2,26^2,21^2,24^2),ncol=2,byrow=FALSE),
+  currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
   currentpi=rep(1/K,K),
   propcov=diag(15)*0.00001)
+
+start$currentlambda[,2] <- start$currentlambda[,2] + rnorm(nrow(start$currentlambda),rep(0,nrow(start$currentlambda)),0.15*start$currentlambda[,2])
+start$currentlambda[,1] <- start$currentlambda[,1]*.8
+start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
 prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               bcov=diag(15)*c(8,1.5,.4,.08,.7,1,3,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
@@ -53,7 +58,7 @@ prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out = mcmc_epi_mixture(MetS,tstar2, start, prior, K,100,0)
+out = mcmc_epi_mixture(MetS,tstar2, start, prior, K,5000,3000)
 
 length(unique(out$beta[,1]))/nrow(out$beta)
 diag(out$propcov)
