@@ -47,9 +47,9 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
   currentpi=rep(1/K,K),
   propcov=diag(15)*0.00001)
 
-start$currentlambda[,2] <- start$currentlambda[,2] + rnorm(nrow(start$currentlambda),rep(0,nrow(start$currentlambda)),0.15*start$currentlambda[,2])
-start$currentlambda[,1] <- start$currentlambda[,1]*.8
-start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
+#start$currentlambda[,2] <- start$currentlambda[,2] + rnorm(nrow(start$currentlambda),rep(0,nrow(start$currentlambda)),0.15*start$currentlambda[,2])
+#start$currentlambda[,1] <- start$currentlambda[,1]*.8
+#start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
 prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               bcov=diag(15)*c(8,1.5,.4,.08,.7,1,3,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),

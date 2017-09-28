@@ -331,7 +331,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   arma::cube currentmeans(n,k,K);
   arma::mat currentspecificmean;
   arma::mat currentmeansnoint;// = calc_mean_noint(tstar.row(index[0]).t(),currentbeta);
-  //std::cout << "8\n";
+  int count;
   
   for(int j=0;j<K;j++){
     currentmeans.slice(j) = calc_mean(tstar.row(index[0]).t(),currentbeta,currentlambda.col(j));
@@ -373,27 +373,27 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
       currentmeans.slice(j) = calc_mean(tstar.row(index[i]).t(),currentbeta,currentlambda.col(j));
     }
       
-    //std::cout << "5\n";
     if((i<burn) && (i>20) && (i%20==0)){
       propcov = cov(beta.rows(0,i-1));
     }
-    //std::cout << "6\n";
-    
+
     beta.row(i) = currentbeta.t();
     zeta.row(i) = currentzeta.t();
     //std::cout << "7\n";
-    //std::cout << "16\n";
-    
-    Sigma.slice(i) = currentSigma.slice(0);
+
+    //Sigma.slice(i) = currentSigma.slice(0);
     pi.row(i) = currentpi.t();
+    //std::cout << "16b\n";
     
     
     for(int j=0;j<K;j++){
       lambda.slice(j).row(i) = currentlambda.col(j).t();
       sds.slice(j).row(i) = sqrt(currentSigma.slice(j).diag().t());
-      for(int l=1;l<K;l++){
-        for(int ll=l;ll<K;ll++){
-          cormat(l,ll,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
+      count = 0;
+      for(int l=0;l<(k-1);l++){
+        for(int ll=(l+1);ll<k;ll++){
+          cormat(i,count,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
+          count++;
         }
       }
     }
@@ -406,7 +406,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   
   return List::create(
     Named("beta") = beta,
-    Named("Sigma") = Sigma,
+    //Named("Sigma") = Sigma,
     Named("lambda") = lambda,
     Named("pi") = pi,
     Named("zeta") = zeta,
