@@ -1,3 +1,4 @@
+library(Rcpp)
 library(MASS)
 library(mvtnorm)
 library(LaplacesDemon)
@@ -6,7 +7,7 @@ library(dplyr)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/stanout_imp1.RData")
+load("/ptmp/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")

@@ -7,7 +7,7 @@ library(dplyr)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/stanout_imp1.RData")
+load("/ptmp/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -61,7 +61,7 @@ prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
 
 out2 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,150000,50000,thin=2)
 
-save(out2,file="/ptmp/stanout_mix2.RData")
+save(out2,file="/ptmp/dcries/stanout_mix2.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
