@@ -246,7 +246,7 @@ arma::vec sample_beta(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat la
   //int k = pi.size();
   
   
-  propb = (mvrnormArma(1,beta,0.15*propcov)).row(0).t();
+  propb = (mvrnormArma(1,beta,0.1*propcov)).row(0).t();
   //tstar.row(index[i]).t()
 
   logrprop = logl_b(y,tstar,propb,Sigma,lambda,zeta,pi,bm,bcov); 
@@ -276,16 +276,16 @@ double calc_full_ll(arma::mat y, arma::ivec zeta, arma::mat specificmeanmat, arm
 
 arma::cube calc_meanSigma(arma::cube sds, arma::cube covmat){
   int K = sds.n_slices;
-  int k = sds.n_cols;
-  arma::cube out(k,k,K);
+  int p = sds.n_cols;
+  arma::cube out(p,p,K);
   arma::mat sdmat;
   int count;
   for(int i=0;i<K;i++){
     sdmat = pow(sds.slice(i),2.0);
     out.slice(i).diag() = mean(sdmat,0);
     count = 0;
-    for(int j=0;j<(K-1);j++){
-      for(int k=(j+1);k<K;k++){
+    for(int j=0;j<(p-1);j++){
+      for(int k=(j+1);k<p;k++){
         out(j,k,i) = out(k,j,i) = mean(covmat.slice(i).col(count));
         count++;
       }
@@ -410,7 +410,9 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     //std::cout << "13\n";
     
     for(int j=0;j<K;j++){
-      currentlambda.col(j) = sample_lambda(subset(y,currentzeta,j),subset(currentmeansnoint,currentzeta,j),currentSigma.slice(j),lm,lcov);
+      if((which(currentzeta,j)).size() > 0){
+        currentlambda.col(j) = sample_lambda(subset(y,currentzeta,j),subset(currentmeansnoint,currentzeta,j),currentSigma.slice(j),lm,lcov);
+      }
     }
     
     //std::cout << "14\n";
@@ -463,11 +465,8 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   meanlambda = calc_meanlambda(lambda);
   finalmeanmat = calc_specific_mean(mean(tstar,0).t(),mean(beta,0).t(),meanlambda,median(zeta,0).t());
   meanSigma = calc_meanSigma(sds,covmat);
-  std::cout << "4\n";
-  
   penalty = calc_full_ll(y,median(zeta,0).t(),finalmeanmat,meanSigma);
-  std::cout << "5\n";
-  
+
   dic = -4*mean(full_ll) + 2*penalty;
   
   return List::create(
@@ -479,6 +478,8 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     Named("sds") = sds,
     Named("cormat") = cormat,
     Named("dic") = dic,
+    Named("meanll") = mean(full_ll),
+    Named("pentalty") = penalty,
     Named("propcov") = propcov);
 } 
 
