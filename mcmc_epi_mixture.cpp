@@ -265,6 +265,47 @@ arma::vec sample_beta(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat la
   return beta;
 }
 
+double calc_full_ll(arma::mat y, arma::ivec zeta, arma::mat specificmeanmat, arma::cube Sigma){
+  int n = y.n_rows;
+  double ll=0.0;
+  for(int i=0;i<n;i++){
+    ll += dmvnrm_arma(y.row(i).t(),specificmeanmat.row(i),Sigma.slice(zeta[i]),true);
+  }
+  return ll;
+}
+
+arma::cube calc_meanSigma(arma::cube sds, arma::cube covmat){
+  int K = sds.n_slices;
+  int k = sds.n_cols;
+  arma::cube out(k,k,K);
+  arma::mat sdmat;
+  int count;
+  for(int i=0;i<K;i++){
+    sdmat = pow(sds.slice(i),2.0);
+    out.slice(i).diag() = mean(sdmat,0);
+    count = 0;
+    for(int j=0;j<(K-1);j++){
+      for(int k=(j+1);k<K;k++){
+        out(j,k,i) = out(k,j,i) = mean(covmat.slice(i).col(count));
+        count++;
+      }
+    }
+  }
+  return out;
+}
+
+arma::mat calc_meanlambda(arma::cube lambda){
+  int p = lambda.n_cols;
+  int K = lambda.n_slices;
+  arma::mat out(p,K);
+  
+  for(int i=0;i<K;i++){
+    for(int j=0;j<p;j++){
+      out(j,i) = mean(lambda.slice(i).col(j));
+    }
+  }
+  return out;
+}
 
 // [[Rcpp::export]]
 List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int K, int nsim,int burn){
@@ -311,7 +352,18 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   arma::cube lambda(nsim,k,K);
   arma::imat zeta(nsim,n);
   arma::cube cormat(nsim,0.5*k*(k-1),K);
+  arma::cube covmat(nsim,0.5*k*(k-1),K);
+  
   //std::cout << "6\n";
+  
+  //for dic
+  arma::vec full_ll(nsim);
+  double penalty;
+  double dic;
+  arma::ivec medianzeta(n);
+  arma::cube meanSigma(k,k,K);
+  arma::mat meanlambda;
+  arma::mat finalmeanmat;
   
   //arma::ivec index(nsim);
   // arma::ivec index2(ntstar);
@@ -376,7 +428,10 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     if((i<burn) && (i>20) && (i%20==0)){
       propcov = cov(beta.rows(0,i-1));
     }
-
+    
+    currentspecificmean = calc_specific_mean(tstar.row(index[i]).t(),currentbeta,currentlambda,currentzeta);
+    
+    full_ll[i] = calc_full_ll(y,currentzeta,currentspecificmean,currentSigma);
     beta.row(i) = currentbeta.t();
     zeta.row(i) = currentzeta.t();
     //std::cout << "7\n";
@@ -393,6 +448,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
       for(int l=0;l<(k-1);l++){
         for(int ll=(l+1);ll<k;ll++){
           cormat(i,count,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
+          covmat(i,count,j) = currentSigma(l,ll,j);
           count++;
         }
       }
@@ -404,6 +460,16 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     }
   }
   
+  meanlambda = calc_meanlambda(lambda);
+  finalmeanmat = calc_specific_mean(mean(tstar,0).t(),mean(beta,0).t(),meanlambda,median(zeta,0).t());
+  meanSigma = calc_meanSigma(sds,covmat);
+  std::cout << "4\n";
+  
+  penalty = calc_full_ll(y,median(zeta,0).t(),finalmeanmat,meanSigma);
+  std::cout << "5\n";
+  
+  dic = -4*mean(full_ll) + 2*penalty;
+  
   return List::create(
     Named("beta") = beta,
     //Named("Sigma") = Sigma,
@@ -412,6 +478,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     Named("zeta") = zeta,
     Named("sds") = sds,
     Named("cormat") = cormat,
+    Named("dic") = dic,
     Named("propcov") = propcov);
 } 
 
