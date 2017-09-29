@@ -21,9 +21,9 @@ using namespace Rcpp;
 //   return x(ids);
 // }
 // [[Rcpp::export]]
-IntegerVector pick(IntegerVector x, NumericVector probs, int k){
+arma::ivec pick(IntegerVector x, arma::vec probs, int k){
   //Rcpp::IntegerVector frame = Rcpp::Range(0,k-1);
-  IntegerVector out;
+  arma::ivec out;
   out = Rcpp::RcppArmadillo::sample(x, k, true, probs);
   return out;
 }
