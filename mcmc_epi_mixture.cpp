@@ -308,7 +308,8 @@ arma::mat calc_meanlambda(arma::cube lambda){
 }
 
 // [[Rcpp::export]]
-List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int K, int nsim,int burn){
+List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, 
+                      int K, int nsim,int burn, int thin=1){
   
   //std::cout << "1\n";
   arma::vec currentbeta         = as<arma::vec>(start["currentbeta"]);
@@ -336,6 +337,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   int p = bm.size();
   int k = y.n_cols;
   int ntstar = tstar.n_rows;
+  int keep = (nsim-burn)/thin;
   
   arma::cube currentSigma = arma::zeros(k,k,K);
   for(int i=0;i<K;i++){
@@ -345,19 +347,20 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   
   
   //storage
-  arma::mat beta(nsim,p);
-  arma::cube Sigma(k,k,nsim);
-  arma::cube sds(nsim,k,K);
-  arma::mat pi(nsim,K);
-  arma::cube lambda(nsim,k,K);
-  arma::imat zeta(nsim,n);
-  arma::cube cormat(nsim,0.5*k*(k-1),K);
-  arma::cube covmat(nsim,0.5*k*(k-1),K);
+  arma::mat beta(keep,p);
+  arma::mat betaburn(burn,p);
+  arma::cube Sigma(k,k,keep);
+  arma::cube sds(keep,k,K);
+  arma::mat pi(keep,K);
+  arma::cube lambda(keep,k,K);
+  arma::imat zeta(keep,n);
+  arma::cube cormat(keep,0.5*k*(k-1),K);
+  arma::cube covmat(keep,0.5*k*(k-1),K);
   
   //std::cout << "6\n";
   
   //for dic
-  arma::vec full_ll(nsim);
+  arma::vec full_ll(keep);
   double penalty;
   double dic;
   arma::ivec medianzeta(n);
@@ -384,6 +387,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
   arma::mat currentspecificmean;
   arma::mat currentmeansnoint;// = calc_mean_noint(tstar.row(index[0]).t(),currentbeta);
   int count;
+  int ind = 0;
   
   for(int j=0;j<K;j++){
     currentmeans.slice(j) = calc_mean(tstar.row(index[0]).t(),currentbeta,currentlambda.col(j));
@@ -428,32 +432,40 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, int 
     }
       
     if((i<burn) && (i>20) && (i%20==0)){
-      propcov = cov(beta.rows(0,i-1));
+      propcov = cov(betaburn.rows(0,i-1));
     }
     
     currentspecificmean = calc_specific_mean(tstar.row(index[i]).t(),currentbeta,currentlambda,currentzeta);
     
-    full_ll[i] = calc_full_ll(y,currentzeta,currentspecificmean,currentSigma);
-    beta.row(i) = currentbeta.t();
-    zeta.row(i) = currentzeta.t();
-    //std::cout << "7\n";
-
-    //Sigma.slice(i) = currentSigma.slice(0);
-    pi.row(i) = currentpi.t();
-    //std::cout << "16b\n";
     
+    //storage 
+    if(i < burn){
+      betaburn.row(i) = currentbeta.t();
+    }
+    //std::cout << "8\n";
     
-    for(int j=0;j<K;j++){
-      lambda.slice(j).row(i) = currentlambda.col(j).t();
-      sds.slice(j).row(i) = sqrt(currentSigma.slice(j).diag().t());
-      count = 0;
-      for(int l=0;l<(k-1);l++){
-        for(int ll=(l+1);ll<k;ll++){
-          cormat(i,count,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
-          covmat(i,count,j) = currentSigma(l,ll,j);
-          count++;
+    if((i >= burn) && (i%thin==0)){
+      full_ll[ind] = calc_full_ll(y,currentzeta,currentspecificmean,currentSigma);
+      beta.row(ind) = currentbeta.t();
+      zeta.row(ind) = currentzeta.t();
+      //Sigma.slice(i) = currentSigma.slice(0);
+      pi.row(ind) = currentpi.t();
+      //std::cout << "16b\n";
+      
+      for(int j=0;j<K;j++){
+        lambda.slice(j).row(ind) = currentlambda.col(j).t();
+        sds.slice(j).row(ind) = sqrt(currentSigma.slice(j).diag().t());
+        count = 0;
+        for(int l=0;l<(k-1);l++){
+          for(int ll=(l+1);ll<k;ll++){
+            cormat(ind,count,j) = currentSigma(l,ll,j)/sqrt(currentSigma(l,l,j)*currentSigma(ll,ll,j));
+            covmat(ind,count,j) = currentSigma(l,ll,j);
+            count++;
+          }
         }
       }
+      
+      ind++;
     }
     //std::cout << "17\n";
     

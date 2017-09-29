@@ -58,7 +58,7 @@ prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,100000,50000)
+out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,150000,50000,thin=2)
 
 save(out3,file="/ptmp/stanout_mix3.RData")
 
