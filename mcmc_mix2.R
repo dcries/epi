@@ -1,3 +1,4 @@
+library(Rcpp)
 library(MASS)
 library(mvtnorm)
 library(LaplacesDemon)
