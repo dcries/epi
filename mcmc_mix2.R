@@ -33,7 +33,7 @@ MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 K=2
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
                             0.2805, 4.4733, 1.8297,  #tri
-                            18.388,   4.602 ,  1.389, 137.256 , #bps
+                            18.388,   4.602 ,  1.389,  #bps
                             #.138,4.247,1.387, #log bps
                             -6.3, #ldl
                             #-0.16, #sqrt(ldl)
