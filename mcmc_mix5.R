@@ -7,7 +7,7 @@ library(dplyr)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/dcries/stanout_imp1.RData")
+load("/ptmp/STAT/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -24,22 +24,22 @@ meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd))
 waist <- meas7$waist[!duplicated(meas7$id)]
 lglu <- log(meas7$glu[!duplicated(meas7$id)])
 ltri <- log(meas7$tri[!duplicated(meas7$id)])
-bps <- log(meas7$bps[!duplicated(meas7$id)])
-ldl <- sqrt(meas7$ldl[!duplicated(meas7$id)])
+bps <- (meas7$bps[!duplicated(meas7$id)])
+ldl <- (meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
-hdl <- log(meas7$hdl[!duplicated(meas7$id)])
+hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
 K=5
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
                             0.2805, 4.4733, 1.8297,  #tri
-                            #18.388,   4.602 ,  1.389, 137.256 , #bps
-                            .138,4.247,1.387, #log bps
-                            #126,-6.3, #ldl
-                            -0.16, #sqrt(ldl)
+                            18.388,   4.602 ,  1.389, 137.256 , #bps
+                            #.138,4.247,1.387, #log bps
+                            -6.3, #ldl
+                            #-0.16, #sqrt(ldl)
                             2.3, #bpd
-                            #62,-3.3 #hdl
-                            -.02 #log(hdl)
+                            -3.3 #hdl
+                            #-.02 #log(hdl)
 ),
 currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(4.908,K),
                        rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
@@ -59,9 +59,9 @@ prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,150000,50000,thin=2)
+out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=5)
 
-save(out5,file="/ptmp/stanout_mix5.RData")
+save(out5,file="/ptmp/STAT/dcries/stanout_mix5.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
