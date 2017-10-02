@@ -31,8 +31,9 @@ hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
 K=5
-start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
-                            0.2805, 4.4733, 1.8297,  #tri
+start <- list(currentbeta=c(10.445,   3.230,   2.033 ,26.428,2.725,1.256,#0.1642,3.4081,1.4433,
+                            #0.2805, 4.4733, 1.8297,  #log tri
+                            65.736,   1.412,   2.121, #tri
                             18.388,   4.602 ,  1.389 , #bps
                             #.138,4.247,1.387, #log bps
                             -6.3, #ldl
@@ -41,9 +42,9 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,
                             -3.3 #hdl
                             #-.02 #log(hdl)
 ),
-currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(4.908,K),
+currentlambda=matrix(c(rep(101.517,K),rep(122.501,K),rep(170.393,K),rep(138.480,K),
                        rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
-Sigmadiag=matrix(rep(c(15^2,.16^2,.54^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
+Sigmadiag=matrix(rep(c(15^2,16^2,24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
 currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
 propcov=diag(15)*0.00001)
@@ -52,10 +53,10 @@ propcov=diag(15)*0.00001)
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
-prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
-              bcov=diag(15)*c(8,1.5,.4,.08,.7,1,3,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
-              lm=c(98,4.7,4.73,130,0,0,0),
-              lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
+prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,4.88,2.11,18,3,1.3,rep(0,3)),
+              bcov=diag(15)*c(8,1.5,.4,17,.7,1,20,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
+              lm=c(98,exp(4.7),exp(4.73),130,0,0,0),
+              lcov=diag(7)*c(17,40,80,7,100,100,100)^2,
               a=rep(1,K))
 
 
