@@ -8,10 +8,10 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
-imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/STAT/dcries/stanout_imp1.RData")
+imp1 <- read.csv("nhanes_complete.csv")
+load("/ptmp/dcries/stanout.RData")
 rmat <- as.matrix(rs)
-tstar <- rmat[,31:7903]
+tstar <- rmat[,31:3367]
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
 imp1 <- subset(imp1,rep!=7)
@@ -20,7 +20,7 @@ nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6] & (!is.na(imp1$education))) #individuals with all 7 days
 
 
-tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),]) & (meas7$bpd[!duplicated(meas7$id)] > 0)]
+tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),c("waist","glu","tri","bps","bpd","ldl","hdl")]) & (meas7$bpd[!duplicated(meas7$id)] > 0)]
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)) & (!is.na(meas7$education)) & (meas7$bpd >0),] #remove NAs for waist
 
 waist <- meas7$waist[!duplicated(meas7$id)]
@@ -76,7 +76,7 @@ out1$dic
 #                              p=pmat,z=out5$zeta+1,K=K)
 # out5=list(out5,permutations)
 
-save(out1,file="/ptmp/STAT/dcries/stanout_realmix1.RData")
+save(out1,file="/ptmp/dcries/stanout_mix1.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
