@@ -86,6 +86,7 @@ qplot(data=agevar,x=age,y=v)  + geom_smooth() + geom_line(aes(x=num,y=eval),colo
 #don't know about these
 a1 <- a[a$n>1,]
 a1$a <- 1;a1$a[a1$age>=35] <- 2;a1$a[a1$age>=50] <- 3;a1$a[a1$age>=65] <- 4
+a1$b <- 1;a1$b[a1$age>=35] <- 2;a1$b[a1$age>=50] <- 3;a1$b[a1$age>=65] <- 4
 
 a1 %>% group_by(g) %>% summarise(m=mean(s))
 a1 %>% group_by(r) %>% summarise(m=mean(s))
@@ -116,6 +117,8 @@ qplot(data=subset(a3,r==1),x=age,y=m)  + geom_smooth()
 # plot(a2$age,a2$m);lines(a2$age,predict(m3),col="red")
 
 #different values of rho
+nhanes2$b <- 1;nhanes2$b[nhanes2$bmi>=18] <- 2;nhanes2$b[nhanes2$bmi>=25] <- 3;nhanes2$b[nhanes2$bmi>=30] <- 4;nhanes2$b[nhanes2$bmi>=35] <- 5
+
 m1c <- lme(w~1,data=nhanes2,random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
 mm <- lme(w~1,data=subset(nhanes2,sex==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
