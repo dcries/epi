@@ -196,6 +196,27 @@ arma::ivec sample_zeta(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube
   return out;
 }
 
+arma::mat calc_pmat(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube Sigma){
+  int k = pi.size();
+  int n = meanmat.slice(0).n_rows;
+  arma::vec probs(k);
+  arma::mat out(n,k);
+
+  
+  for(int i=0;i<n;i++){
+    for(int j=0;j<k;j++){
+      // if((i==1 )| (i==15) | (i==600) | (i== 2000)){
+      //   std::cout << "for i=" << i << " log pi=" << log(pi[j]) << "\n";
+      //   std::cout << "dmvnorm = " << dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true) << "\n";
+      // }
+      probs[j] = log(pi[j]) + dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true);
+    }
+    out.row(i) = exp(probs-log(sum(exp(probs)))).t();
+
+  }
+  return out;
+}
+
 arma::vec sample_pi(arma::ivec zeta, arma::vec a){
   int k = a.size();
   int n = zeta.size();
@@ -356,6 +377,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior,
   arma::imat zeta(keep,n);
   arma::cube cormat(keep,0.5*k*(k-1),K);
   arma::cube covmat(keep,0.5*k*(k-1),K);
+  arma::cube pmat(n,K,keep);
   
   //std::cout << "6\n";
   
@@ -445,13 +467,13 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior,
     //std::cout << "8\n";
     
     if((i >= burn) && (i%thin==0)){
+      pmat.slice(ind) = calc_pmat(y, currentpi, currentmeans, currentSigma);
       full_ll[ind] = calc_full_ll(y,currentzeta,currentspecificmean,currentSigma);
       beta.row(ind) = currentbeta.t();
       zeta.row(ind) = currentzeta.t();
       //Sigma.slice(i) = currentSigma.slice(0);
       pi.row(ind) = currentpi.t();
-      //std::cout << "16b\n";
-      
+
       for(int j=0;j<K;j++){
         lambda.slice(j).row(ind) = currentlambda.col(j).t();
         sds.slice(j).row(ind) = sqrt(currentSigma.slice(j).diag().t());
@@ -492,6 +514,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior,
     Named("dic") = dic,
     Named("meanll") = mean(full_ll),
     Named("pentalty") = penalty,
+    Named("pmat") = pmat,
     Named("propcov") = propcov);
 } 
 
