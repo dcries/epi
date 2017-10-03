@@ -22,8 +22,8 @@ tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),]) & (meas7$bpd[!dup
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)) & (!is.na(meas7$education)) & (meas7$bpd >0),] #remove NAs for waist
 
 waist <- meas7$waist[!duplicated(meas7$id)]
-lglu <- log(meas7$glu[!duplicated(meas7$id)])
-ltri <- log(meas7$tri[!duplicated(meas7$id)])
+lglu <- (meas7$glu[!duplicated(meas7$id)])
+ltri <- (meas7$tri[!duplicated(meas7$id)])
 bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- (meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
@@ -53,14 +53,14 @@ propcov=diag(15)*0.00001)
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
-prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,4.88,2.11,18,3,1.3,rep(0,3)),
+prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,1.88,2.11,18,3,1.3,rep(0,3)),
               bcov=diag(15)*c(8,1.5,.4,17,.7,1,20,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
               lm=c(98,exp(4.7),exp(4.73),130,0,0,0),
               lcov=diag(7)*c(17,40,80,7,100,100,100)^2,
               a=rep(1,K))
 
 
-out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=5)
+out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,40000,20000,thin=1)
 
 save(out5,file="/ptmp/STAT/dcries/stanout_mix5.RData")
 

@@ -59,9 +59,9 @@ prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out2 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=5)
+out1 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=5)
 
-save(out2,file="/ptmp/STAT/dcries/stanout_mix1.RData")
+save(out1,file="/ptmp/STAT/dcries/stanout_mix1.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
