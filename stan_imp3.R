@@ -256,7 +256,7 @@ for(i in 2:ncol(nonzeropos)){
   nonzeropos[,i] <- temp
 }
 
-x <- model.matrix(~age+as.factor(sex)+as.factor(race)+as.factor(education),data=meas7[!duplicated(meas7$id),c("age","sex","race","education","weekend","first5")])
+x <- model.matrix(~age+bmi+as.factor(sex)+as.factor(race)+as.factor(education),data=meas7[!duplicated(meas7$id),c("age","bmi","sex","race","education","weekend","first5")])
 
 waist <- meas7$waist[!duplicated(meas7$id)]
 lglu <- log(meas7$glu[!duplicated(meas7$id)])
