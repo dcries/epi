@@ -62,19 +62,19 @@ prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,1.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,200000,50000,thin=10)
+out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=10)
 out3$dic
-# pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
-# for(i in 1:K){
-#   for(j in 1:nrow(MetS)){
-#     pmat[,j,i] <- out5$pmat[j,i,]
-#   }
-# }
-# out5$pmat <- NULL
-# 
-# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-#                              p=pmat,z=out5$zeta+1,K=K)
-# out5=list(out5,permutations)
+pmat <- array(0,dim=c(nrow(out3$beta),nrow(MetS),K))
+for(i in 1:K){
+  for(j in 1:nrow(MetS)){
+    pmat[,j,i] <- out3$pmat[j,i,]
+  }
+}
+out3$pmat <- NULL
+
+permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+                             p=pmat,z=out3$zeta+1,K=K)
+out3=list(out3,permutations)
 
 save(out3,file="/ptmp/dcries/stanout_realmix3.RData")
 

@@ -62,7 +62,7 @@ prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,1.88,2.11,18,3,1.3,rep(0,3)),
               a=rep(1,K))
 
 
-out6 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,200000,50000,thin=10)
+out6 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=10)
 out6$dic
 pmat <- array(0,dim=c(nrow(out6$beta),nrow(MetS),K))
 for(i in 1:K){
