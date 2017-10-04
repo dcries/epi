@@ -135,4 +135,9 @@ ma2 <- lme(w~1,data=subset(nhanes2,a==2),random=~1|id,correlation=corAR1(form=~1
 ma3 <- lme(w~1,data=subset(nhanes2,a==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 ma4 <- lme(w~1,data=subset(nhanes2,a==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 
+mb1 <- lme(w~1,data=subset(nhanes2,b==1),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mb2 <- lme(w~1,data=subset(nhanes2,b==2),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mb3 <- lme(w~1,data=subset(nhanes2,b==3),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mb4 <- lme(w~1,data=subset(nhanes2,b==4),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
+mb5 <- lme(w~1,data=subset(nhanes2,b==5),random=~1|id,correlation=corAR1(form=~1|id),method="ML")
 

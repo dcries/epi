@@ -76,7 +76,7 @@ out1$dic
 #                              p=pmat,z=out5$zeta+1,K=K)
 # out5=list(out5,permutations)
 
-save(out1,file="/ptmp/dcries/stanout_mix1.RData")
+save(out1,file="/ptmp/dcries/stanout_realmix1.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
