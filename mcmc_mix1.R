@@ -9,7 +9,7 @@ library(label.switching)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/STAT/dcries/stanout_imp1.RData")
+load("/home/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -55,10 +55,10 @@ propcov=diag(15)*0.00001)
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
-prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,1.88,2.11,18,3,1.3,rep(0,3)),
-              bcov=diag(15)*c(8,1.5,.4,17,.7,1,20,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
-              lm=c(98,exp(4.7),exp(4.73),130,0,0,0),
-              lcov=diag(7)*c(17,40,80,7,100,100,100)^2,
+prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
+              bcov=diag(15)*c(8,1.5,.8,.08,1.5,.8,3,1.5,.8,5,1.5,.8,rep(100,3))^2,d=8,D=diag(7),
+              lm=c(98,4.7,4.73,130,0,0,0),
+              lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
 
 
@@ -70,13 +70,13 @@ out1$dic
 #     pmat[,j,i] <- out5$pmat[j,i,]
 #   }
 # }
-# out5$pmat <- NULL
+out1$pmat <- NULL
 # 
 # permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
 #                              p=pmat,z=out5$zeta+1,K=K)
 # out5=list(out5,permutations)
 
-save(out1,file="/ptmp/STAT/dcries/stanout_realmix1.RData")
+save(out1,file="/home/dcries/stanout_realmix1.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
