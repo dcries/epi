@@ -73,7 +73,7 @@ for(i in 1:K){
 out7$pmat <- NULL
 
 permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-                             p=pmat,z=out8$zeta+1,K=K)
+                             p=pmat,z=out7$zeta+1,K=K)
 out7=list(out7=out7,permutations=permutations)
 
 save(out7,file="/ptmp/STAT/dcries/stanout_mix7.RData")

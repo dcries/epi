@@ -38,13 +38,13 @@ x <- seq(from=0,to=4,by=0.1)
 # ldl <- mean(out$beta[,17]) + mean(out$beta[,18])*x #+ mean(out$beta[,15])*x^2
 # hdl <- mean(out$beta[,21]) + mean(out$beta[,22])*x 
 
-waist <- mean(out$lambda[,1,5])-mean(out$beta[,1])/(1+exp(-mean(out$beta[,2])*(x-mean(out$beta[,3]))))
-glu <- mean(out$lambda[,2,5])-mean(out$beta[,4])/(1+exp(-mean(out$beta[,5])*(x-mean(out$beta[,6]))))
-tri <- mean(out$lambda[,3,5])-mean(out$beta[,7])/(1+exp(-mean(out$beta[,8])*(x-mean(out$beta[,9]))))
-bps <- mean(out$lambda[,4,5])-mean(out$beta[,10])/(1+exp(-mean(out$beta[,11])*(x-mean(out$beta[,12]))))
-bpd <- mean(out$lambda[,6,5]) + mean(out$beta[,14])*x #+ mean(out$beta[,22])*x^2
-ldl <- mean(out$lambda[,5,5]) + mean(out$beta[,13])*x #+ mean(out$beta[,15])*x^2
-hdl <- mean(out$lambda[,7,5]) + mean(out$beta[,15])*x 
+waist <- mean(out$lambda[,1,1])-mean(out$beta[,1])/(1+exp(-mean(out$beta[,2])*(x-mean(out$beta[,3]))))
+glu <- mean(out$lambda[,2,1])-mean(out$beta[,4])/(1+exp(-mean(out$beta[,5])*(x-mean(out$beta[,6]))))
+tri <- mean(out$lambda[,3,1])-mean(out$beta[,7])/(1+exp(-mean(out$beta[,8])*(x-mean(out$beta[,9]))))
+bps <- mean(out$lambda[,4,1])-mean(out$beta[,10])/(1+exp(-mean(out$beta[,11])*(x-mean(out$beta[,12]))))
+bpd <- mean(out$lambda[,6,1]) + mean(out$beta[,14])*x #+ mean(out$beta[,22])*x^2
+ldl <- mean(out$lambda[,5,1]) + mean(out$beta[,13])*x #+ mean(out$beta[,15])*x^2
+hdl <- mean(out$lambda[,7,1]) + mean(out$beta[,15])*x 
 
 
 naivewaist <- naivemeans[4]-naivemeans[1]/(1+exp(-naivemeans[2]*(x-naivemeans[3])))
@@ -56,8 +56,8 @@ naiveldl <- naivemeans[13] + naivemeans[14]*x + naivemeans[15]*x^2
 naivehdl <- naivemeans[23] + naivemeans[24]*x 
 
 p1=ggplot() + geom_point(data=indmeans,aes(x=m,y=waist))  + geom_line(aes(x=x,y=naivewaist),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=waist),colour="blue",size=2) + theme_bw()
-p2=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu)))  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw()
-p3=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=naivetri),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw()
+p2=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu)))  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw() #+ ylim(c(0,400))
+p3=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=naivetri),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw() #+ ylim(c(0,1000))
 p4=ggplot() + geom_point(data=indmeans,aes(x=m,y=(bps))) + geom_line(aes(x=x,y=naivebps),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bps),colour="blue",size=2) + theme_bw()
 p5=ggplot() + geom_point(data=indmeans,aes(x=m,y=bpd))  + geom_line(aes(x=x,y=naivebpd),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bpd),colour="blue",size=2)+ theme_bw()
 p6=ggplot() + geom_point(data=indmeans,aes(x=m,y=(ldl)))  + geom_line(aes(x=x,y=naiveldl),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw()
