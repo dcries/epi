@@ -9,7 +9,7 @@ library(label.switching)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/STAT/dcries/stanout_imp1.RData")
+load("/ptmp/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -76,7 +76,7 @@ permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
                              p=pmat,z=out5$zeta+1,K=K)
 out5=list(out5,permutations)
 
-save(out5,file="/ptmp/STAT/dcries/stanout_mix5.RData")
+save(out5,file="/ptmp/dcries/stanout_mix5.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
