@@ -9,7 +9,7 @@ library(label.switching)
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("nhanes_complete.csv")
-load("/ptmp/dcries/stanout.RData")
+load("/home/dcries/stanout.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:3367]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -55,28 +55,29 @@ propcov=diag(15)*0.00001)
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
-prior <- list(bm=c(7,3,2.11,.16,3.6,1.4,.12,4.88,2.11,18,3,1.3,rep(0,3)),
-              bcov=diag(15)*c(8,1.5,.4,.08,.7,1,3,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
+prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
+              bcov=diag(15)*c(8,1.5,.8,.08,1.5,.8,3,1.5,.8,5,1.5,.8,rep(100,3))^2,d=8,D=diag(7),
               lm=c(98,4.7,4.73,130,0,0,0),
               lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
 
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=10)
-out3$dic
-pmat <- array(0,dim=c(nrow(out3$beta),nrow(MetS),K))
-for(i in 1:K){
-  for(j in 1:nrow(MetS)){
-    pmat[,j,i] <- out3$pmat[j,i,]
-  }
-}
-out3$pmat <- NULL
 
-permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-                             p=pmat,z=out3$zeta+1,K=K)
-out3=list(out3,permutations)
+out1 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=10)
+out1$dic
+# pmat <- array(0,dim=c(nrow(out1$beta),nrow(MetS),K))
+# for(i in 1:K){
+#   for(j in 1:nrow(MetS)){
+#     pmat[,j,i] <- out1$pmat[j,i,]
+#   }
+# }
+out1$pmat <- NULL
 
-save(out3,file="/ptmp/dcries/stanout_realmix3.RData")
+# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+#                              p=pmat,z=out1$zeta+1,K=K)
+# out1=list(out1,permutations)
+
+save(out1,file="/home/dcries/stanout_realmix3.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
