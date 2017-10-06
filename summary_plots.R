@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
-setwd("C:/Users/dcries/workspace2")
+setwd("C:/Users/dcries/workspace")
 nhanes <- read.csv("../github/epi/NHANES_complete.csv")
 names(nhanes) <- tolower(names(nhanes))
 nhanes$a <- 1;nhanes$a[nhanes$age>=35] <- 2;nhanes$a[nhanes$age>=50] <- 3;nhanes$a[nhanes$age>=65] <- 4
@@ -55,13 +55,13 @@ naivebpd <- naivemeans[20] + naivemeans[21]*x + naivemeans[22]*x^2
 naiveldl <- naivemeans[13] + naivemeans[14]*x + naivemeans[15]*x^2
 naivehdl <- naivemeans[23] + naivemeans[24]*x 
 
-p1=ggplot() + geom_point(data=indmeans,aes(x=m,y=waist))  + geom_line(aes(x=x,y=naivewaist),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=waist),colour="blue",size=2) + theme_bw()
-p2=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu)))  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2,linetype=2)+ geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw() #+ ylim(c(0,400))
-p3=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=naivetri),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw() #+ ylim(c(0,1000))
-p4=ggplot() + geom_point(data=indmeans,aes(x=m,y=(bps))) + geom_line(aes(x=x,y=naivebps),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bps),colour="blue",size=2) + theme_bw()
-p5=ggplot() + geom_point(data=indmeans,aes(x=m,y=bpd))  + geom_line(aes(x=x,y=naivebpd),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=bpd),colour="blue",size=2)+ theme_bw()
-p6=ggplot() + geom_point(data=indmeans,aes(x=m,y=(ldl)))  + geom_line(aes(x=x,y=naiveldl),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw()
-p7=ggplot() + geom_point(data=indmeans,aes(x=m,y=(hdl)))  + geom_line(aes(x=x,y=naivehdl),colour="red",size=2,linetype=2) + geom_line(aes(x=x,y=hdl),colour="blue",size=2)+ theme_bw()
+p1=ggplot() + geom_point(data=indmeans,aes(x=m,y=waist))  + geom_line(aes(x=x,y=waist),colour="blue",size=2) + theme_bw()+ geom_line(aes(x=x,y=naivewaist),colour="red",size=2,linetype=2)
+p2=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(glu))) + geom_line(aes(x=x,y=glu),colour="blue",size=2) + theme_bw()  + geom_line(aes(x=x,y=naiveglu),colour="red",size=2,linetype=2)#+ ylim(c(0,400))
+p3=ggplot() + geom_point(data=indmeans,aes(x=m,y=log(tri))) + geom_line(aes(x=x,y=tri),colour="blue",size=2) + theme_bw()  + geom_line(aes(x=x,y=naivetri),colour="red",size=2,linetype=2)#+ ylim(c(0,1000))
+p4=ggplot() + geom_point(data=indmeans,aes(x=m,y=(bps)))  + geom_line(aes(x=x,y=bps),colour="blue",size=2) + theme_bw()+ geom_line(aes(x=x,y=naivebps),colour="red",size=2,linetype=2)
+p5=ggplot() + geom_point(data=indmeans,aes(x=m,y=bpd))  + geom_line(aes(x=x,y=bpd),colour="blue",size=2)+ theme_bw() + geom_line(aes(x=x,y=naivebpd),colour="red",size=2,linetype=2)
+p6=ggplot() + geom_point(data=indmeans,aes(x=m,y=(ldl)))  + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw() + geom_line(aes(x=x,y=naiveldl),colour="red",size=2,linetype=2)
+p7=ggplot() + geom_point(data=indmeans,aes(x=m,y=(hdl)))  + geom_line(aes(x=x,y=hdl),colour="blue",size=2)+ theme_bw() + geom_line(aes(x=x,y=naivehdl),colour="red",size=2,linetype=2)
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
 
 #load("stanout_second.RData") ???

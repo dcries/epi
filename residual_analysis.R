@@ -5,14 +5,14 @@ setwd("C:/Users/dcries/github/epi/")
 
 
 #for imputed data
-load("../../workspace2/stanout_imp1.RData")
+load("../../workspace/stanout_imp1.RData")
 samples <- as.matrix(rs)
 samples <- samples[,1:30]
 
 #load("../../workspace2/stanout_temp2.RData")
 #out$beta <- out$beta[50000:100000,]
 #out$Sigma <- out$Sigma[,,50000:100000]
-load("../../workspace/stanout_mix5.RData")
+load("../../workspace/stanout_mix1.RData")
 
 
 demo <- read.csv("demographics_imp.csv")
@@ -45,9 +45,9 @@ for(i in 1:nsim){
   
   zeta <- out$zeta[index2[i],] +1
   alpha <- out$beta[index2[i],]
-  lambda <- out$lambda[index2[i],,]
-  sds <- out$sds[index2[i],,]
-  cormat <- out$cormat[index2[i],,]
+  lambda <- as.matrix(out$lambda[index2[i],,])
+  sds <- as.matrix(out$sds[index2[i],,])
+  cormat <- as.matrix(out$cormat[index2[i],,])
   #Sigma <- out$Sigma[,,index2[i]]
   Sigma <- array(0,dim=c(7,7,K))
   for(j in 1:K){
@@ -114,10 +114,32 @@ p7=qplot(y=residhdl,x=MetS$X) #+ geom_smooth()
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
 
 par(mfrow=c(4,2))
-qqnorm(residwaist);qqline(residwaist)
-qqnorm(residglu);qqline(residglu)
-qqnorm(residtri);qqline(residtri)
-qqnorm(residbps);qqline(residbps)
-qqnorm(residbpd);qqline(residbpd)
-qqnorm(residldl);qqline(residldl)
-qqnorm(residhdl);qqline(residhdl)
+qqnorm(residwaist,main="Waist Circumference");qqline(residwaist)
+qqnorm(residglu,main="log Glucose");qqline(residglu)
+qqnorm(residtri,main="log Triglyceride");qqline(residtri)
+qqnorm(residbps,main="Systolic Blood Pressure");qqline(residbps)
+qqnorm(residbpd,main="Diastolic Blood Pressure");qqline(residbpd)
+qqnorm(residldl,main="LDL");qqline(residldl)
+qqnorm(residhdl,main="HDL");qqline(residhdl)
+
+
+#----------------
+lam <- colMeans(out3$lambda)
+sds <- colMeans(out3$sds)
+pi <- colMeans(out3$pi)
+gamma0 <- rep(0,7)
+for(i in 2:K){
+  gamma0 <- gamma0 + pi[i]*(lam[,1] - lam[,i])
+}
+gamma0 <- lam[,1]-gamma0
+
+n <- round(1000*pi)
+random <- matrix(0,ncol=7,nrow=1000)
+for(i in 1:7){
+  random[,i] <- c(rnorm(n[1],lam[i,1]-gamma0[i],sds[i,1]),rnorm(n[2],lam[i,2]-gamma0[i],sds[i,2]),rnorm(n[3],lam[i,3]-gamma0[i],sds[i,3]))
+}
+
+qqnorm(random[,1]);qqline(random[,1])
+qqplot(residwaist,random[,1])
+qqplot(residglu,random[,2])
+qqplot(residtri,random[,3])

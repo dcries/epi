@@ -292,8 +292,8 @@ rs <- sampling(ms,dat,c("beta","gamma","L","sigmab","rho","Tstar"#,"alphaw",
                         #"sigma2waist","sigma2bps",
                         #"sigma2glu","sigma2tri","sigma2ldl",
                         #"sigma2hdl","sigma2bpd"
-),chains=8,
-iter=4000)
+),chains=8,control=list(adapt_delta=0.99),
+iter=2000)
 (rs)
 save(rs,file="/ptmp/dcries/stanout_imp2.RData")
 
