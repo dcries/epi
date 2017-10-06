@@ -33,9 +33,9 @@ hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
 K=1
-start <- list(currentbeta=c(10.445,   3.230,   2.033 ,26.428,2.725,1.256,#0.1642,3.4081,1.4433,
-                            #0.2805, 4.4733, 1.8297,  #log tri
-                            65.736,   1.412,   2.121, #tri
+start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
+                            0.2805, 4.4733, 1.8297,  #log tri
+                            #65.736,   1.412,   2.121, #tri
                             18.388,   4.602 ,  1.389 , #bps
                             #.138,4.247,1.387, #log bps
                             -6.3, #ldl
@@ -44,9 +44,9 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,26.428,2.725,1.256,#0.1642
                             -3.3 #hdl
                             #-.02 #log(hdl)
 ),
-currentlambda=matrix(c(rep(101.517,K),rep(122.501,K),rep(170.393,K),rep(138.480,K),
+currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(138.480,K),
                        rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
-Sigmadiag=matrix(rep(c(15^2,16^2,24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
+Sigmadiag=matrix(rep(c(15^2,.16^2,.24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
 currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
 propcov=diag(15)*0.00001)
