@@ -87,12 +87,12 @@ plot(out$beta[,13],type="l") #ldl
 plot(out$beta[,14],type="l") #bpd
 plot(out$beta[,15],type="l") #hdl
 
-
+maxk=3
 name=c("w","G","t","bps","ldl","bpd","hdl")
 par(mfrow=c(3,2))
 for(i in 1:7){
   for(j in 1:6){
-    if(j==6){
+    if(j>maxk){
       plot.new()
     }
     else{
@@ -103,7 +103,7 @@ for(i in 1:7){
 
 for(i in 1:7){
   for(j in 1:6){
-    if(j==6){
+    if(j>maxk){
       plot.new()
     }
     else{
