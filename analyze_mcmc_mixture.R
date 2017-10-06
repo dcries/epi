@@ -26,8 +26,32 @@ ldl <- sqrt(meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- log(meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
-#-------------------------------------
 
+#-------------------------------------
+#check mixing
+load("C:/Users/dcries/workspace2/stanout_realmix3.RData")
+out3a=out3
+load("C:/Users/dcries/workspace2/stanout_realmix3b.RData")
+out3b=out3
+load("C:/Users/dcries/workspace2/stanout_realmix3c.RData")
+out3c=out3
+
+length(unique(out3a$beta[,1]))/nrow(out3a$beta)
+length(unique(out3b$beta[,1]))/nrow(out3b$beta)
+length(unique(out3c$beta[,1]))/nrow(out3c$beta)
+
+beta <- mcmc.list(list(mcmc(out3a$beta),mcmc(out3b$beta),mcmc(out3c$beta)))
+gelman.diag(beta)
+pi <- mcmc.list(list(mcmc(out3a$pi[,2]),mcmc(out3b$pi[,1]),mcmc(out3c$pi[,3])))
+gelman.diag(pi)
+lambda <- mcmc.list(list(mcmc(out3a$lambda[,7,1]),mcmc(out3b$lambda[,7,2]),mcmc(out3c$lambda[,7,1])))
+gelman.diag(lambda)
+sigma <- mcmc.list(list(mcmc(out3a$sds[,7,1]),mcmc(out3b$sds[,7,2]),mcmc(out3c$sds[,7,1])))
+gelman.diag(sigma)
+
+plot(out3a$beta[,5],type="l")
+lines(out3b$beta[,5],type="l",col=2)
+lines(out3c$beta[,5],type="l",col=3)
 
 length(unique(out$beta[,1]))/nrow(out$beta)
 diag(out$propcov)

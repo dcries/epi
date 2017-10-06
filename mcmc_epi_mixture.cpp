@@ -258,7 +258,7 @@ arma::vec sample_lambda(arma::mat y, arma::mat meannoint, arma::mat Sigma, arma:
 
 arma::vec sample_beta(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat lambda,
                       arma::ivec zeta, arma::cube Sigma,
-                      arma::vec pi, arma::mat propcov, arma::vec bm, arma::mat bcov){
+                      arma::vec pi, arma::mat propcov, arma::vec bm, arma::mat bcov,double mult){
   int p = beta.size();
   arma::vec propb(p);
   double logr = 0.0;
@@ -267,7 +267,7 @@ arma::vec sample_beta(arma::mat y, arma::vec tstar, arma::vec beta, arma::mat la
   //int k = pi.size();
   
   
-  propb = (mvrnormArma(1,beta,0.1*propcov)).row(0).t();
+  propb = (mvrnormArma(1,beta,mult*propcov)).row(0).t();
   //tstar.row(index[i]).t()
 
   logrprop = logl_b(y,tstar,propb,Sigma,lambda,zeta,pi,bm,bcov); 
@@ -330,7 +330,7 @@ arma::mat calc_meanlambda(arma::cube lambda){
 
 // [[Rcpp::export]]
 List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior, 
-                      int K, int nsim,int burn, int thin=1){
+                      int K, int nsim,int burn, int thin=1, double mult=0.1){
   
   //std::cout << "1\n";
   arma::vec currentbeta         = as<arma::vec>(start["currentbeta"]);
@@ -447,7 +447,7 @@ List mcmc_epi_mixture(arma::mat y, arma::mat tstar, List start, List prior,
     
     
     currentbeta = sample_beta(y,tstar.row(index[i]).t(),currentbeta,currentlambda,
-                              currentzeta,currentSigma,currentpi,propcov,bm,bcov);
+                              currentzeta,currentSigma,currentpi,propcov,bm,bcov,mult);
     
     for(int j=0;j<K;j++){
       currentmeans.slice(j) = calc_mean(tstar.row(index[i]).t(),currentbeta,currentlambda.col(j));
