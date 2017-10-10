@@ -62,7 +62,7 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               a=rep(1,K))
 
 #start$currentbeta <- start$currentbeta * .9
-start$currentbeta <- c(19.06,7.41,2.57,0.26,8.18,1.63,0.56,4,2.36,24.79,7.45,1.51,-0.36,2.2,-0.312)
+start$currentbeta <- c(17,7.41,2.47,0.26,8.18,1.63,0.56,4,2.36,22,7.45,1.51,-0.36,2.2,-0.312)
 start$currentlambda <- start$currentlambda * 2
 start$Sigmadiag <- start$Sigmadiag * 2
 
