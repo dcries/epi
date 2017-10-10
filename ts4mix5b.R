@@ -6,12 +6,12 @@ library(dplyr)
 library(label.switching)
 
 
-setwd("/home/dcries/epi/")
+setwd("C:/Users/dcries/github/epi")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
-imp1 <- read.csv("nhanes_complete.csv")
-load("/home/dcries/stanout.RData")
+imp1 <- read.csv("NHANES_accel_imp1.csv")
+load("../../workspace/stanout_imp1.RData")
 rmat <- as.matrix(rs)
-tstar <- rmat[,31:3367]
+tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
 imp1 <- subset(imp1,rep!=7)
@@ -20,7 +20,7 @@ nrep <- (imp1 %>% group_by(id) %>% summarise(n=length(id)))$n
 meas7 <- subset(imp1, id %in% unique(id)[nrep==6] & (!is.na(imp1$education))) #individuals with all 7 days
 
 
-tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),c("waist","glu","tri","bps","bpd","ldl","hdl")]) & (meas7$bpd[!duplicated(meas7$id)] > 0)]
+tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),]) & (meas7$bpd[!duplicated(meas7$id)] > 0)]
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)) & (!is.na(meas7$education)) & (meas7$bpd >0),] #remove NAs for waist
 
 waist <- meas7$waist[!duplicated(meas7$id)]
@@ -32,7 +32,7 @@ bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
-K=3
+K=5
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
                             0.2805, 4.4733, 1.8297,  #log tri
                             #65.736,   1.412,   2.121, #tri
@@ -51,6 +51,8 @@ currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
 propcov=diag(15)*0.00001)
 
+
+
 #start$currentlambda[,2] <- start$currentlambda[,2] + rnorm(nrow(start$currentlambda),rep(0,nrow(start$currentlambda)),0.15*start$currentlambda[,2])
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
@@ -60,28 +62,27 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               lm=c(98,4.7,4.73,130,0,0,0),
               lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
+prior$bcov <- prior$bcov*0.1
 
-#start$currentbeta <- start$currentbeta * 1.1
-start$currentbeta <- c(7.15,1.41,1.78,0.11,1.49,1.1,0.17,1.32,1.60,15.11,2.33,1.19,-7.05,0.44,-2.4)
-start$currentlambda <- start$currentlambda * 0.5
-start$Sigmadiag <- start$Sigmadiag * 0.5
+start$currentbeta <- start$currentbeta * 1.1
+start$currentlambda <- start$currentlambda * 1.1
+start$Sigmadiag <- start$Sigmadiag * 1.1
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,650000,150000,thin=10,.2)
-out3$dic
-# pmat <- array(0,dim=c(nrow(out1$beta),nrow(MetS),K))
-# for(i in 1:K){
-#   for(j in 1:nrow(MetS)){
-#     pmat[,j,i] <- out1$pmat[j,i,]
-#   }
-# }
-out3$pmat <- NULL
+out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,350000,150000,thin=10,0.2)
+out5$dic
+pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
+for(i in 1:K){
+  for(j in 1:nrow(MetS)){
+    pmat[,j,i] <- out5$pmat[j,i,]
+  }
+}
+out5$pmat <- NULL
 
-# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-#                              p=pmat,z=out1$zeta+1,K=K)
-# out1=list(out1,permutations)
+permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+                             p=pmat,z=out5$zeta+1,K=K)
+out5=list(out5=out5,permutations=permutations)
 
-save(out3,file="/home/dcries/stanout_realmix3b.RData")
-
+save(out5,file="../../workspace/stanout_mix5b.RData")
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
 

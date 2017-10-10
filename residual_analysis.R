@@ -16,9 +16,13 @@ load("../../workspace/stanout_mix1.RData")
 
 
 demo <- read.csv("demographics_imp.csv")
+demo <- read.csv("demographics.csv")
+
 Z <- model.matrix(~age+as.factor(sex)+as.factor(race)+as.factor(education),data=demo)
 
 MetS <- read.csv("MetS_imp.csv")
+MetS <- read.csv("MetS.csv")
+
 sigma2y <- .2662 + -.00806*demo[,2]+.0002099*demo[,2]^2+-1.625e-06*demo[,2]^3
 
 nsim <- 1000
@@ -104,13 +108,13 @@ residbpd <- (MetS$bpd-colMeans(bpd))/apply(bpd,2,sd)
 residldl <- (MetS$ldl-colMeans(ldl))/apply(ldl,2,sd)
 residhdl <- (MetS$hdl-colMeans(hdl))/apply(hdl,2,sd)
 
-p1=qplot(y=residwaist,x=MetS$X) #+ geom_smooth()
-p2=qplot(y=residglu,x=MetS$X) #+ geom_smooth()
-p3=qplot(y=residtri,x=MetS$X) #+ geom_smooth()
-p4=qplot(y=residbps,x=MetS$X) #+ geom_smooth()
-p5=qplot(y=residbpd,x=MetS$X) #+ geom_smooth()
-p6=qplot(y=residldl,x=MetS$X) #+ geom_smooth()
-p7=qplot(y=residhdl,x=MetS$X) #+ geom_smooth()
+p1=qplot(y=residwaist,x=MetS$X) + ggtitle("Waist Circumference") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()
+p2=qplot(y=residglu,x=MetS$X) + ggtitle("log Glucose") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
+p3=qplot(y=residtri,x=MetS$X) + ggtitle("log Triglycerides") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
+p4=qplot(y=residbps,x=MetS$X) + ggtitle("Systolic Blood Pressure") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
+p5=qplot(y=residbpd,x=MetS$X) + ggtitle("Diastolic Blood Pressure") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
+p6=qplot(y=residldl,x=MetS$X) + ggtitle("LDL") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
+p7=qplot(y=residhdl,x=MetS$X) + ggtitle("HDL") + geom_hline(yintercept = 0) + ylab("Standardized Residual") + xlab("Usual Minutes in MVPA")  + theme_bw()#+ geom_smooth()#+ geom_smooth()
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
 
 par(mfrow=c(4,2))
@@ -133,8 +137,8 @@ for(i in 2:K){
 }
 gamma0 <- lam[,1]-gamma0
 
-n <- round(1000*pi)
-random <- matrix(0,ncol=7,nrow=1000)
+n <- round(3000*pi)
+random <- matrix(0,ncol=7,nrow=3000)
 for(i in 1:7){
   random[,i] <- c(rnorm(n[1],lam[i,1]-gamma0[i],sds[i,1]),rnorm(n[2],lam[i,2]-gamma0[i],sds[i,2]),rnorm(n[3],lam[i,3]-gamma0[i],sds[i,3]))
 }
