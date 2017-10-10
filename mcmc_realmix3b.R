@@ -63,8 +63,8 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
 
 #start$currentbeta <- start$currentbeta * 1.1
 start$currentbeta <- c(7.15,1.41,1.78,0.11,1.49,1.1,0.17,1.32,1.60,15.11,2.33,1.19,-7.05,0.44,-2.4)
-start$currentlambda <- start$currentlambda * 0.5
-start$Sigmadiag <- start$Sigmadiag * 0.5
+start$currentlambda <- start$currentlambda * 0.7
+start$Sigmadiag <- start$Sigmadiag * 0.7
 
 out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,650000,150000,thin=10,.2)
 out3$dic
