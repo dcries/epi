@@ -62,13 +62,13 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               lm=c(98,4.7,4.73,130,0,0,0),
               lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
-prior$bcov <- prior$bcov*0.1
+prior$bcov <- prior$bcov#*0.1
 
 start$currentbeta <- start$currentbeta * .9
 start$currentlambda <- start$currentlambda * .9
 start$Sigmadiag <- start$Sigmadiag * .9
 
-out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,350000,150000,thin=10,0.2)
+out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,1300000,500000,thin=20,0.15)
 out5$dic
 pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
 for(i in 1:K){

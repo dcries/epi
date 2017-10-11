@@ -61,8 +61,8 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
 
-#start$currentbeta <- start$currentbeta * .9
-start$currentbeta <- c(17,7.41,2.47,0.26,8.18,1.63,0.56,4,2.36,22,7.45,1.51,-0.36,2.2,-0.312)
+start$currentbeta <- start$currentbeta * 1.1
+#start$currentbeta <- c(17,7.41,2.47,0.26,8.18,1.63,0.56,4,2.36,22,7.45,1.51,-0.36,2.2,-0.312)
 start$currentlambda <- start$currentlambda * 2
 start$Sigmadiag <- start$Sigmadiag * 2
 
