@@ -11,7 +11,7 @@ Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
 imp1 <- read.csv("NHANES_accel_imp5.csv")
 load("/ptmp/dcries/stanout_imp5.RData")
 rmat <- as.matrix(rs)
-tstar <- rmat[,31:7903]
+tstar <- rmat[,31:7893]
 #nhanes <- read.csv("NHANES_complete.csv")
 names(imp1) <- tolower(names(imp1))
 imp1 <- subset(imp1,rep!=7)
