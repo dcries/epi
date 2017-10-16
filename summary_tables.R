@@ -25,7 +25,7 @@ for(i in 1:nrow(out3$lambda)){
 }
 
 
-tab <- matrix(0,nrow=22,ncol=3)
+tab <- matrix(0,nrow=16,ncol=3)
 for(i in 1:4){
   tab[i,] <- round(c(mean(gamma0[,i]),quantile(gamma0[,i],probs=c(0.025,0.975))),3)
 }

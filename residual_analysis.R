@@ -12,7 +12,7 @@ samples <- samples[,1:30]
 #load("../../workspace2/stanout_temp2.RData")
 #out$beta <- out$beta[50000:100000,]
 #out$Sigma <- out$Sigma[,,50000:100000]
-load("../../workspace/stanout_mix1.RData")
+load("../../workspace/stanout_mix5.RData")
 
 
 demo <- read.csv("demographics_imp.csv")
