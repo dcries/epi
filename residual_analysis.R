@@ -1,8 +1,13 @@
+#this script calculates standardized residuals for the regression model
+#according to the method in my dissertation-simulate new usual values
+#according to taylor series appx then simualate new observations according
+#to mean fcn
+#plots of standardized residuals also given
+
 library(ggplot2)
 library(MASS)
 library(gridExtra)
 setwd("C:/Users/dcries/github/epi/")
-
 
 #for imputed data
 load("../../workspace/stanout_imp1.RData")

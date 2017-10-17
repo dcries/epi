@@ -1,3 +1,5 @@
+#this script provides code for summary tables in my dissertation
+
 library(xtable)
 
 setwd("C:/Users/dcries/workspace")

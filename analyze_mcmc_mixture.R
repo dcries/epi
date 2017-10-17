@@ -274,17 +274,30 @@ out <- list(beta=cbind(out5a$beta,out5b$beta,out5c$beta,out5d$beta,out5e$beta),
 #--------------------
 source('C:/Users/dcries/github/epi/calc_mets_prob.R')
 
-demo <- read.csv("demographics_imp.csv")
+load("C:/Users/dcries/workspace/stanout_realmix3.RData")
+load("C:/Users/dcries/workspace/stanout_mix5.RData")
+demoimp <- read.csv("demographics_imp.csv")
 demo <- read.csv("demographics.csv")
 
-zeroMVPA <- calc_mets_prob(out5$out5,demo,tstar = 0,nsim=100,criteria = 3)
-fiveMVPA <- calc_mets_prob(out5$out5,demo,tstar = 5^.25,nsim=100,criteria = 3)
-tenMVPA <- calc_mets_prob(out5$out5,demo,tstar = 10^.25,nsim=100,criteria = 3)
-twentyMVPA <- calc_mets_prob(out5$out5,demo,tstar = 20^.25,nsim=100,criteria = 3)
-thirtyMVPA <- calc_mets_prob(out5$out5,demo,tstar = 30^.25,nsim=100,criteria = 3)
-sixtyMVPA <- calc_mets_prob(out5$out5,demo,tstar = 60^.25,nsim=100,criteria = 3)
+out=out3
+outimp = out5$out5
+
+zeroMVPA <- calc_mets_prob(out,demo,tstar = 0,nsim=100,criteria = 3)
+fiveMVPA <- calc_mets_prob(out,demo,tstar = 5^.25,nsim=100,criteria = 3)
+tenMVPA <- calc_mets_prob(out,demo,tstar = 10^.25,nsim=100,criteria = 3)
+twentyMVPA <- calc_mets_prob(out,demo,tstar = 20^.25,nsim=100,criteria = 3)
+thirtyMVPA <- calc_mets_prob(out,demo,tstar = 30^.25,nsim=100,criteria = 3)
+sixtyMVPA <- calc_mets_prob(out,demo,tstar = 60^.25,nsim=100,criteria = 3)
 
 minMVPA <- rep(0,61)
+minMVPAimp <- rep(0,61)
+minMVPAquant <- matrix(0,ncol=2,nrow=61)
+minMVPAquantimp <- matrix(0,ncol=2,nrow=61)
 for(i in 0:60){
-  minMVPA <- mean(calc_mets_prob(out5$out5,demo,tstar = i^.25,nsim=100,criteria = 3))
+  cc <- calc_mets_prob(out5$out5,demo,tstar = i^.25,nsim=100,criteria = 3)
+  imp <- calc_mets_prob(outimp,demoimp,tstar = i^.25,nsim=100,criteria = 3)
+  minMVPA[i] <- mean(cc)
+  minMVPAimp[i] <- mean(imp)
+  minMVPAquant[i,] <- quantile(cc,probs=c(0.025,0.975))
+  minMVPAquantimp[i,] <- quantile(imp,probs=c(0.025,0.975))
 }

@@ -1,3 +1,7 @@
+#this function simulates metS risk factor data from posterior predictive distribution 
+#and then calculates probabiity of having MetS under certain criteria and cutoff
+#values that are user supplied
+
 # library(ggplot2)
 # library(MASS)
 # library(gridExtra)
@@ -66,7 +70,7 @@ calc_mets_prob <- function(out,demo,tstar,nsim,criteria=3,cutoffs=list(wstm=102,
     ldl[i,] <- lambda[5,zeta] + alpha[13]*tstar + random[5,] #+ alpha[15])*tstar^2
     hdl[i,] <- lambda[7,zeta] + alpha[15]*tstar +random[7,]
     
-    if(i%%100==0){print(i)}
+    #if(i%%100==0){print(i)}
     
   }
   
