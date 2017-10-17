@@ -1,3 +1,8 @@
+#this script has code to do most of the analysis for my 4th chapter
+#-traceplots,gelman-rubin diagnostics
+#-chi square tests for differences in groups according to mixture components
+#-distribution of errors
+
 library(MASS)
 library(mvtnorm)
 library(LaplacesDemon)
@@ -282,22 +287,27 @@ demo <- read.csv("demographics.csv")
 out=out3
 outimp = out5$out5
 
-zeroMVPA <- calc_mets_prob(out,demo,tstar = 0,nsim=100,criteria = 3)
-fiveMVPA <- calc_mets_prob(out,demo,tstar = 5^.25,nsim=100,criteria = 3)
-tenMVPA <- calc_mets_prob(out,demo,tstar = 10^.25,nsim=100,criteria = 3)
-twentyMVPA <- calc_mets_prob(out,demo,tstar = 20^.25,nsim=100,criteria = 3)
-thirtyMVPA <- calc_mets_prob(out,demo,tstar = 30^.25,nsim=100,criteria = 3)
-sixtyMVPA <- calc_mets_prob(out,demo,tstar = 60^.25,nsim=100,criteria = 3)
+# zeroMVPA <- calc_mets_prob(out,demo,tstar = 0,nsim=100,criteria = 3)
+# fiveMVPA <- calc_mets_prob(out,demo,tstar = 5^.25,nsim=100,criteria = 3)
+# tenMVPA <- calc_mets_prob(out,demo,tstar = 10^.25,nsim=100,criteria = 3)
+# twentyMVPA <- calc_mets_prob(out,demo,tstar = 20^.25,nsim=100,criteria = 3)
+# thirtyMVPA <- calc_mets_prob(out,demo,tstar = 30^.25,nsim=100,criteria = 3)
+# sixtyMVPA <- calc_mets_prob(out,demo,tstar = 60^.25,nsim=100,criteria = 3)
 
-minMVPA <- rep(0,61)
-minMVPAimp <- rep(0,61)
-minMVPAquant <- matrix(0,ncol=2,nrow=61)
-minMVPAquantimp <- matrix(0,ncol=2,nrow=61)
+minMVPA <- matrix(0,nrow=61,ncol=6)
+minMVPAimp <- matrix(0,nrow=61,ncol=6)
+minMVPAquant <- matrix(0,ncol=2*6,nrow=61)
+minMVPAquantimp <- matrix(0,ncol=2*6,nrow=61)
 for(i in 0:60){
-  cc <- calc_mets_prob(out5$out5,demo,tstar = i^.25,nsim=100,criteria = 3)
-  imp <- calc_mets_prob(outimp,demoimp,tstar = i^.25,nsim=100,criteria = 3)
-  minMVPA[i] <- mean(cc)
-  minMVPAimp[i] <- mean(imp)
-  minMVPAquant[i,] <- quantile(cc,probs=c(0.025,0.975))
-  minMVPAquantimp[i,] <- quantile(imp,probs=c(0.025,0.975))
+  for(j in 1:6){
+    cc <- calc_mets_prob(out,demo,tstar = i^.25,nsim=200,criteria = j)
+    imp <- calc_mets_prob(outimp,demoimp,tstar = i^.25,nsim=200,criteria = j)
+    minMVPA[i+1,j] <- mean(cc)
+    minMVPAimp[i+1,j] <- mean(imp)
+    minMVPAquant[i+1,(2*j-1):(2*j)] <- quantile(cc,probs=c(0.025,0.975))
+    minMVPAquantimp[i+1,(2*j-1):(2*j)] <- quantile(imp,probs=c(0.025,0.975))
+  }
+  print(i)
 }
+
+plot(0:60,minMVPA,type="l");lines(minMVPAimp,col=2)
