@@ -504,9 +504,9 @@ List mcmc_epi_mixture_w(arma::mat y, arma::mat tstar, List start, List prior, ar
     }
     //std::cout << "17\n";
     
-    //if(i % 1000==0){
+    if(i % 1000==0){
       std::cout << "i= " << i << "\n";
-    //}
+    }
   }
   
   meanlambda = calc_meanlambda(lambda);
