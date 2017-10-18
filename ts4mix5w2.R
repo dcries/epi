@@ -65,7 +65,7 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
 
 prior$bcov <- prior$bcov#*0.1
 
-weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
-out5w = mcmc_epi_mixture_w(MetS,tstar2, start, prior, weights, K,600000,200000,thin=10,0.15)
+weights <- rep(1,nrow(MetS))#(meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+out5w = mcmc_epi_mixture_w(MetS,tstar2, start, prior, weights, K,50000,20000,thin=10,0.15)
 
-save(out5w,file="../../workspace/stanout_mix5w.RData")
+save(out5w,file="../../workspace/stanout_mix5w2.RData")

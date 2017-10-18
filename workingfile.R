@@ -70,7 +70,7 @@ for(i in 1:length(unique(nhanes2$id))){
   rf <- c(rf,rep(rfs[i],d$n[i]))
 }
 nhanes2$w2 <- nhanes2$w - predict(mfull) - rf
-agevar=nhanes2 %>% group_by(age) %>% summarise(v=var(w2))
+agevar=nhanes2 %>% group_by(age) %>% summarise(v=var(w2),weights=smplwt[1])
 
 qplot(data=agevar,x=age,y=v)  + geom_smooth()
 

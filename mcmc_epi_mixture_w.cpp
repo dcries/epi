@@ -258,7 +258,7 @@ arma::vec sample_lambda(arma::mat y, arma::mat meannoint, arma::mat Sigma, arma:
   
   arma::vec total=arma::zeros(k);
   for(int i=0;i<n;i++){
-    total += (weights[i]*arma::inv(Sigma))*y.row(i).t();
+    total += (weights[i]*arma::inv(Sigma))*(y.row(i)-meannoint.row(i)).t();
   }
   
   //arma::vec ybar = (mean(y-meannoint,0)).t();
