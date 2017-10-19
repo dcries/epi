@@ -84,11 +84,27 @@ calc_mets_prob <- function(out,demo,tstar,nsim,criteria=3,cutoffs=list(wstm=102,
   overhdl <- hdl < cutoffs$hdl
   
   metsprob <- rep(0,nsim)
+  waistprob <- rep(0,nsim)
+  gluprob <- rep(0,nsim)
+  triprob <- rep(0,nsim)
+  bpsprob <- rep(0,nsim)
+  ldlprob <- rep(0,nsim)
+  bpdprob <- rep(0,nsim)
+  hdlprob <- rep(0,nsim)
+  
   for(i in 1:nsim){
     tp <- overwst[i,] + overglu[i,] + overtri[i,] + overbps[i,]+overbpd[i,]+overldl[i,]+overhdl[i,]
     metsprob[i] <- sum(tp >= criteria)/nrow(demo)
+    waistprob[i] <- sum(overwst[i,])/nrow(demo)
+    gluprob[i] <- sum(overglu[i,])/nrow(demo)
+    triprob[i] <- sum(overtri[i,])/nrow(demo)
+    bpsprob[i] <- sum(overbps[i,])/nrow(demo)
+    ldlprob[i] <- sum(overldl[i,])/nrow(demo)
+    bpdprob[i] <- sum(overbpd[i,])/nrow(demo)
+    hdlprob[i] <- sum(overhdl[i,])/nrow(demo)
+    
   }
   
   
-  return(metsprob)
+  return(list(metsprob=metsprob,indprob=cbind(waistprob,gluprob,triprob,bpsprob,ldlprob,bpdprob,hdlprob)))
 }
