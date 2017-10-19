@@ -119,7 +119,7 @@ double logl_b(arma::mat y, arma::vec tstar, arma::vec beta, arma::cube Sigma,
     means(i,5) =  lambda(5,zeta[i]) + beta[13]*tstar[i];
     means(i,6) =  lambda(6,zeta[i]) + beta[14]*tstar[i];
     
-    ll += log(pi[zeta[i]]) + weights[i]*dmvnrm_arma(y.row(i).t(),means.row(i),Sigma.slice(zeta[i]),true);
+    ll += weights[i]*( dmvnrm_arma(y.row(i).t(),means.row(i),Sigma.slice(zeta[i]),true));
   }
   
   ll += dmvnrm_arma(beta,priormean.t(),priorcov,true);
@@ -172,10 +172,11 @@ arma::mat calc_specific_mean(arma::vec tstar, arma::vec beta, arma::mat lambda,a
   return means;
 }
 
-arma::ivec sample_zeta(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube Sigma){
+arma::ivec sample_zeta(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube Sigma,arma::vec weights){
   int k = pi.size();
   int n = meanmat.slice(0).n_rows;
   arma::vec probs(k);
+
   arma::ivec out(n);
   arma::ivec temp(1);
   Rcpp::IntegerVector frame = Rcpp::Range(0,k-1);
@@ -187,7 +188,7 @@ arma::ivec sample_zeta(arma::mat y, arma::vec pi, arma::cube meanmat, arma::cube
       //   std::cout << "for i=" << i << " log pi=" << log(pi[j]) << "\n";
       //   std::cout << "dmvnorm = " << dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true) << "\n";
       // }
-      probs[j] = log(pi[j]) + dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true);
+      probs[j] = weights[i]*(log(pi[j]) + dmvnrm_arma(y.row(i).t(),meanmat.slice(j).row(i),Sigma.slice(j),true));
     }
     probs = exp(probs-log(sum(exp(probs))));
     temp = Rcpp::RcppArmadillo::sample(frame, 1, true, probs);
@@ -243,8 +244,10 @@ arma::vec sample_pi(arma::ivec zeta, arma::vec a){
 arma::mat sample_Sigma(arma::mat y, arma::mat meanmat, arma::mat D, double d, int n,arma::vec weights){
   int k = y.n_cols;
   arma::mat total=arma::zeros(k,k);
+
   for(int i=0;i<n;i++){
       total += weights[i]*((y.row(i)-meanmat.row(i)).t()*(y.row(i)-meanmat.row(i)));
+
   }
   arma::mat out = rinvwish(1,n+d,D+total);
 
@@ -257,13 +260,20 @@ arma::vec sample_lambda(arma::mat y, arma::mat meannoint, arma::mat Sigma, arma:
   arma::vec out;
   
   arma::vec total=arma::zeros(k);
+  arma::vec total2=arma::zeros(k);
+  
   for(int i=0;i<n;i++){
     total += (weights[i]*arma::inv(Sigma))*(y.row(i)-meannoint.row(i)).t();
+    total2 += (arma::inv(Sigma))*(y.row(i)-meannoint.row(i)).t();
+    
   }
-  
+  //std::cout << "total weights = " << total << "\n" << "total2 = " << total2 << "\n";
   //arma::vec ybar = (mean(y-meannoint,0)).t();
   arma::mat postcov = arma::inv(arma::inv(priorcov)+n*arma::inv(Sigma));
-  arma::vec postmean = postcov*(arma::inv(priorcov)*priormean + total);
+  arma::vec postmean = postcov*(arma::inv(priorcov)*priormean + total2);
+  arma::vec postmean2 = postcov*(arma::inv(priorcov)*priormean + total2);
+  
+  //std:: cout << "postmean = " << postmean << "\n" << "postmean2 = " << postmean2 << "\n";
   out = mvrnormArma(1,postmean,postcov).row(0).t();
   
   return out;
@@ -433,7 +443,7 @@ List mcmc_epi_mixture_w(arma::mat y, arma::mat tstar, List start, List prior, ar
     //std::cout << "9\n";
     
     //update tstar
-    currentzeta = sample_zeta(y, currentpi, currentmeans, currentSigma);
+    currentzeta = sample_zeta(y, currentpi, currentmeans, currentSigma,weights);
     //std::cout << "10\n";
     
     currentpi = sample_pi(currentzeta,a);
