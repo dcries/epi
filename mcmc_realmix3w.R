@@ -8,6 +8,7 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture_w.cpp')
+source("")
 imp1 <- read.csv("nhanes_complete.csv")
 load("/home/dcries/stanout.RData")
 rmat <- as.matrix(rs)
@@ -31,6 +32,10 @@ ldl <- (meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
+
+weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+MetSadj <- MetS_adj_weight(MetS,weights)
+
 
 K=3
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
@@ -62,7 +67,6 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               a=rep(1,K))
 
 
-weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
 
 out3w = mcmc_epi_mixture_w(MetS,tstar2, start, prior,weights, K,650000,150000,thin=10,.2)
 out3w$dic

@@ -8,6 +8,7 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
+source("MetS_adj_weight.R")
 imp1 <- read.csv("nhanes_complete.csv")
 load("/home/dcries/stanout.RData")
 rmat <- as.matrix(rs)
@@ -32,6 +33,9 @@ bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
+weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+MetSadj <- MetS_adj_weight(MetS,weights)
+
 K=3
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
                             0.2805, 4.4733, 1.8297,  #log tri
@@ -45,7 +49,7 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.16
                             #-.02 #log(hdl)
 ),
 currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(138.480,K),
-                       rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
+                       rep(10.84^2,K),rep(63,K),rep(exp(3.99),K)),ncol=K,byrow=T),
 Sigmadiag=matrix(rep(c(15^2,.16^2,.24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
 currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
@@ -66,7 +70,7 @@ start$currentbeta <- start$currentbeta * 1.1
 start$currentlambda <- start$currentlambda * 2
 start$Sigmadiag <- start$Sigmadiag * 2
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,650000,150000,thin=10,.2)
+out3 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,650000,150000,thin=10,.2)
 out3$dic
 # pmat <- array(0,dim=c(nrow(out1$beta),nrow(MetS),K))
 # for(i in 1:K){
