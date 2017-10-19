@@ -70,21 +70,21 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
 
 prior$bcov <- prior$bcov#*0.1
 
-out5 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,10000,2000,thin=1,0.15)
+out5 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,1300000,500000,thin=20,0.15)
 out5$dic
-# pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
-# for(i in 1:K){
-#   for(j in 1:nrow(MetS)){
-#     pmat[,j,i] <- out5$pmat[j,i,]
-#   }
-# }
+pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
+for(i in 1:K){
+  for(j in 1:nrow(MetS)){
+    pmat[,j,i] <- out5$pmat[j,i,]
+  }
+}
 out5$pmat <- NULL
 
-# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-#                              p=pmat,z=out5$zeta+1,K=K)
-# out5=list(out5=out5,permutations=permutations)
+permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+                             p=pmat,z=out5$zeta+1,K=K)
+out5=list(out5=out5,permutations=permutations)
 
-save(out5,file="../../workspace2/stanout_mix5.RData")
+save(out5,file="../../workspace/stanout_mix5.RData")
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
 

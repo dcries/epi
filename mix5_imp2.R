@@ -8,6 +8,8 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
+source("MetS_adj_weight.R")
+
 imp1 <- read.csv("NHANES_accel_imp2.csv")
 load("/ptmp/dcries/stanout_imp2.RData")
 rmat <- as.matrix(rs)
@@ -31,6 +33,9 @@ ldl <- (meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
+
+weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+MetSadj <- MetS_adj_weight(MetS,weights)
 
 K=5
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
@@ -64,7 +69,7 @@ prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
               a=rep(1,K))
 
 
-out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,1300000,500000,thin=20,.15)
+out5 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,1300000,500000,thin=20,.15)
 out5$dic
 pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
 for(i in 1:K){
