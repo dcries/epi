@@ -8,8 +8,10 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
+source("MetS_adj_weight.R")
+
 imp1 <- read.csv("NHANES_accel_imp1.csv")
-load("/ptmp/STAT/dcries/stanout_imp1.RData")
+load("/ptmp/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
 tstar <- rmat[,31:7903]
 #nhanes <- read.csv("NHANES_complete.csv")
@@ -24,18 +26,21 @@ tstar2 <- tstar[,complete.cases(meas7[!duplicated(meas7$id),]) & (meas7$bpd[!dup
 meas7 <- meas7[(!is.na(meas7$waist)) & (!is.na(meas7$bps)) & (!is.na(meas7$bpd)) & (!is.na(meas7$hdl)) & (!is.na(meas7$ldl)) & (!is.na(meas7$glu)) & (!is.na(meas7$tri)) & (!is.na(meas7$education)) & (meas7$bpd >0),] #remove NAs for waist
 
 waist <- meas7$waist[!duplicated(meas7$id)]
-lglu <- (meas7$glu[!duplicated(meas7$id)])
-ltri <- (meas7$tri[!duplicated(meas7$id)])
+lglu <- log(meas7$glu[!duplicated(meas7$id)])
+ltri <- log(meas7$tri[!duplicated(meas7$id)])
 bps <- (meas7$bps[!duplicated(meas7$id)])
 ldl <- (meas7$ldl[!duplicated(meas7$id)])
 bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
+weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+MetSadj <- MetS_adj_weight(MetS,weights)
+
 K=3
-start <- list(currentbeta=c(10.445,   3.230,   2.033 ,26.428,2.725,1.256,#0.1642,3.4081,1.4433,
-                            #0.2805, 4.4733, 1.8297,  #log tri
-                            65.736,   1.412,   2.121, #tri
+start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
+                            0.2805, 4.4733, 1.8297,  #log tri
+                            #65.736,   1.412,   2.121, #tri
                             18.388,   4.602 ,  1.389 , #bps
                             #.138,4.247,1.387, #log bps
                             -6.3, #ldl
@@ -44,9 +49,9 @@ start <- list(currentbeta=c(10.445,   3.230,   2.033 ,26.428,2.725,1.256,#0.1642
                             -3.3 #hdl
                             #-.02 #log(hdl)
 ),
-currentlambda=matrix(c(rep(101.517,K),rep(122.501,K),rep(170.393,K),rep(138.480,K),
+currentlambda=matrix(c(rep(101.517,K),rep(4.7228,K),rep(4.9261,K),rep(138.480,K),
                        rep(10.84,K),rep(63,K),rep(3.99,K)),ncol=K,byrow=T),
-Sigmadiag=matrix(rep(c(15^2,16^2,24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
+Sigmadiag=matrix(rep(c(15^2,.16^2,.24^2,36^2,18^2,14^2,16^2),K),ncol=K,byrow=FALSE),
 currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
 propcov=diag(15)*0.00001)
@@ -55,28 +60,28 @@ propcov=diag(15)*0.00001)
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
-prior <- list(bm=c(7,3,2.11,6,3.6,1.4,12.8,1.88,2.11,18,3,1.3,rep(0,3)),
-              bcov=diag(15)*c(8,1.5,.4,17,.7,1,20,2,.4,5,1,1,rep(100,3))^2,d=8,D=diag(7),
-              lm=c(98,exp(4.7),exp(4.73),130,0,0,0),
-              lcov=diag(7)*c(17,40,80,7,100,100,100)^2,
+prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
+              bcov=diag(15)*c(8,1.5,.8,.08,1.5,.8,3,1.5,.8,5,1.5,.8,rep(100,3))^2,d=8,D=diag(7),
+              lm=c(98,4.7,4.73,130,0,0,0),
+              lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
 
 
-out3 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,300000,50000,thin=10)
+out3 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,500000,200000,thin=10)
 out3$dic
-pmat <- array(0,dim=c(nrow(out3$beta),nrow(MetS),K))
-for(i in 1:K){
-  for(j in 1:nrow(MetS)){
-    pmat[,j,i] <- out3$pmat[j,i,]
-  }
-}
+# pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
+# for(i in 1:K){
+#   for(j in 1:nrow(MetS)){
+#     pmat[,j,i] <- out5$pmat[j,i,]
+#   }
+# }
 out3$pmat <- NULL
+# 
+# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+#                              p=pmat,z=out5$zeta+1,K=K)
+# out5=list(out5,permutations)
 
-permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-                             p=pmat,z=out3$zeta+1,K=K)
-out3=list(out3,permutations)
-
-save(out3,file="/ptmp/STAT/dcries/stanout_mix3.RData")
+save(out3,file="/ptmp/dcries/stanout_mix3.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)

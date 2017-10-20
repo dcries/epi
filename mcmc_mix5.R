@@ -8,6 +8,8 @@ library(label.switching)
 
 setwd("/home/dcries/epi/")
 Rcpp::sourceCpp('mcmc_epi_mixture.cpp')
+source("MetS_adj_weight.R")
+
 imp1 <- read.csv("NHANES_accel_imp1.csv")
 load("/ptmp/dcries/stanout_imp1.RData")
 rmat <- as.matrix(rs)
@@ -32,6 +34,9 @@ bpd <- meas7$bpd[!duplicated(meas7$id)]
 hdl <- (meas7$hdl[!duplicated(meas7$id)])
 MetS <- (cbind(waist,lglu,ltri,bps,ldl,bpd,hdl))
 
+weights <- (meas7$smplwt[!duplicated(meas7$id)]/sum(meas7$smplwt[!duplicated(meas7$id)]))*length(meas7$smplwt[!duplicated(meas7$id)])
+MetSadj <- MetS_adj_weight(MetS,weights)
+
 K=5
 start <- list(currentbeta=c(10.445,   3.230,   2.033 ,0.1642,3.4081,1.4433,#0.1642,3.4081,1.4433,
                             0.2805, 4.4733, 1.8297,  #log tri
@@ -51,34 +56,32 @@ currentzeta=sample(0:(K-1),nrow(MetS),replace=TRUE,rep(1/K,K)),
 currentpi=rep(1/K,K),
 propcov=diag(15)*0.00001)
 
-
-
 #start$currentlambda[,2] <- start$currentlambda[,2] + rnorm(nrow(start$currentlambda),rep(0,nrow(start$currentlambda)),0.15*start$currentlambda[,2])
 #start$currentlambda[,1] <- start$currentlambda[,1]*.8
 #start$Sigmadiag[,1] <- start$Sigmadiag[,1]*.6
 
 prior <- list(bm=c(7,3,2.11,.16,3,2.11,.12,3,2.11,18,3,2.11,rep(0,3)),
-                           bcov=diag(15)*c(8,1.5,.8,.08,1.5,.8,3,1.5,.8,5,1.5,.8,rep(100,3))^2,d=8,D=diag(7),
-                          lm=c(98,4.7,4.73,130,0,0,0),
-                          lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
+              bcov=diag(15)*c(8,1.5,.8,.08,1.5,.8,3,1.5,.8,5,1.5,.8,rep(100,3))^2,d=8,D=diag(7),
+              lm=c(98,4.7,4.73,130,0,0,0),
+              lcov=diag(7)*c(17,.1,.6,7,100,100,100)^2,
               a=rep(1,K))
 
 
-out5 = mcmc_epi_mixture(MetS,tstar2, start, prior, K,700000,300000,thin=10)
+out5 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,500000,200000,thin=10)
 out5$dic
-pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
-for(i in 1:K){
-  for(j in 1:nrow(MetS)){
-    pmat[,j,i] <- out5$pmat[j,i,]
-  }
-}
+# pmat <- array(0,dim=c(nrow(out5$beta),nrow(MetS),K))
+# for(i in 1:K){
+#   for(j in 1:nrow(MetS)){
+#     pmat[,j,i] <- out5$pmat[j,i,]
+#   }
+# }
 out5$pmat <- NULL
+# 
+# permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
+#                              p=pmat,z=out5$zeta+1,K=K)
+# out5=list(out5,permutations)
 
-permutations=label.switching(c("ECR-ITERATIVE-1","ECR-ITERATIVE-2","STEPHENS"),
-                             p=pmat,z=out5$zeta+1,K=K)
-out5=list(out5=out5,permutations=permutations)
-
-save(out5,file="/home/ptmp/stanout_mix5.RData")
+save(out5,file="/ptmp/dcries/stanout_mix5.RData")
 
 # length(unique(out$beta[,1]))/nrow(out$beta)
 # diag(out$propcov)
