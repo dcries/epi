@@ -70,7 +70,7 @@ start$currentbeta <- c(7.15,1.41,1.78,0.11,1.49,1.1,0.17,1.32,1.60,15.11,2.33,1.
 start$currentlambda <- start$currentlambda * 0.7
 start$Sigmadiag <- start$Sigmadiag * 0.7
 
-out3 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,650000,150000,thin=10,.2)
+out3 = mcmc_epi_mixture(MetSadj,tstar2, start, prior, K,1000000,250000,thin=15,.2)
 out3$dic
 # pmat <- array(0,dim=c(nrow(out1$beta),nrow(MetS),K))
 # for(i in 1:K){
