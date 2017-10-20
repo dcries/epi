@@ -11,6 +11,8 @@ setwd("C:/Users/dcries/github/epi/")
 
 #for imputed data
 load("../../workspace/stanout_imp1.RData")
+load("../../workspace/stanout.RData")
+
 samples <- as.matrix(rs)
 samples <- samples[,1:30]
 

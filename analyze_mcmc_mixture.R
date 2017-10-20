@@ -153,43 +153,43 @@ gamma0 <- lam[,1]-gamma0
 xxw <- seq(from=-50,to=50,by=0.1)
 wsd <- colMeans(out3$sds[,1,])
 wlam <- colMeans(out3$lambda[,1,]) - gamma0[1]
-wden <- pi[1]*dnorm(xxw,wlam[1],wsd[1]) + pi[2]*dnorm(xxw,wlam[2],wsd[2]) + pi[3]*dnorm(xxw,wlam[3],wsd[3]) + pi[4]*dnorm(xxw,wlam[4],wsd[4]) + pi[5]*dnorm(xxw,wlam[5],wsd[5]) 
+wden <- pi[1]*dnorm(xxw,wlam[1],wsd[1]) + pi[2]*dnorm(xxw,wlam[2],wsd[2]) + pi[3]*dnorm(xxw,wlam[3],wsd[3]) #+ pi[4]*dnorm(xxw,wlam[4],wsd[4]) + pi[5]*dnorm(xxw,wlam[5],wsd[5]) 
 e1=qplot(x=xxw,y=wden,geom="line") +ggtitle("Waist Circumference")+labs(x="",y="Density") + theme_bw()#+ geom_line(aes(x=xxw,y=dnorm(xxw,0,12.8)),colour="red")
 
 xxg <- seq(from=-1,to=1,by=0.01)
 glam <- colMeans(out3$lambda[,2,]) - gamma0[2]
 gsd <- colMeans(out3$sds[,2,])
-gden <- pi[1]*dnorm(xxg,glam[1],gsd[1]) + pi[2]*dnorm(xxg,glam[2],gsd[2]) + pi[3]*dnorm(xxg,glam[3],gsd[3]) + pi[4]*dnorm(xxg,glam[4],gsd[4]) + pi[5]*dnorm(xxg,glam[5],gsd[5]) 
+gden <- pi[1]*dnorm(xxg,glam[1],gsd[1]) + pi[2]*dnorm(xxg,glam[2],gsd[2]) + pi[3]*dnorm(xxg,glam[3],gsd[3]) #+ pi[4]*dnorm(xxg,glam[4],gsd[4]) + pi[5]*dnorm(xxg,glam[5],gsd[5]) 
 e2=qplot(x=xxg,y=gden,geom="line")+labs(x="",y="Density") +ggtitle("log Glucose")+ theme_bw()#+ geom_line(aes(x=xxg,y=dnorm(xxg,0,.12)),colour="red")
 
 xxt <- seq(from=-2.5,to=2.5,by=0.05)
 tlam <- colMeans(out3$lambda[,3,]) - gamma0[3]
 tsd <- colMeans(out3$sds[,3,])
-tden <- pi[1]*dnorm(xxt,tlam[1],tsd[1]) + pi[2]*dnorm(xxt,tlam[2],tsd[2]) + pi[3]*dnorm(xxt,tlam[3],tsd[3]) + pi[4]*dnorm(xxt,tlam[4],tsd[4]) + pi[5]*dnorm(xxt,tlam[5],tsd[5]) 
+tden <- pi[1]*dnorm(xxt,tlam[1],tsd[1]) + pi[2]*dnorm(xxt,tlam[2],tsd[2]) + pi[3]*dnorm(xxt,tlam[3],tsd[3]) #+ pi[4]*dnorm(xxt,tlam[4],tsd[4]) + pi[5]*dnorm(xxt,tlam[5],tsd[5]) 
 e3=qplot(x=xxt,y=tden,geom="line")+labs(x="",y="Density") +ggtitle("log Triglycerides")+ theme_bw()#+ geom_line(aes(x=xxt,y=dnorm(xxt,0,.5)),colour="red")
 
 xxbps <- seq(from=-70,to=70,by=0.5)
 bpslam <- colMeans(out3$lambda[,4,]) - gamma0[4]
 bpssd <- colMeans(out3$sds[,4,])
-bpsden <- pi[1]*dnorm(xxbps,bpslam[1],bpssd[1]) + pi[2]*dnorm(xxbps,bpslam[2],bpssd[2]) + pi[3]*dnorm(xxbps,bpslam[3],bpssd[3]) + pi[4]*dnorm(xxbps,bpslam[4],bpssd[4]) + pi[5]*dnorm(xxbps,bpslam[5],bpssd[5]) 
+bpsden <- pi[1]*dnorm(xxbps,bpslam[1],bpssd[1]) + pi[2]*dnorm(xxbps,bpslam[2],bpssd[2]) + pi[3]*dnorm(xxbps,bpslam[3],bpssd[3]) #+ pi[4]*dnorm(xxbps,bpslam[4],bpssd[4]) + pi[5]*dnorm(xxbps,bpslam[5],bpssd[5]) 
 e4=qplot(x=xxbps,y=bpsden,geom="line")+labs(x="",y="Density") +ggtitle("Systolic Blood Pressure")+ theme_bw()#+ geom_line(aes(x=xxbps,y=dnorm(xxbps,0,.5)),colour="red")
 
 xxbpd <- seq(from=-50,to=50,by=0.5)
 bpdlam <- colMeans(out3$lambda[,6,]) - gamma0[6]
 bpdsd <- colMeans(out3$sds[,6,])
-bpdden <- pi[1]*dnorm(xxbpd,bpdlam[1],bpdsd[1]) + pi[2]*dnorm(xxbpd,bpdlam[2],bpdsd[2]) + pi[3]*dnorm(xxbpd,bpdlam[3],bpdsd[3]) + pi[4]*dnorm(xxbpd,bpdlam[4],bpdsd[4]) + pi[5]*dnorm(xxbpd,bpdlam[5],bpdsd[5]) 
+bpdden <- pi[1]*dnorm(xxbpd,bpdlam[1],bpdsd[1]) + pi[2]*dnorm(xxbpd,bpdlam[2],bpdsd[2]) + pi[3]*dnorm(xxbpd,bpdlam[3],bpdsd[3]) #+ pi[4]*dnorm(xxbpd,bpdlam[4],bpdsd[4]) + pi[5]*dnorm(xxbpd,bpdlam[5],bpdsd[5]) 
 e5=qplot(x=xxbpd,y=bpdden,geom="line")+labs(x="",y="Density") +ggtitle("Diastolic Blood Pressure")+ theme_bw()#+ geom_line(aes(x=xxbpd,y=dnorm(xxbpd,0,.5)),colour="red")
 
 xxl <- seq(from=-120,to=120,by=0.5)
 llam <- colMeans(out3$lambda[,5,]) - gamma0[5]
 lsd <- colMeans(out3$sds[,5,])
-lden <- pi[1]*dnorm(xxl,llam[1],lsd[1]) + pi[2]*dnorm(xxl,llam[2],lsd[2]) + pi[3]*dnorm(xxl,llam[3],lsd[3]) + pi[4]*dnorm(xxl,llam[4],lsd[4]) + pi[5]*dnorm(xxl,llam[5],lsd[5]) 
+lden <- pi[1]*dnorm(xxl,llam[1],lsd[1]) + pi[2]*dnorm(xxl,llam[2],lsd[2]) + pi[3]*dnorm(xxl,llam[3],lsd[3]) #+ pi[4]*dnorm(xxl,llam[4],lsd[4]) + pi[5]*dnorm(xxl,llam[5],lsd[5]) 
 e6=qplot(x=xxl,y=lden,geom="line")+labs(x="",y="Density") +ggtitle("LDL")+ theme_bw()#+ geom_line(aes(x=xxl,y=dnorm(xxl,0,.5)),colour="red")
 
 xxh <- seq(from=-60,to=60,by=0.5)
 hlam <- colMeans(out3$lambda[,7,]) - gamma0[7]
 hsd <- colMeans(out3$sds[,7,])
-hden <- pi[1]*dnorm(xxh,hlam[1],hsd[1]) + pi[2]*dnorm(xxh,hlam[2],hsd[2]) + pi[3]*dnorm(xxh,hlam[3],hsd[3]) + pi[4]*dnorm(xxh,hlam[4],hsd[4]) + pi[5]*dnorm(xxh,hlam[5],hsd[5]) 
+hden <- pi[1]*dnorm(xxh,hlam[1],hsd[1]) + pi[2]*dnorm(xxh,hlam[2],hsd[2]) + pi[3]*dnorm(xxh,hlam[3],hsd[3]) #+ pi[4]*dnorm(xxh,hlam[4],hsd[4]) + pi[5]*dnorm(xxh,hlam[5],hsd[5]) 
 e7=qplot(x=xxh,y=hden,geom="line")+labs(x="",y="Density") +ggtitle("HDL")+ theme_bw()#+ geom_line(aes(x=xxh,y=dnorm(xxh,0,.5)),colour="red")
 
 grid.arrange(e1,e2,e3,e4,e5,e6,e7,nrow=4)

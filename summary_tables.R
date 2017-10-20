@@ -10,6 +10,18 @@ load("stanout_realmix3.RData")
 #load("stanout_second.RData") ???
 #naive <- as.matrix(rs)
 #mem <- as.matrix(rs)
+load("C:/Users/dcries/workspace/stanout_mix5.RData")
+out5a=out5$out5
+load("C:/Users/dcries/workspace/stanout_mix5_2.RData")
+out5b=out5$out5
+load("C:/Users/dcries/workspace/stanout_mix5_3.RData")
+out5c=out5$out5
+load("C:/Users/dcries/workspace/stanout_mix5_4.RData")
+out5d=out5$out5
+load("C:/Users/dcries/workspace/stanout_mix5_5.RData")
+out5e=out5$out5
+
+
 
 #for nonlinear function parameters
 #naivenonlinear <- naive[,c(1:12,16:19)]
@@ -21,7 +33,7 @@ load("stanout_realmix3.RData")
 gamma0 <- matrix(0,ncol=7,nrow=nrow(out3$lambda))
 for(i in 1:nrow(out3$lambda)){
   for(j in 2:K){
-    gamma0[i,] <- gamma0[i,] + out$pi[i,j]*(out3$lambda[i,,1] - out3$lambda[i,,j])
+    gamma0[i,] <- gamma0[i,] + out3$pi[i,j]*(out3$lambda[i,,1] - out3$lambda[i,,j])
   }
   gamma0[i,] <- out3$lambda[i,,1]-gamma0[i,]
 }

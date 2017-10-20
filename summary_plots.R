@@ -1,6 +1,8 @@
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
+library(reshape)
+
 
 setwd("C:/Users/dcries/workspace")
 nhanes <- read.csv("../github/epi/NHANES_complete.csv")
@@ -39,7 +41,7 @@ nhanes <- read.csv("../github/epi/NHANES_complete.csv")
 load("stanout_mix5.RData") #!!!!!!!!!!!
 out=out5
 MetS <- read.csv("MetS_imp.csv")
-MetS <- read.csv("MetS.csv")
+MetS <- read.csv("../github/epi/MetS.csv")
 x <- seq(from=0.25,to=3.5,by=0.1)
 
 lam <- colMeans(out$lambda)
@@ -76,4 +78,44 @@ p5=ggplot() + geom_point(data=MetS,aes(x=X,y=bpd))  + geom_line(aes(x=x,y=bpd),c
 p6=ggplot() + geom_point(data=MetS,aes(x=X,y=(ldl)))  + geom_line(aes(x=x,y=ldl),colour="blue",size=2)+ theme_bw() + xlab("Usual Minutes in MVPA") + ylab("LDL")# + geom_line(aes(x=x,y=naiveldl),colour="red",size=2,linetype=2)
 p7=ggplot() + geom_point(data=MetS,aes(x=X,y=(hdl)))  + geom_line(aes(x=x,y=hdl),colour="blue",size=2)+ theme_bw() + xlab("Usual Minutes in MVPA") + ylab("HDL")# + geom_line(aes(x=x,y=naivehdl),colour="red",size=2,linetype=2)
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=4)
+
+
+#-----------------------
+load("C:/Users/dcries/workspace/prob_mets.RData")
+
+probcc <- melt(outlist$minMVPA)
+probimp <- melt(outlist$minMVPAimp)
+#probcc$X2 <- paste(probcc$X2, " High MetS rf ")
+#probimp$X2 <- paste(probimp$X2, " High MetS rf ")
+cicc <- data.frame()
+ciimp <- data.frame()
+for(i in 1:6){
+  cicc <- rbind(cicc,cbind(outlist$minMVPAquant[,(2*i-1):(2*i)],rep(i,nrow(outlist$minMVPAquant)),0:(nrow(outlist$minMVPAquant)-1)))
+  ciimp <- rbind(ciimp,cbind(outlist$minMVPAquantimp[,(2*i-1):(2*i)],rep(i,nrow(outlist$minMVPAquantimp)),0:(nrow(outlist$minMVPAquant)-1)))
+}
+
+probcc <- cbind(probcc,cicc)
+
+ggplot(data=probcc) + geom_line(aes(x=X1-1,y=value,colour=as.factor(X2),group=as.factor(X2))) +
+  geom_ribbon(aes(x=V4,ymin=V1,ymax=V2,group=as.factor(X2),fill=as.factor(X2)),alpha=0.2) + theme_bw() +
+  guides(colour=guide_legend(title="No. High Risk Factors"),fill=FALSE) + xlab("Daily Minutes in MVPA")+ylab("Probability")#+
+
+
+indprobcc <- melt(outlist$indprob)
+indprobimp <- melt(outlist$indprobimp)
+indprobcc$X2[indprobcc$X2==1] <- "P(High Waist Circum)";indprobcc$X2[indprobcc$X2==2] <- "P(High Glucose)";indprobcc$X2[indprobcc$X2==3] <- "P(High Triglycerides)";indprobcc$X2[indprobcc$X2==4] <- "P(High Sys Blood Press)";indprobcc$X2[indprobcc$X2==5] <- "P(High LDL)";indprobcc$X2[indprobcc$X2==6] <- "P(High Dias Blood Press)";indprobcc$X2[indprobcc$X2==7] <- "P(Low LDL)";
+indprobimp$X2[indprobimp$X2==1] <- "P(High Waist Circum)";indprobimp$X2[indprobimp$X2==2] <- "P(High Glucose)";indprobimp$X2[indprobimp$X2==3] <- "P(High Triglycerides)";indprobimp$X2[indprobimp$X2==4] <- "P(High Sys Blood Press)";indprobimp$X2[indprobimp$X2==5] <- "P(High LDL)";indprobimp$X2[indprobimp$X2==6] <- "P(High Dias Blood Press)";indprobimp$X2[indprobimp$X2==7] <- "P(Low LDL)";
+ciccind <- data.frame()
+ciimpind <- data.frame()
+for(i in 1:7){
+  ciccind <- rbind(ciccind,cbind(outlist$indprobquant[,(2*i-1):(2*i)],rep(i,nrow(outlist$indprobquant)),0:(nrow(outlist$indprobquant)-1)))
+  ciimpind <- rbind(ciimpind,cbind(outlist$indprobquantimp[,(2*i-1):(2*i)],rep(i,nrow(outlist$indprobquantimp)),0:(nrow(outlist$indprobquantimp)-1)))
+}
+
+indcc <- cbind(indprobcc,ciccind)
+names(indcc)[2] <- "MetS_RF"
+ggplot(data=indcc) + geom_line(aes(x=X1-1,y=value,colour=MetS_RF,group=MetS_RF,linetype=MetS_RF),size=1) +theme_bw() +
+  xlab("Daily Minutes in MVPA")+ylab("Probability")  #+guides(colour=guide_legend(title=""))
+  #geom_ribbon(aes(x=V4,ymin=V1,ymax=V2,group=as.factor(X2),fill=as.factor(X2)),alpha=0.2) 
+
 
