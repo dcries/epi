@@ -33,10 +33,10 @@ for(i in 0:60){
     minMVPAquant[i+1,(2*j-1):(2*j)] <- quantile(cc$metsprob,probs=c(0.025,0.975))
     minMVPAquantimp[i+1,(2*j-1):(2*j)] <- quantile(imp$metsprob,probs=c(0.025,0.975))
   }
-  indprob[i,] <- colMeans(cc$indprob)
-  indprobimp[i,] <- colMeans(imp$indprob)
-  indprobquant[i,] <- c(apply(cc$indprob,2,quantile,probs=c(0.025,0.975)))
-  indprobquantimp[i,] <- c(apply(imp$indprob,2,quantile,probs=c(0.025,0.975)))
+  indprob[i+1,] <- colMeans(cc$indprob)
+  indprobimp[i+1,] <- colMeans(imp$indprob)
+  indprobquant[i+1,] <- c(apply(cc$indprob,2,quantile,probs=c(0.025,0.975)))
+  indprobquantimp[i+1,] <- c(apply(imp$indprob,2,quantile,probs=c(0.025,0.975)))
   
   print(i)
 }

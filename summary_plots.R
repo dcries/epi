@@ -95,16 +95,20 @@ for(i in 1:6){
 }
 
 probcc <- cbind(probcc,cicc)
+probimp <- cbind(probimp,ciimp)
+
 
 ggplot(data=probcc) + geom_line(aes(x=X1-1,y=value,colour=as.factor(X2),group=as.factor(X2))) +
   geom_ribbon(aes(x=V4,ymin=V1,ymax=V2,group=as.factor(X2),fill=as.factor(X2)),alpha=0.2) + theme_bw() +
   guides(colour=guide_legend(title="No. High Risk Factors"),fill=FALSE) + xlab("Daily Minutes in MVPA")+ylab("Probability")#+
+  # geom_line(data=probimp,aes(x=X1-1,y=value,colour=as.factor(X2),group=as.factor(X2))) +
+  # geom_ribbon(data=probimp,aes(x=V4,ymin=V1,ymax=V2,group=as.factor(X2),fill=as.factor(X2)),alpha=0.2)
 
 
 indprobcc <- melt(outlist$indprob)
 indprobimp <- melt(outlist$indprobimp)
-indprobcc$X2[indprobcc$X2==1] <- "P(High Waist Circum)";indprobcc$X2[indprobcc$X2==2] <- "P(High Glucose)";indprobcc$X2[indprobcc$X2==3] <- "P(High Triglycerides)";indprobcc$X2[indprobcc$X2==4] <- "P(High Sys Blood Press)";indprobcc$X2[indprobcc$X2==5] <- "P(High LDL)";indprobcc$X2[indprobcc$X2==6] <- "P(High Dias Blood Press)";indprobcc$X2[indprobcc$X2==7] <- "P(Low LDL)";
-indprobimp$X2[indprobimp$X2==1] <- "P(High Waist Circum)";indprobimp$X2[indprobimp$X2==2] <- "P(High Glucose)";indprobimp$X2[indprobimp$X2==3] <- "P(High Triglycerides)";indprobimp$X2[indprobimp$X2==4] <- "P(High Sys Blood Press)";indprobimp$X2[indprobimp$X2==5] <- "P(High LDL)";indprobimp$X2[indprobimp$X2==6] <- "P(High Dias Blood Press)";indprobimp$X2[indprobimp$X2==7] <- "P(Low LDL)";
+indprobcc$X2[indprobcc$X2==1] <- "P(High Waist Circum)";indprobcc$X2[indprobcc$X2==2] <- "P(High Glucose)";indprobcc$X2[indprobcc$X2==3] <- "P(High Triglycerides)";indprobcc$X2[indprobcc$X2==4] <- "P(High Sys Blood Press)";indprobcc$X2[indprobcc$X2==5] <- "P(High LDL)";indprobcc$X2[indprobcc$X2==6] <- "P(High Dias Blood Press)";indprobcc$X2[indprobcc$X2==7] <- "P(Low HDL)";
+indprobimp$X2[indprobimp$X2==1] <- "P(High Waist Circum)";indprobimp$X2[indprobimp$X2==2] <- "P(High Glucose)";indprobimp$X2[indprobimp$X2==3] <- "P(High Triglycerides)";indprobimp$X2[indprobimp$X2==4] <- "P(High Sys Blood Press)";indprobimp$X2[indprobimp$X2==5] <- "P(High LDL)";indprobimp$X2[indprobimp$X2==6] <- "P(High Dias Blood Press)";indprobimp$X2[indprobimp$X2==7] <- "P(Low HDL)";
 ciccind <- data.frame()
 ciimpind <- data.frame()
 for(i in 1:7){
@@ -113,9 +117,15 @@ for(i in 1:7){
 }
 
 indcc <- cbind(indprobcc,ciccind)
+indimp <- cbind(indprobimp,ciimpind)
+
 names(indcc)[2] <- "MetS_RF"
+names(indimp)[2] <- "MetS_RF"
+
 ggplot(data=indcc) + geom_line(aes(x=X1-1,y=value,colour=MetS_RF,group=MetS_RF,linetype=MetS_RF),size=1) +theme_bw() +
   xlab("Daily Minutes in MVPA")+ylab("Probability")  #+guides(colour=guide_legend(title=""))
   #geom_ribbon(aes(x=V4,ymin=V1,ymax=V2,group=as.factor(X2),fill=as.factor(X2)),alpha=0.2) 
 
+ggplot(data=indimp) + geom_line(aes(x=X1-1,y=value,colour=MetS_RF,group=MetS_RF,linetype=MetS_RF),size=1) +theme_bw() +
+  xlab("Daily Minutes in MVPA")+ylab("Probability")  #+guides(colour=guide_legend(title=""))
 
